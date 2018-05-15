@@ -11,6 +11,7 @@ import utility as util
 
 SCAN_OUT_DIR = "scan_results"
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
+SCANNER_JOIN_TIMEOUT = 0.38
 
 class Scanner():
 
@@ -82,7 +83,7 @@ class Scanner():
             # TODO: Check for TTY (https://www.tutorialspoint.com/python/os_isatty.htm or other)
             show_progress_state = 0
             while scan_thread.is_alive():
-                scan_thread.join(timeout=0.5)
+                scan_thread.join(timeout=SCANNER_JOIN_TIMEOUT)
                 print(util.GREEN + "Conducting scan %d of %d  " % (i, len(self.scanner_modules)), end="")
                 print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
                 util.clear_previous_line()
