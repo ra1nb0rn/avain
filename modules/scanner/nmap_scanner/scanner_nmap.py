@@ -11,32 +11,6 @@ NETWORKS_PATH, NETWORK_OMIT_PATH = "network_add.list", "network_omit.list"
 # additional nmap scripts to use
 NMAP_SCRIPTS = ["http-headers", "http-title", "smb-os-discovery", "banner"]  
 
-# what about:
-#   !!!!!!!!!!! banner, for banner grabbing? CHECK IF USEFUL
-#   banner-plus: https://github.com/hdm/scan-tools/blob/master/nse/banner-plus.nse ???
-#   http-enum? aggressive scan ok?
-#   http-methods to find "vulnerable" HTTP methods, e.g. maybe put?
-#   for mysql servers: mysql-info? But maybe unuseful for automatic scanning?
-# NOT http-sitemap-generator but it is interesting for manual recon!
-
-# nmap shows bad cpe for cpe:/a:openbsd:openssh:6.7p1   ?
-
-#### !!!!!!! nmap-vulners script !!!!!!!! ####
-
-# another field for hardware?
-
-# when multiple potential OS and correlating with other info (service, SMB, ...) use similarity metrics (i.e. cosine-similarity)
-# or add similarities of all considered fields?
-
-# add a mandatory accuracy field to every set of information (e.g. for every port information set)
-
-# VMs setup and bridged network adapter
-
-# https://github.com/toolswatch/vFeed ???
-
-# correlate accuracy, i.e. more general OS has 100 accuracy and conrecete OS has 96 accuracy
-
-
 def scan_network(network: str, add_networks: list, omit_networks: list, verbose: bool, ports:str = None):
     """
     Scan the specified networks with the following nmap command:
