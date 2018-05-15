@@ -83,12 +83,15 @@ class Controller():
         self.logger.info("Starting network scans")
         print("Scanning ...")
         hosts = scanner.conduct_scans()
+        outfile = os.path.join(self.output_dir, "results.txt")
         self.logger.info("Network scans completed.")
         self.logger.info("All created files have been written to '%s'" % self.output_dir)
+        self.logger.info("The main output file is called '%s'" % outfile)
         print("Done.")
         print("Results:")
-        visualizer.visualize_scan_results(hosts)
+        visualizer.visualize_scan_results(hosts, outfile)
         print("All created files have been written to: %s" % self.output_dir)
+        print("The main output file is called: %s" % outfile)
 
     def print_arguments(self):
         print("Network: %s" % self.network)

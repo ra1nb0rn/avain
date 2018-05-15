@@ -1,7 +1,9 @@
 import pprint
 
-def visualize_scan_results(hosts: dict):
+def visualize_scan_results(hosts: dict, outfile: str):
     pprint.pprint(hosts)
+    with open(outfile, "w") as file:
+        pprint.pprint(hosts, stream=file)
 
 def host_details_to_html(filepath: str, hosts: list):
     with open(filepath, "w") as output:
