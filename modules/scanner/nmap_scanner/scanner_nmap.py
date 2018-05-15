@@ -6,7 +6,8 @@ import xml.etree.ElementTree as ET
 
 from ... import utility as util
 
-OUTPUT_PATH = "nmap_scan_results.xml"
+XML_OUTPUT_PATH = "nmap_scan_results.xml"
+TEXT_OUTPUT_PATH = "nmap_scan_results.txt"
 NETWORKS_PATH, NETWORKS_OMIT_PATH = "network_add.list", "network_omit.list"
 
 # additional nmap scripts to use
@@ -43,7 +44,7 @@ def conduct_scan(results):
             file.write(net + "\n")
 
     # prepare the base of the nmap call
-    nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T3", "-oX", OUTPUT_PATH, "-iL", NETWORKS_PATH]
+    nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T3", "-oX", XML_OUTPUT_PATH, "-iL", NETWORKS_PATH]
 
     # check if process owner is root and change nmap call accordingly
     if os.getuid() == 0:
@@ -73,23 +74,24 @@ def conduct_scan(results):
     
     logger.info("Executing Nmap call '%s'" % " ".join(nmap_call))
 
-    # create /dev/null file handle to redirect nmap's stderr
-    f = open(os.devnull, "w") 
+    # open file handle to redirect nmap's stderr
+    redr_file = open(TEXT_OUTPUT_PATH, "w") 
 
     # call nmap with the created command
-    subprocess.check_output(nmap_call, stderr=f)
+    subprocess.call(nmap_call, stdout=redr_file, stderr=subprocess.STDOUT)
 
     # close /dev/null file again
-    f.close()
+    redr_file.close()
 
-    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'. The XML output has been written to '%s'" % ("", OUTPUT_PATH))
+    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'." % TEXT_OUTPUT_PATH + 
+        "The XML output has been written to '%s'" % XML_OUTPUT_PATH)
 
-    created_files = [OUTPUT_PATH, NETWORKS_PATH]
+    created_files = [TEXT_OUTPUT_PATH, XML_OUTPUT_PATH, NETWORKS_PATH]
     if OMIT_NETWORKS:
         created_files.append(NETWORKS_OMIT_PATH)
 
     logger.info("Parsing Nmap XML output")
-    result = parse_output_file(OUTPUT_PATH), created_files
+    result = parse_output_file(XML_OUTPUT_PATH), created_files
     logger.info("Done")
 
     results.append(result)
