@@ -26,9 +26,6 @@ def conduct_scan():
     :return: a tuple containging the scan results and a list of created files
     """
 
-    # cleanup existing network files
-    cleanup()
-
     # write the networks to scan into a file to give to nmap
     with open(NETWORKS_PATH, "w") as file:
         if NETWORK:
@@ -77,10 +74,11 @@ def conduct_scan():
     # close /dev/null file again
     f.close()
 
-    # cleanup created network files
-    cleanup()
+    created_files = [OUTPUT_PATH, NETWORKS_PATH]
+    if OMIT_NETWORKS:
+        created_files.append(NETWORK_OMIT_PATH)
 
-    return parse_output_file(OUTPUT_PATH), [OUTPUT_PATH]
+    return parse_output_file(OUTPUT_PATH), created_files
 
 
 def cleanup():
