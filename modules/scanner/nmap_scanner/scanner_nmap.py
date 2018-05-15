@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 from ... import utility as util
 
 OUTPUT_PATH = "nmap_scan_results.xml"
-NETWORKS_PATH, NETWORK_OMIT_PATH = "network_add.list", "network_omit.list"
+NETWORKS_PATH, NETWORKS_OMIT_PATH = "network_add.list", "network_omit.list"
 
 # additional nmap scripts to use
 NMAP_SCRIPTS = ["http-headers", "http-title", "smb-os-discovery", "banner"]  
@@ -62,12 +62,12 @@ def conduct_scan():
 
     # write the networks to exclude from the scan to an extra file that nmap can take as input
     if OMIT_NETWORKS:
-        logger.info("Writing networks to omit into '%s'" % NETWORK_OMIT_PATH)
-        with open(NETWORK_OMIT_PATH, "w") as file:
+        logger.info("Writing networks to omit into '%s'" % NETWORKS_OMIT_PATH)
+        with open(NETWORKS_OMIT_PATH, "w") as file:
             for net in OMIT_NETWORKS:
                 file.write(net + "\n")
         nmap_call.append("--excludefile")
-        nmap_call.append(NETWORK_OMIT_PATH)
+        nmap_call.append(NETWORKS_OMIT_PATH)
 
     
     logger.info("Executing Nmap call '%s'" % " ".join(nmap_call))
@@ -85,7 +85,7 @@ def conduct_scan():
 
     created_files = [OUTPUT_PATH, NETWORKS_PATH]
     if OMIT_NETWORKS:
-        created_files.append(NETWORK_OMIT_PATH)
+        created_files.append(NETWORKS_OMIT_PATH)
 
     logger.info("Parsing Nmap XML output")
     result = parse_output_file(OUTPUT_PATH), created_files
@@ -104,7 +104,7 @@ def cleanup():
             pass
 
     remove_file(NETWORKS_PATH)
-    remove_file(NETWORK_OMIT_PATH)
+    remove_file(NETWORKS_OMIT_PATH)
 
 
 def parse_output_file(filepath: str):
