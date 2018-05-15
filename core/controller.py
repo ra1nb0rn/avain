@@ -72,6 +72,7 @@ class Controller():
         print("Done.")
         print("Results:")
         visualizer.visualize_scan_results(hosts)
+        print("All created files have been written to: %s" % self.output_dir)
 
     def print_arguments(self):
         print("Network: %s" % self.network)
