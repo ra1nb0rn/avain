@@ -1,9 +1,13 @@
 import pprint
 
+import utility as util
+
 def visualize_scan_results(hosts: dict, outfile: str):
+    print(util.BRIGHT_BLUE + "Results:" + util.SANE)
     pprint.pprint(hosts)
     with open(outfile, "w") as file:
         pprint.pprint(hosts, stream=file)
+    print()
 
 def host_details_to_html(filepath: str, hosts: list):
     with open(filepath, "w") as output:

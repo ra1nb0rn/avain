@@ -3,10 +3,22 @@ import logging
 import sys
 import datetime
 
-
 # TODO: How to handle broadcast and network identifier addresses. Decide to include or not and fix.
 
 LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# define ANSI color escape sequences 
+# Taken from: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html
+# and: http://www.topmudsites.com/forums/showthread.php?t=413
+SANE = "\u001b[0m"
+GREEN = "\u001b[32m"
+RED = "\u001b[31m"
+YELLOW = "\u001b[33m"
+BRIGHT_BLUE = "\u001b[34;1m"
+
+# other ANSI escape sequences
+CURSOR_PREV_LINE = "\033[F"
+CLEAR_UNTIL_EOL = "\033[K"
 
 def parse_wildcard_ipv4(network: str):
     def get_all_hosts(splits):
@@ -124,7 +136,7 @@ def get_logger(module_name: str, logfile: str):
     :param logile: filepath to the logfile
     :return: a logger with the specified attributes
     """
-    
+
     logger = logging.getLogger(module_name)
     logger.setLevel(logging.INFO)
 
@@ -140,3 +152,14 @@ def get_logger(module_name: str, logfile: str):
     logger.addHandler(handler)
 
     return logger
+
+def clear_previous_line():
+    print(CURSOR_PREV_LINE, end="")
+    print(CLEAR_UNTIL_EOL, end="")
+
+
+def hide_cursor():
+    print("\033[?25l", end="")
+
+def show_cursor():
+    print("\033[?25h", end="")

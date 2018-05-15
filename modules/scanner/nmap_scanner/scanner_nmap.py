@@ -1,3 +1,4 @@
+
 import os
 import subprocess
 import sys
@@ -20,33 +21,8 @@ LOGFILE = ""
 
 logger = None
 
-# what about:
-#   !!!!!!!!!!! banner, for banner grabbing? CHECK IF USEFUL
-#   banner-plus: https://github.com/hdm/scan-tools/blob/master/nse/banner-plus.nse ???
-#   http-enum? aggressive scan ok?
-#   http-methods to find "vulnerable" HTTP methods, e.g. maybe put?
-#   for mysql servers: mysql-info? But maybe unuseful for automatic scanning?
-# NOT http-sitemap-generator but it is interesting for manual recon!
 
-# nmap shows bad cpe for cpe:/a:openbsd:openssh:6.7p1   ?
-
-#### !!!!!!! nmap-vulners script !!!!!!!! ####
-
-# another field for hardware?
-
-# when multiple potential OS and correlating with other info (service, SMB, ...) use similarity metrics (i.e. cosine-similarity)
-# or add similarities of all considered fields?
-
-# add a mandatory accuracy field to every set of information (e.g. for every port information set)
-
-# VMs setup and bridged network adapter
-
-# https://github.com/toolswatch/vFeed ???
-
-# correlate accuracy, i.e. more general OS has 100 accuracy and conrecete OS has 96 accuracy
-
-
-def conduct_scan():
+def conduct_scan(results):
     """
     Scan the specified networks with the following nmap command:
     sudo nmap -Pn -n -A --osscan-guess -T3 'network' -sSU --script=${NMAP_SCRIPTS}
@@ -116,7 +92,7 @@ def conduct_scan():
     result = parse_output_file(OUTPUT_PATH), created_files
     logger.info("Done")
 
-    return result
+    results.append(result)
 
 def cleanup():
     """

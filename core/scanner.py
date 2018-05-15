@@ -1,13 +1,16 @@
+import curses
 import importlib
 import inspect
 import os
 import shutil
 import sys
+import threading
 
 import module_seeker
 import utility as util
 
 SCAN_OUT_DIR = "scan_results"
+SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
 
 class Scanner():
 
@@ -46,6 +49,9 @@ class Scanner():
         scan_result_out_dir = os.path.join(self.output_dir, SCAN_OUT_DIR)
         os.makedirs(scan_result_out_dir, exist_ok=True)
 
+        util.hide_cursor()  # hide cursor
+        self.logger.info("Starting network scan(s)")
+        print(util.BRIGHT_BLUE + "Starting network scans:")
         self.logger.info("%d scanner module(s) have been found" % len(self.scanner_modules))
         self.logger.debug("The following scanner modules have been found: %s"
             % ", ".join(self.scanner_modules))
@@ -66,9 +72,29 @@ class Scanner():
 
             # set the module's scan parameters (e.g. network, ports, etc.)
             self.set_module_parameters(module)
+
             # conduct the module's scan
             self.logger.info("Starting scan %d of %d" % (i+1, len(self.scanner_modules)))
-            result, created_files = module.conduct_scan()
+            scan_info = []
+            scan_thread = threading.Thread(target=module.conduct_scan, args=(scan_info,))
+
+            scan_thread.start()
+            # TODO: Check for TTY (https://www.tutorialspoint.com/python/os_isatty.htm or other)
+            show_progress_state = 0
+            while scan_thread.is_alive():
+                scan_thread.join(timeout=0.5)
+                print(util.GREEN + "Conducting scan %d of %d  " % (i, len(self.scanner_modules)), end="")
+                print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
+                util.clear_previous_line()
+                if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
+                    show_progress_state = 0
+                else:
+                    show_progress_state += 1
+
+            if scan_info:
+                result, created_files = scan_info[0]
+            else:
+                result, created_files = {}, []
 
             # change back into the main directory
             os.chdir(main_cwd)
@@ -92,7 +118,8 @@ class Scanner():
                 self.write_scan_result_to_xml(result, os.path.join(module_output_dir, scanner_module + "_result.xml"))  # write the dict to XML
                 self.results[scanner_module] = result
             else:  # if result cannot be processed, skip this module
-                print("Warning: results of scan from file '%s' could not be used.\nOnly XML files or python dicts can be used." % scanner_module_path)
+                print(util.RED + "Warning: results of scan from file '%s' could not be used.\n"
+                    "Only XML files or python dicts can be used." % scanner_module_path)
 
             # move all created files into the output directory of the current module
             if created_files:
@@ -110,11 +137,19 @@ class Scanner():
 
             self.logger.info("Scan %d of %d done" % (i+1, len(self.scanner_modules)))
 
+        if len(self.scanner_modules) == 1:
+            print(util.GREEN + "Scan completed.")
+        else:
+            print(util.GREEN + "All %d scans completed." % len(self.scanner_modules))
+        print(util.SANE)
         self.logger.info("All scans completed")
         self.logger.info("Aggregating results")
         self.result = self.construct_result()
         self.logger.info("Done")
+        self.logger.info("Network scans completed")
+        util.show_cursor()  # show cursor again
         return self.result
+
 
     def set_module_parameters(self, module):
         """
@@ -149,9 +184,11 @@ class Scanner():
             module.LOGFILE = self.logfile
 
     def parse_xml_scan_result_to_dict(self, xml_file: str):
+        # TODO: implement
         pass
 
     def write_scan_result_to_xml(self, result: dict, out_name: str):
+        # TODO: implement
         pass
 
     def construct_result(self):

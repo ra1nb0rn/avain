@@ -46,7 +46,8 @@ class Controller():
 
         # inform user about not being root
         if os.getuid() != 0:
-            print("Warning: not running this program as root user leads to less effective scanning (e.g. with nmap)", file=sys.stderr)
+            print(util.RED + "Warning: not running this program as root user leads"
+                " to less effective scanning (e.g. with nmap)" + util.SANE, file=sys.stderr)
 
     def extend_networks_to_hosts(self):
         """
@@ -80,15 +81,10 @@ class Controller():
         """
 
         scanner = Scanner(self.network, self.add_networks, self.omit_networks, self.output_dir, self.verbose, self.logfile)
-        self.logger.info("Starting network scans")
-        print("Scanning ...")
         hosts = scanner.conduct_scans()
         outfile = os.path.join(self.output_dir, "results.txt")
-        self.logger.info("Network scans completed.")
         self.logger.info("All created files have been written to '%s'" % self.output_dir)
         self.logger.info("The main output file is called '%s'" % outfile)
-        print("Done.")
-        print("Results:")
         visualizer.visualize_scan_results(hosts, outfile)
         print("All created files have been written to: %s" % self.output_dir)
         print("The main output file is called: %s" % outfile)
