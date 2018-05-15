@@ -46,8 +46,8 @@ class Controller():
 
         # inform user about not being root
         if os.getuid() != 0:
-            print(util.RED + "Warning: not running this program as root user leads"
-                " to less effective scanning (e.g. with nmap)" + util.SANE, file=sys.stderr)
+            print(util.MAGENTA + "Warning: not running this program as root user leads"
+                " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
 
     def extend_networks_to_hosts(self):
         """

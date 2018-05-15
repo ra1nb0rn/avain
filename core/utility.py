@@ -15,6 +15,7 @@ GREEN = "\u001b[32m"
 RED = "\u001b[31m"
 YELLOW = "\u001b[33m"
 BRIGHT_BLUE = "\u001b[34;1m"
+MAGENTA = "\u001b[35m"
 
 # other ANSI escape sequences
 CURSOR_PREV_LINE = "\033[F"
