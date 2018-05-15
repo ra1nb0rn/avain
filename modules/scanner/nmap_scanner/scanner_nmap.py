@@ -83,7 +83,7 @@ def conduct_scan(results):
     # close /dev/null file again
     redr_file.close()
 
-    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'." % TEXT_OUTPUT_PATH + 
+    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'." % TEXT_OUTPUT_PATH +
         "The XML output has been written to '%s'" % XML_OUTPUT_PATH)
 
     created_files = [TEXT_OUTPUT_PATH, XML_OUTPUT_PATH, NETWORKS_PATH]
