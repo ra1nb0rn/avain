@@ -67,7 +67,10 @@ class Controller():
         """
 
         scanner = Scanner(self.network, self.add_networks, self.omit_networks, self.output_dir, self.verbose)
+        print("Scanning ...")
         hosts = scanner.conduct_scans()
+        print("Done.")
+        print("Results:")
         visualizer.visualize_scan_results(hosts)
 
     def print_arguments(self):
