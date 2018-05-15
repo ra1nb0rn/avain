@@ -28,6 +28,7 @@ class Scanner():
         self.scanner_modules = module_seeker.find_all_scanners_modules()
         self.analysis_modules = module_seeker.find_all_analyzer_modules()
         self.verbose = verbose
+        self.ports = None
 
     def conduct_scans(self):
         """
@@ -56,18 +57,10 @@ class Scanner():
             module_dir = os.path.dirname(scanner_module_path)
             os.chdir(module_dir)
 
-            # execute the scanning function of the module and save result
-            all_module_functions = [func_tuple[0] for func_tuple in inspect.getmembers(module, inspect.isfunction)]
-            if "scan_network" in all_module_functions:
-                result, created_files = module.scan_network(self.network, self.add_networks, self.omit_networks, self.verbose)
-            elif "scan_hosts" in all_module_functions:
-                if not self.hosts:
-                    controller.extend_networks_to_hosts()
-                result, created_files = module.scan_hosts(self.hosts, self.verbose)
-            else:
-                print("Warning couldn't conduct scan with module '%s'" % scanner_module_path, file=sys.stderr)
-                print("Reason: neither function 'scan_network' nor function 'scan_hosts' is present.", file=sys.stderr)
-                continue
+            # set the module's scan parameters (e.g. network, ports, etc.)
+            self.set_module_parameters(module)
+            # conduct the module's scan
+            result, created_files = module.conduct_scan()
 
             # change back into the main directory
             os.chdir(main_cwd)
@@ -109,6 +102,35 @@ class Scanner():
 
         self.result = self.construct_result()
         return self.result
+
+    def set_module_parameters(self, module):
+        """
+        Set the given modules's scan parameters depening on which parameters it has declared.
+
+        :param module: the module whose scan parameters to set
+        """
+        # execute the scanning function of the module and save result
+        all_module_attributes = [attr_tuple[0] for attr_tuple in inspect.getmembers(module)]
+
+        if "NETWORK" in all_module_attributes:
+            module.NETWORK = self.network
+
+        if "ADD_NETWORKS" in all_module_attributes:
+            module.ADD_NETWORKS = self.add_networks
+
+        if "OMIT_NETWORKS" in all_module_attributes:
+            module.OMIT_NETWORKS = self.omit_networks
+
+        if "VERBOSE" in all_module_attributes:
+            module.VERBOSE = self.verbose
+
+        if "PORTS" in all_module_attributes:
+            module.PORTS = self.ports
+
+        if "HOSTS" in all_module_attributes:
+            if not self.hosts:
+                controller.extend_networks_to_hosts()
+            module.HOSTS = self.hosts
 
     def parse_xml_scan_result_to_dict(self, xml_file: str):
         pass

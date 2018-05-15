@@ -11,24 +11,29 @@ NETWORKS_PATH, NETWORK_OMIT_PATH = "network_add.list", "network_omit.list"
 # additional nmap scripts to use
 NMAP_SCRIPTS = ["http-headers", "http-title", "smb-os-discovery", "banner"]  
 
-def scan_network(network: str, add_networks: list, omit_networks: list, verbose: bool, ports:str = None):
+NETWORK = ""  # a string representing the network to analyze
+ADD_NETWORKS = []  # a list of networks as strings to additionally analyze
+OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
+VERBOSE = False  # specifying whether to provide verbose output or not
+PORTS = None  # the ports to scan
+
+
+def conduct_scan():
     """
     Scan the specified networks with the following nmap command:
     sudo nmap -Pn -n -A --osscan-guess -T3 'network' -sSU --script=${NMAP_SCRIPTS}
 
-    :param network: A string representing the network to analyze
-    :param add_networks: A list of networks as strings to additionally analyze
-    :param omit_networks: A list of networks as strings to omit from the analysis
-    :param verbose: Specifying whether to provide verbose output or not
-    :param ports: The ports to scan
     :return: a tuple containging the scan results and a list of created files
     """
 
+    # cleanup existing network files
+    cleanup()
+
     # write the networks to scan into a file to give to nmap
     with open(NETWORKS_PATH, "w") as file:
-        if network:
-            file.write(network + "\n")
-        for net in add_networks:
+        if NETWORK:
+            file.write(NETWORK + "\n")
+        for net in ADD_NETWORKS:
             file.write(net + "\n")
 
     # prepare the base of the nmap call
@@ -45,22 +50,22 @@ def scan_network(network: str, add_networks: list, omit_networks: list, verbose:
     nmap_call.append("--script=%s" % ",".join(NMAP_SCRIPTS))
 
     # if only specific ports should be scanned, append that to the nmap call
-    if ports:
+    if PORTS:
         nmap_call.append("-p%s" % ports)
 
     # if nmap output should be verbose
-    if verbose:
+    if VERBOSE:
         nmap_call.append("-v")
 
     # write the networks to exclude from the scan to an extra file that nmap can take as input
-    if omit_networks:
+    if OMIT_NETWORKS:
         with open(NETWORK_OMIT_PATH, "w") as file:
-            for net in omit_networks:
+            for net in OMIT_NETWORKS:
                 file.write(net + "\n")
         nmap_call.append("--excludefile")
         nmap_call.append(NETWORK_OMIT_PATH)
 
-    if (verbose):
+    if (VERBOSE):
         print("Executing formatted nmap call: " + " ".join(nmap_call))
     
     # create /dev/null file handle to redirect nmap's stderr
@@ -72,7 +77,7 @@ def scan_network(network: str, add_networks: list, omit_networks: list, verbose:
     # close /dev/null file again
     f.close()
 
-    # cleanup network files
+    # cleanup created network files
     cleanup()
 
     return parse_output_file(OUTPUT_PATH), [OUTPUT_PATH]
