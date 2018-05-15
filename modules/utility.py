@@ -1,6 +1,9 @@
 from collections import Counter
+import logging
 import math
 import re
+
+LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 def compute_cosine_similarity(text_1: str, text_2: str):
     """
@@ -33,3 +36,29 @@ def compute_cosine_similarity(text_1: str, text_2: str):
         return 0.0
     else:
         return float(inner_product)/float(normalization_factor) 
+
+
+def get_logger(module_name: str, logfile: str):
+    """
+    Create a logger with the given module name logging to the given logfile.
+
+    :param module_name: the name of the module the logger is for
+    :param logile: filepath to the logfile
+    :return: a logger with the specified attributes
+    """
+    
+    logger = logging.getLogger(module_name)
+    logger.setLevel(logging.INFO)
+
+    # create log file handler
+    handler = logging.FileHandler(logfile, encoding="utf-8")
+    handler.setLevel(logging.INFO)
+
+    # create logging format
+    formatter = logging.Formatter(LOGGING_FORMAT)
+    handler.setFormatter(formatter)
+
+    # add the handler to the logger
+    logger.addHandler(handler)
+
+    return logger

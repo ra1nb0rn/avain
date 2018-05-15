@@ -16,6 +16,9 @@ ADD_NETWORKS = []  # a list of networks as strings to additionally analyze
 OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
 VERBOSE = False  # specifying whether to provide verbose output or not
 PORTS = None  # the ports to scan
+LOGFILE = ""
+
+logger = None
 
 
 def conduct_scan():
@@ -26,7 +29,12 @@ def conduct_scan():
     :return: a tuple containging the scan results and a list of created files
     """
 
+    # setup logger
+    logger = util.get_logger(__name__, LOGFILE)
+    logger.info("Setting up Nmap scan")
+
     # write the networks to scan into a file to give to nmap
+    logger.info("Writing networks to scan into '%s'" % NETWORKS_PATH)
     with open(NETWORKS_PATH, "w") as file:
         if NETWORK:
             file.write(NETWORK + "\n")
@@ -40,8 +48,6 @@ def conduct_scan():
     if os.getuid() == 0:
         nmap_call.insert(0, "sudo")
         nmap_call.append("-sSU")  #  scan for TCP and UDP (UDP requires root privilege)
-    else:
-        print("Warning: not running this program as root user leads to less effective scanning (e.g. with nmap)", file=sys.stderr)
 
     # add nmap scripts to nmap call
     nmap_call.append("--script=%s" % ",".join(NMAP_SCRIPTS))
@@ -56,15 +62,16 @@ def conduct_scan():
 
     # write the networks to exclude from the scan to an extra file that nmap can take as input
     if OMIT_NETWORKS:
+        logger.info("Writing networks to omit into '%s'" % NETWORK_OMIT_PATH)
         with open(NETWORK_OMIT_PATH, "w") as file:
             for net in OMIT_NETWORKS:
                 file.write(net + "\n")
         nmap_call.append("--excludefile")
         nmap_call.append(NETWORK_OMIT_PATH)
 
-    if (VERBOSE):
-        print("Executing formatted nmap call: " + " ".join(nmap_call))
     
+    logger.info("Executing Nmap call '%s'" % " ".join(nmap_call))
+
     # create /dev/null file handle to redirect nmap's stderr
     f = open(os.devnull, "w") 
 
@@ -74,12 +81,17 @@ def conduct_scan():
     # close /dev/null file again
     f.close()
 
+    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'. The XML output has been written to '%s'" % ("", OUTPUT_PATH))
+
     created_files = [OUTPUT_PATH, NETWORKS_PATH]
     if OMIT_NETWORKS:
         created_files.append(NETWORK_OMIT_PATH)
 
-    return parse_output_file(OUTPUT_PATH), created_files
+    logger.info("Parsing Nmap XML output")
+    result = parse_output_file(OUTPUT_PATH), created_files
+    logger.info("Done")
 
+    return result
 
 def cleanup():
     """

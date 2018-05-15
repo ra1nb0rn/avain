@@ -1,4 +1,5 @@
 import os
+import sys
 
 from scanner import Scanner
 import utility as util
@@ -29,11 +30,23 @@ class Controller():
         else:
             self.output_dir = "avain_output-" + util.get_current_timestamp()
             # self.output_dir = "avain_output"  # for debugging purposes
+        os.makedirs(self.output_dir, exist_ok=True)
         self.scan_results = scan_results
         self.analysis_results = analysis_results
         self.time = time
         self.verbose = verbose
         self.hosts = set()
+
+        # setup logging
+        self.logfile = os.path.abspath(os.path.join(self.output_dir, "avain.log"))
+        if os.path.isfile(self.logfile):
+            os.remove(self.logfile)  # delete logging file if it already exists (from a previous run)
+        self.logger = util.get_logger(__name__, self.logfile)
+        self.logger.info("Starting the AVAIN program")
+
+        # inform user about not being root
+        if os.getuid() != 0:
+            print("Warning: not running this program as root user leads to less effective scanning (e.g. with nmap)", file=sys.stderr)
 
     def extend_networks_to_hosts(self):
         """
@@ -66,9 +79,12 @@ class Controller():
         of the specified network for vulnerabilities.
         """
 
-        scanner = Scanner(self.network, self.add_networks, self.omit_networks, self.output_dir, self.verbose)
+        scanner = Scanner(self.network, self.add_networks, self.omit_networks, self.output_dir, self.verbose, self.logfile)
+        self.logger.info("Starting network scans")
         print("Scanning ...")
         hosts = scanner.conduct_scans()
+        self.logger.info("Network scans completed.")
+        self.logger.info("All created files have been written to '%s'" % self.output_dir)
         print("Done.")
         print("Results:")
         visualizer.visualize_scan_results(hosts)

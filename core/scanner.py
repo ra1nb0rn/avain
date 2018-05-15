@@ -5,12 +5,13 @@ import shutil
 import sys
 
 import module_seeker
+import utility as util
 
 SCAN_OUT_DIR = "scan_results"
 
 class Scanner():
 
-    def __init__(self, network: str, add_networks: list, omit_networks: list, output_dir: str, verbose: bool):
+    def __init__(self, network: str, add_networks: list, omit_networks: list, output_dir: str, verbose: bool, logfile: str):
         """
         Create a Scanner object with the given networks and output_directory
 
@@ -19,6 +20,7 @@ class Scanner():
         :param omit_networks: A list of networks as strings to omit from the analysis
         :param output_dir: A string specifying the output directory of the analysis
         :param verbose: Specifying whether to provide verbose output or not
+        :param logger: a logger for logging information
         """
 
         self.network = network
@@ -29,6 +31,8 @@ class Scanner():
         self.analysis_modules = module_seeker.find_all_analyzer_modules()
         self.verbose = verbose
         self.ports = None
+        self.logfile = logfile
+        self.logger = util.get_logger(__name__, logfile)
 
     def conduct_scans(self):
         """
@@ -38,13 +42,16 @@ class Scanner():
         """
 
         self.results = {}
-
         # create the output directory for all scan results
         scan_result_out_dir = os.path.join(self.output_dir, SCAN_OUT_DIR)
         os.makedirs(scan_result_out_dir, exist_ok=True)
 
+        self.logger.info("%d scanner module(s) have been found" % len(self.scanner_modules))
+        self.logger.debug("The following scanner modules have been found: %s"
+            % ", ".join(self.scanner_modules))
+
         # iterate over all available scanner modules
-        for scanner_module_path in self.scanner_modules:
+        for i, scanner_module_path in enumerate(self.scanner_modules):
             # get scanner module name
             scanner_module = scanner_module_path.replace(os.sep, ".")
             scanner_module = scanner_module.replace(".py", "")
@@ -60,6 +67,7 @@ class Scanner():
             # set the module's scan parameters (e.g. network, ports, etc.)
             self.set_module_parameters(module)
             # conduct the module's scan
+            self.logger.info("Starting scan %d of %d" % (i+1, len(self.scanner_modules)))
             result, created_files = module.conduct_scan()
 
             # change back into the main directory
@@ -100,7 +108,12 @@ class Scanner():
                     else:
                         shutil.move(os.path.join(module_dir, file), file_out_path)
 
+            self.logger.info("Scan %d of %d done" % (i+1, len(self.scanner_modules)))
+
+        self.logger.info("All scans completed")
+        self.logger.info("Aggregating results")
         self.result = self.construct_result()
+        self.logger.info("Done")
         return self.result
 
     def set_module_parameters(self, module):
@@ -131,6 +144,9 @@ class Scanner():
             if not self.hosts:
                 controller.extend_networks_to_hosts()
             module.HOSTS = self.hosts
+
+        if "LOGFILE" in all_module_attributes:
+            module.LOGFILE = self.logfile
 
     def parse_xml_scan_result_to_dict(self, xml_file: str):
         pass
