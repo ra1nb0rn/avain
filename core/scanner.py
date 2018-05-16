@@ -84,7 +84,7 @@ class Scanner():
             show_progress_state = 0
             while scan_thread.is_alive():
                 scan_thread.join(timeout=SCANNER_JOIN_TIMEOUT)
-                print(util.GREEN + "Conducting scan %d of %d  " % (i, len(self.scanner_modules)), end="")
+                print(util.GREEN + "Conducting scan %d of %d  " % (i+1, len(self.scanner_modules)), end="")
                 print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
                 util.clear_previous_line()
                 if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
