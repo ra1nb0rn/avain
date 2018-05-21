@@ -15,7 +15,7 @@ NETWORKS_PATH, NETWORKS_OMIT_PATH = "network_add.list", "network_omit.list"
 # additional nmap scripts to use
 NMAP_SCRIPTS = ["http-headers", "http-title", "smb-os-discovery", "banner"]  
 
-NETWORKS = []  # a string representing the network to analyze
+NETWORKS = []  # a list representing the networks to analyze
 ADD_NETWORKS = []  # a list of networks as strings to additionally analyze
 OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
 VERBOSE = False  # specifying whether to provide verbose output or not
@@ -27,12 +27,12 @@ DETECTED_OSES = {}
 logger = None
 
 
-def conduct_scan(results):
+def conduct_scan(results: list):
     """
-    Scan the specified networks with the following nmap command:
-    sudo nmap -Pn -n -A --osscan-guess -T3 'network' -sSU --script=${NMAP_SCRIPTS}
+    Scan the specified networks above with the following nmap command:
+    sudo nmap -Pn -n -A --osscan-guess -T3 'networks' -sSU --script=${NMAP_SCRIPTS}
 
-    :return: a tuple containging the scan results and a list of created files
+    Returns a tuple contaiging the scan results and a list of created files by writing it into the result list.
     """
 
     # setup logger

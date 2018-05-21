@@ -1,4 +1,3 @@
-import curses
 import importlib
 import inspect
 import os
@@ -24,14 +23,13 @@ class Scanner():
         :param omit_networks: A list of networks as strings to omit from the analysis
         :param output_dir: A string specifying the output directory of the analysis
         :param verbose: Specifying whether to provide verbose output or not
-        :param logger: a logger for logging information
+        :param logfile: a logfile for logging information
         """
         self.networks = networks
         self.add_networks = add_networks
         self.omit_networks = omit_networks
         self.output_dir = output_dir
         self.scanner_modules = module_seeker.find_all_scanners_modules()
-        self.analysis_modules = module_seeker.find_all_analyzer_modules()
         self.verbose = verbose
         self.ports = ports
         self.logfile = logfile
