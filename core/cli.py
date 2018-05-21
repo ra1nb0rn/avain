@@ -31,7 +31,7 @@ class Cli():
         required_args = parser.add_argument_group("required arguments")
         parser._action_groups.append(optional_args)
 
-        required_args.add_argument("-n", "--network", help="Specify a network to scan in CIDR or wildcard notation. If given argument does not contain a CIDR "
+        required_args.add_argument("-n", "--networks", nargs="+", help="Specify networks to scan in CIDR or wildcard notation. If given argument does not contain a CIDR "
                                                            "or wildcard, the host at the given IP is scanned.")
         required_args.add_argument("-nL", "--network-list", help="A list that specifies networks/hosts to add to or omit from the scan.")
 
@@ -43,11 +43,12 @@ class Cli():
         optional_args.add_argument("-sR", "--scan-results", nargs="+", help="Addtional scan results to include into the scanning result. "
                                                                             "Multiple files or folders can be specified.")
         optional_args.add_argument("-t", "--time", action="store_true", help="Specifies whether to time the scan or not.")
+        optional_args.add_argument("-p", "--ports", help="Specifies which ports to scan on every host.")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
 
 
         self.args = parser.parse_args()
-        if (not self.args.network) and (not self.args.network_list):
+        if (not self.args.networks) and (not self.args.network_list):
             parser.error("at least one of the following arguments is required: -n/--network or -nL/--network-list")
 
         self.parse_network_list(parser)
@@ -60,9 +61,10 @@ class Cli():
         :param parser: an ArgumentParser with input arguments
         """
 
-        if self.args.network:
-            if not util.is_valid_net_addr(self.args.network):
-                parser.error("not a valid network address")
+        if self.args.networks:
+            for net in self.args.networks:
+                if not util.is_valid_net_addr(net):
+                    parser.error("%s is not a valid network address" % net)
 
         if self.args.network_list:
             for ip in self.args.add_networks:
@@ -70,7 +72,7 @@ class Cli():
                     parser.error("network %s on network list is not a valid network address" % ip)
             for ip in self.args.omit_networks:
                 if not util.is_valid_net_addr(ip):
-                    parser.error("network %s on network list is not a valid network address" % ip)
+                    parser.error("network %s on network omit list is not a valid network address" % ip)
 
         if self.args.analysis_results:
             for r in self.args.analysis_results:
@@ -85,12 +87,31 @@ class Cli():
                 if not os.path.isfile(r):
                     parser.error("scan result %s does not exist" % r)
 
+        if self.args.ports:
+            def check_port(port_expr: str):
+                try:
+                    port_int = int(port_expr)
+                    if port_int < 0 or port_int > 65535:
+                        raise ValueError
+                except ValueError:
+                    parser.error("port %s is not a valid port" % port_expr)
+
+            for port_expr in self.args.ports.split(","):
+                if "-" in port_expr:
+                    p1, p2 = port_expr.split("-")
+                    check_port(p1)
+                    check_port(p2)
+                    if int(p1) > int(p2):
+                        parser.error("port range %s is not a valid port range" % port_expr)
+                else:
+                    check_port(port_expr)
+
     def process_arguments(self):
         """
         Parse the program arguments and initiate the vulnerability analysis.
         """
 
-        controller = Controller(self.args.network, self.args.add_networks, self.args.omit_networks, self.args.output, 
+        controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.ports, self.args.output, 
                                 self.args.scan_results, self.args.analysis_results, self.args.time, self.args.verbose)
         controller.do_analysis()
 

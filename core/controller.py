@@ -7,7 +7,7 @@ import visualizer
 
 class Controller():
 
-    def __init__(self, network: str, add_networks: list, omit_networks: list, output_dir: str, scan_results: list,
+    def __init__(self, networks: list, add_networks: list, omit_networks: list, ports: list, output_dir: str, scan_results: list,
                 analysis_results: list, time: bool, verbose: bool):
         """
         Create a Controller object.
@@ -22,7 +22,7 @@ class Controller():
         :param vebose: Specifying whether to provide verbose output or not
         """
 
-        self.network = network
+        self.networks = networks
         self.add_networks = add_networks
         self.omit_networks = omit_networks
         if output_dir:
@@ -36,6 +36,7 @@ class Controller():
         self.time = time
         self.verbose = verbose
         self.hosts = set()
+        self.ports = ports
 
         # setup logging
         self.logfile = os.path.abspath(os.path.join(self.output_dir, "avain.log"))
@@ -49,38 +50,13 @@ class Controller():
             print(util.MAGENTA + "Warning: not running this program as root user leads"
                 " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
 
-    def extend_networks_to_hosts(self):
-        """
-        Parse the network strings of the main network, the additional networks and the networks
-        to omit into an enumeration of all hosts to analyse. 
-        """
-        def add_to_hosts(network):
-            hosts = util.extend_network_to_hosts(network)
-            if isinstance(hosts, list):
-                self.hosts |= set(hosts)
-            else:
-                self.hosts.add(hosts)
-
-        add_to_hosts(self.network)
-        for network in self.add_networks:
-            add_to_hosts(network)
-
-        for network in self.omit_networks:
-            hosts = util.extend_network_to_hosts(network)
-            if isinstance(hosts, list):
-                self.hosts = self.hosts - set(hosts)
-            else:
-                self.hosts.remove(hosts)
-
-        self.hosts = list(self.hosts)
-
     def do_analysis(self):
         """
         First conduct network reconnaissance and then analyze the hosts
         of the specified network for vulnerabilities.
         """
 
-        scanner = Scanner(self.network, self.add_networks, self.omit_networks, self.output_dir, self.verbose, self.logfile)
+        scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.ports, self.output_dir, self.verbose, self.logfile)
         hosts = scanner.conduct_scans()
         outfile = os.path.join(self.output_dir, "results.txt")
         self.logger.info("All created files have been written to '%s'" % self.output_dir)
@@ -90,7 +66,7 @@ class Controller():
         print("The main output file is called: %s" % outfile)
 
     def print_arguments(self):
-        print("Network: %s" % self.network)
+        print("Network: %s" % self.networks)
         print("Additional networks: {}".format(self.add_networks))
         print("Omitted networks: {}".format(self.omit_networks))
         print("Output: %s" % self.output)

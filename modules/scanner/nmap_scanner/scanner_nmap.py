@@ -13,7 +13,7 @@ NETWORKS_PATH, NETWORKS_OMIT_PATH = "network_add.list", "network_omit.list"
 # additional nmap scripts to use
 NMAP_SCRIPTS = ["http-headers", "http-title", "smb-os-discovery", "banner"]  
 
-NETWORK = ""  # a string representing the network to analyze
+NETWORKS = []  # a string representing the network to analyze
 ADD_NETWORKS = []  # a list of networks as strings to additionally analyze
 OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
 VERBOSE = False  # specifying whether to provide verbose output or not
@@ -38,8 +38,8 @@ def conduct_scan(results):
     # write the networks to scan into a file to give to nmap
     logger.info("Writing networks to scan into '%s'" % NETWORKS_PATH)
     with open(NETWORKS_PATH, "w") as file:
-        if NETWORK:
-            file.write(NETWORK + "\n")
+        for net in NETWORKS:
+            file.write(net + "\n")
         for net in ADD_NETWORKS:
             file.write(net + "\n")
 
@@ -56,7 +56,7 @@ def conduct_scan(results):
 
     # if only specific ports should be scanned, append that to the nmap call
     if PORTS:
-        nmap_call.append("-p%s" % ports)
+        nmap_call.append("-p%s" % PORTS)
 
     # if nmap output should be verbose
     if VERBOSE:

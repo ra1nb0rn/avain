@@ -15,7 +15,7 @@ SCANNER_JOIN_TIMEOUT = 0.38
 
 class Scanner():
 
-    def __init__(self, network: str, add_networks: list, omit_networks: list, output_dir: str, verbose: bool, logfile: str):
+    def __init__(self, networks: list, add_networks: list, omit_networks: list, ports: str, output_dir: str, verbose: bool, logfile: str):
         """
         Create a Scanner object with the given networks and output_directory
 
@@ -26,15 +26,14 @@ class Scanner():
         :param verbose: Specifying whether to provide verbose output or not
         :param logger: a logger for logging information
         """
-
-        self.network = network
+        self.networks = networks
         self.add_networks = add_networks
         self.omit_networks = omit_networks
         self.output_dir = output_dir
         self.scanner_modules = module_seeker.find_all_scanners_modules()
         self.analysis_modules = module_seeker.find_all_analyzer_modules()
         self.verbose = verbose
-        self.ports = None
+        self.ports = ports
         self.logfile = logfile
         self.logger = util.get_logger(__name__, logfile)
 
@@ -161,8 +160,8 @@ class Scanner():
         # execute the scanning function of the module and save result
         all_module_attributes = [attr_tuple[0] for attr_tuple in inspect.getmembers(module)]
 
-        if "NETWORK" in all_module_attributes:
-            module.NETWORK = self.network
+        if "NETWORKS" in all_module_attributes:
+            module.NETWORKS = self.networks
 
         if "ADD_NETWORKS" in all_module_attributes:
             module.ADD_NETWORKS = self.add_networks
@@ -220,7 +219,9 @@ class Scanner():
             else:
                 self.hosts.add(hosts)
 
-        add_to_hosts(self.network)
+        for net in self.networks:
+            add_to_hosts(net)
+
         for network in self.add_networks:
             add_to_hosts(network)
 
