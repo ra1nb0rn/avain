@@ -9,7 +9,6 @@ from ... import utility as util
 XML_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.xml"
 TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"
 POT_OSES_PATH = "potential_oses.json"
-SCAN_RESULT_PATH = "scan_results.json"
 NETWORKS_PATH, NETWORKS_OMIT_PATH = "network_add.list", "network_omit.list"
 
 # additional nmap scripts to use
@@ -90,14 +89,12 @@ def conduct_scan(results: list):
     logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'." % TEXT_NMAP_OUTPUT_PATH +
         "The XML output has been written to '%s'" % XML_NMAP_OUTPUT_PATH)
 
-    created_files = [TEXT_NMAP_OUTPUT_PATH, XML_NMAP_OUTPUT_PATH, NETWORKS_PATH, SCAN_RESULT_PATH, POT_OSES_PATH]
+    created_files = [TEXT_NMAP_OUTPUT_PATH, XML_NMAP_OUTPUT_PATH, NETWORKS_PATH, POT_OSES_PATH]
     if OMIT_NETWORKS:
         created_files.append(NETWORKS_OMIT_PATH)
 
     logger.info("Parsing Nmap XML output")
     result = parse_output_file(XML_NMAP_OUTPUT_PATH), created_files
-    with open(SCAN_RESULT_PATH, "w") as f:
-        f.write(json.dumps(result, ensure_ascii=False, indent=3))
     with open(POT_OSES_PATH, "w") as f:
         f.write(json.dumps(DETECTED_OSES, ensure_ascii=False, indent=3))
     logger.info("Done")

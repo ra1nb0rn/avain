@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import json
 import os
 import shutil
 import sys
@@ -102,7 +103,7 @@ class Scanner():
             os.makedirs(module_output_dir, exist_ok=True)
 
             # process this module's scan results
-            if isinstance(result, str):  # if scanner module provides XML output
+            if isinstance(result, str):  # if scanner module provides json output
                 # add result file to created_files (in case module has not)
                 created_files = set(created_files)
                 created_files.add(result)
@@ -110,14 +111,17 @@ class Scanner():
                 if not os.path.isabs(result_path):
                     result_path = os.path.join(module_dir, result_path)
 
-                # parse the XML output into a python dict
-                self.results[scanner_module] = self.parse_xml_scan_result_to_dict(result_path)
+                # parse the json output into a python dict
+                with open(result_path) as f:
+                    self.results[scanner_module] = json.load(f)
             elif isinstance(result, dict):  # if scanner module provides output as python dict
-                self.write_scan_result_to_xml(result, os.path.join(module_output_dir, scanner_module + "_result.xml"))  # write the dict to XML
+                scan_result_path = os.path.join(module_output_dir, scanner_module + "_result.json")
+                with open(scan_result_path, "w") as f:  # write dict output to json file
+                    f.write(json.dumps(result, ensure_ascii=False, indent=3))
                 self.results[scanner_module] = result
             else:  # if result cannot be processed, skip this module
                 print(util.RED + "Warning: results of scan from file '%s' could not be used.\n"
-                    "Only XML files or python dicts can be used." % scanner_module_path)
+                    "Only JSON files or python dicts can be used." % scanner_module_path)
 
             # move all created files into the output directory of the current module
             if created_files:
@@ -180,14 +184,6 @@ class Scanner():
 
         if "LOGFILE" in all_module_attributes:
             module.LOGFILE = self.logfile
-
-    def parse_xml_scan_result_to_dict(self, xml_file: str):
-        # TODO: implement
-        pass
-
-    def write_scan_result_to_xml(self, result: dict, out_name: str):
-        # TODO: implement
-        pass
 
     def construct_result(self):
         """
