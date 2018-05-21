@@ -97,6 +97,8 @@ class Cli():
                     parser.error("port %s is not a valid port" % port_expr)
 
             for port_expr in self.args.ports.split(","):
+                if ":" in port_expr:
+                    port_expr = port_expr[port_expr.find(":")+1:]
                 if "-" in port_expr:
                     p1, p2 = port_expr.split("-")
                     check_port(p1)

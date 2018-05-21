@@ -1,4 +1,4 @@
-
+import json
 import os
 import subprocess
 import sys
@@ -6,8 +6,10 @@ import xml.etree.ElementTree as ET
 
 from ... import utility as util
 
-XML_OUTPUT_PATH = "nmap_scan_results.xml"
-TEXT_OUTPUT_PATH = "nmap_scan_results.txt"
+XML_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.xml"
+TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"
+POT_OSES_PATH = "potential_oses.json"
+SCAN_RESULT_PATH = "scan_results.json"
 NETWORKS_PATH, NETWORKS_OMIT_PATH = "network_add.list", "network_omit.list"
 
 # additional nmap scripts to use
@@ -19,6 +21,8 @@ OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
 VERBOSE = False  # specifying whether to provide verbose output or not
 PORTS = None  # the ports to scan
 LOGFILE = ""
+
+DETECTED_OSES = {}
 
 logger = None
 
@@ -44,7 +48,7 @@ def conduct_scan(results):
             file.write(net + "\n")
 
     # prepare the base of the nmap call
-    nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T3", "-oX", XML_OUTPUT_PATH, "-iL", NETWORKS_PATH]
+    nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T3", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
 
     # check if process owner is root and change nmap call accordingly
     if os.getuid() == 0:
@@ -75,7 +79,7 @@ def conduct_scan(results):
     logger.info("Executing Nmap call '%s'" % " ".join(nmap_call))
 
     # open file handle to redirect nmap's stderr
-    redr_file = open(TEXT_OUTPUT_PATH, "w") 
+    redr_file = open(TEXT_NMAP_OUTPUT_PATH, "w") 
 
     # call nmap with the created command
     subprocess.call(nmap_call, stdout=redr_file, stderr=subprocess.STDOUT)
@@ -83,15 +87,19 @@ def conduct_scan(results):
     # close /dev/null file again
     redr_file.close()
 
-    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'." % TEXT_OUTPUT_PATH +
-        "The XML output has been written to '%s'" % XML_OUTPUT_PATH)
+    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'." % TEXT_NMAP_OUTPUT_PATH +
+        "The XML output has been written to '%s'" % XML_NMAP_OUTPUT_PATH)
 
-    created_files = [TEXT_OUTPUT_PATH, XML_OUTPUT_PATH, NETWORKS_PATH]
+    created_files = [TEXT_NMAP_OUTPUT_PATH, XML_NMAP_OUTPUT_PATH, NETWORKS_PATH, SCAN_RESULT_PATH, POT_OSES_PATH]
     if OMIT_NETWORKS:
         created_files.append(NETWORKS_OMIT_PATH)
 
     logger.info("Parsing Nmap XML output")
-    result = parse_output_file(XML_OUTPUT_PATH), created_files
+    result = parse_output_file(XML_NMAP_OUTPUT_PATH), created_files
+    with open(SCAN_RESULT_PATH, "w") as f:
+        f.write(json.dumps(result, ensure_ascii=False, indent=3))
+    with open(POT_OSES_PATH, "w") as f:
+        f.write(json.dumps(DETECTED_OSES, ensure_ascii=False, indent=3))
     logger.info("Done")
 
     results.append(result)
@@ -404,54 +412,53 @@ def discard_unuseful_info(parsed_host):
         """
         if dict_key in parsed_host:
             for service_elem in parsed_host[dict_key]:
-                # check if the name of the current OS is not a prefix of a name already stored in the list of potential oses
-                if not any(service_elem["name"].replace(" ", "").lower() in pot_os["name"].replace(" ", "").lower() for pot_os in potential_oses):
+                if "cpes" in service_elem:
+                    # check if a CPE of the current OS is a prefix of a CPE already saved in potential_oses
+                    found_supstring = False
+                    for cpe in service_elem["cpes"]:
+                        for pot_os in potential_oses:
+                            if "cpes" in pot_os:
+                                if any(cpe in pot_cpe for pot_cpe in pot_os["cpes"]):
+                                    found_supstring = True
+                                    break
+                        if found_supstring:
+                            break
 
-                    if "cpes" in service_elem:
-                        # check if a CPE of the current OS is a prefix of a CPE already saved in potential_oses
-                        found_supstring = False
-                        for cpe in service_elem["cpes"]:
-                            for pot_os in potential_oses:
-                                if "cpes" in pot_os:
-                                    if any(cpe in pot_cpe for pot_cpe in pot_os["cpes"]):
-                                        found_supstring = True
-                                        break
-                            if found_supstring:
-                                break
+                replaced_os = False
+                # now check for a substring of name or CPE
+                for i, pot_os in enumerate(potential_oses):
+                    # if there this OS of potential_oses is a prefix of the current OS mentioned in the services
+                    if pot_os["name"].replace(" ", "").lower() in service_elem["name"].replace(" ", "").lower():
+                        del potential_oses[i]
+                        new_pot_os = {"name": service_elem["name"], "accuracy": "100"}
+                        if "cpes" in service_elem:
+                            new_pot_os["cpes"] = service_elem["cpes"]
 
-                    replaced_os = False
-                    # now check for a substring of name or CPE
-                    for i, pot_os in enumerate(potential_oses):
-                        # if there this OS of potential_oses is a prefix of the current OS mentioned in the services
-                        if pot_os["name"].replace(" ", "").lower() in service_elem["name"].replace(" ", "").lower():
-                            del potential_oses[i]
-                            new_pot_os = {"name": service_elem["name"], "accuracy": "100"}
-                            if "cpes" in service_elem:
-                                new_pot_os["cpes"] = service_elem["cpes"]
+                        if not replaced_os:
                             potential_oses.insert(i, new_pot_os)
                             replaced_os = True
-                            break
-                        # if there this OS of potential_oses has a CPE that is a prefix
-                        # of a CPE of the current OS mentioned in the services
-                        elif "cpes" in service_elem and "cpes" in pot_os:
-                            for cpe in service_elem["cpes"]:
-                                if any(pot_cpe in cpe for pot_cpe in pot_os["cpes"]):
-                                    del potential_oses[i]
-                                    new_pot_os = {"name": service_elem["name"], "cpes": service_elem["cpes"],
-                                        "accuracy": "100", "type": service_elem.get("devicetype", "")}
+                        break
+                    # if there this OS of potential_oses has a CPE that is a prefix
+                    # of a CPE of the current OS mentioned in the services
+                    elif "cpes" in service_elem and "cpes" in pot_os:
+                        for cpe in service_elem["cpes"]:
+                            if any(pot_cpe in cpe for pot_cpe in pot_os["cpes"]):
+                                del potential_oses[i]
+                                new_pot_os = {"name": service_elem["name"], "cpes": service_elem["cpes"],
+                                    "accuracy": "100", "type": service_elem.get("devicetype", "")}
+
+                                if not replaced_os:
                                     potential_oses.insert(i, new_pot_os)
                                     replaced_os = True
-                                    break
-                            if replaced_os:
                                 break
 
-                        # if the CPE is not stored yet in any way, append the current OS to the list of potential OSes
-                        if not found_supstring and not replaced_one:
-                            potential_oses.append({"name": service_elem["name"], "cpes": service_elem[cpes],
-                                "accuracy": "100", "type": service_elem.get("devicetype", "")})
-                    else:
-                        # if there is no CPE, add the OS without a CPE
-                        potential_oses.append({"name": service_elem["name"], "accuracy": "100", "type": service_elem.get("devicetype", "")})
+                    # if the CPE is not stored yet in any way, append the current OS to the list of potential OSes
+                    if not found_supstring and not replaced_one:
+                        potential_oses.append({"name": service_elem["name"], "cpes": service_elem[cpes],
+                            "accuracy": "100", "type": service_elem.get("devicetype", "")})
+                else:
+                    # if there is no CPE, add the OS without a CPE
+                    potential_oses.append({"name": service_elem["name"], "accuracy": "100", "type": service_elem.get("devicetype", "")})
 
 
     host = {}
@@ -479,24 +486,31 @@ def discard_unuseful_info(parsed_host):
 
                     if "cpes" in osclass:
                         for cpe in osclass["cpes"]:
-                            found_dupl = False
+                            store_os = True
                             if potential_oses:
-                                for pot_os in potential_oses:
-                                    if any(cpe == pot_cpe for pot_cpe in pot_os["cpes"]):
-                                        found_dupl = True
-                                        break
+                                for i, pot_os in enumerate(potential_oses):
+                                    # if this cpe is substring of another OS's cpe
+                                    if any(cpe in pot_cpe for pot_cpe in pot_os["cpes"]):
+                                        store_os = False
 
-                            if not found_dupl:
+                                    # if this cpe is a true superstring of another OS's cpe
+                                    if any(pot_cpe in cpe and not cpe == pot_cpe for pot_cpe in pot_os["cpes"]):
+                                        store_os = True
+                                        del potential_oses[i]
+
+                            if store_os:
                                 potential_oses.append({"name": name, "cpes": osclass["cpes"],
                                     "accuracy": osclass["accuracy"], "type": osclass.get("type", "")})
                                 break
                     else:
-                        if not any(name == pot_os["name"] for pot_os in potential_oses):
+                        if not any(name in pot_os["name"] for pot_os in potential_oses):
                             potential_oses.append({"name": name, "cpes": [],"accuracy": osclass["accuracy"],
                                 "type": osclass.get("type", "")})
 
     add_potential_oses_from_service("os_si")
     add_potential_oses_from_service("os_smb_discv")
+
+    DETECTED_OSES[parsed_host["ip"]["addr"]] = potential_oses
 
     # compute similarities of potential OSes to matching string
     is_os, highest_sim, = None, -1
