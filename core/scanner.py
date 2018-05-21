@@ -47,7 +47,7 @@ class Scanner():
         scan_result_out_dir = os.path.join(self.output_dir, SCAN_OUT_DIR)
         os.makedirs(scan_result_out_dir, exist_ok=True)
 
-        util.hide_cursor()  # hide cursor
+        # util.hide_cursor()  # hide cursor
         self.logger.info("Starting network scan(s)")
         print(util.BRIGHT_BLUE + "Starting network scans:")
         self.logger.info("%d scanner module(s) have been found" % len(self.scanner_modules))
@@ -145,7 +145,7 @@ class Scanner():
         self.result = self.construct_result()
         self.logger.info("Done")
         self.logger.info("Network scans completed")
-        util.show_cursor()  # show cursor again
+        # util.show_cursor()  # show cursor again
         return self.result
 
 
