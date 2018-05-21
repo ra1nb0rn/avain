@@ -2,6 +2,7 @@ import os
 import sys
 
 from scanner import Scanner
+from analyzer import Analyzer
 import utility as util
 import visualizer
 
@@ -58,10 +59,14 @@ class Controller():
 
         scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.ports, self.output_dir, self.verbose, self.logfile)
         hosts = scanner.conduct_scans()
+
+        analyzer = Analyzer(hosts, self.output_dir, self.verbose, self.logfile) 
+        scores = analyzer.conduct_analyses()
+
         outfile = os.path.join(self.output_dir, "results.txt")
+        visualizer.visualize_dict_results(scores, outfile)
         self.logger.info("All created files have been written to '%s'" % self.output_dir)
         self.logger.info("The main output file is called '%s'" % outfile)
-        visualizer.visualize_scan_results(hosts, outfile)
         print("All created files have been written to: %s" % self.output_dir)
         print("The main output file is called: %s" % outfile)
 
