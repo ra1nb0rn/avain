@@ -8,6 +8,7 @@ import subprocess
 import sys
 import vulners
 import warnings
+import xml.etree.ElementTree as ET
 
 from ... import utility as util
 
@@ -17,9 +18,13 @@ HOSTS = {}  # a string representing the network to analyze
 VERBOSE = False  # specifying whether to provide verbose output or not
 LOGFILE = ""
 
-logger = None
-
+CPE_DICT_FILEPATH = ".." + os.sep + ".." + os.sep + ".." + os.sep + "official-cpe-dictionary_v2.2.xml"
 CVE_AMOUNT = 0
+CPE_DICT_ET_CPE_ITEMS = None
+NUM_CVES_PER_CPE_MAX = 25
+VULNERS_MAX_VULNS = 1000
+
+logger = None
 
 def conduct_analysis(results: list):
     """
@@ -32,45 +37,55 @@ def conduct_analysis(results: list):
         global CVE_AMOUNT
         nonlocal hosts
 
-        for _, portinfo in host[protocol].items():
+        for portid, portinfo in host[protocol].items():
             if "cpes" in portinfo:
                 service_cpes = portinfo["cpes"]
                 portinfo["cpes"] = {}
                 for cpe in service_cpes:
                     # get cpe cves
-                    cves = get_cves(vulners_api, cpe)
-                    CVE_AMOUNT += len(cves)
-                    cves_dict = {}
-                    for cve in cves:
-                        cves_dict[cve["id"]] = cve
-                    portinfo["cpes"][cpe] = cves_dict
+                    all_cves = get_cves_to_cpe(vulners_api, cpe, NUM_CVES_PER_CPE_MAX)
+                    for cur_cpe, cves in all_cves.items():
+                        if cur_cpe not in portinfo["cpes"]:
+                            portinfo["cpes"][cur_cpe] = cves
+                            CVE_AMOUNT += len(cves)
+                        else:
+                            logger.warning("CPE '%s' already stored in host '%s'\'s information of port '%s'; " % (cur_cpe, host["ip"]["addr"], portid) +
+                                "check whether program correctly replaced vaguer CPEs with more specific CPEs")
             else:
                 # TODO: implement
                 pass
 
-    global CVE_AMOUNT, logger   
+    global CVE_AMOUNT, logger, CPE_DICT_ET_CPE_ITEMS
+
     # setup logger
     logger = util.get_logger(__name__, LOGFILE)
     logger.info("Starting with CVE analysis")
+
+    # open file descriptor for CPE dict in case further lookup has to be done
+    logger.info("Parsing CPE dictionary in case of further lookups")
+    CPE_DICT_ET_CPE_ITEMS = ET.parse(CPE_DICT_FILEPATH).getroot().getchildren()[1:]  # first child needs to be skipped, because it's generator
+    logger.info("Done")
 
     cve_results = {}
     vulners_api = vulners.Vulners()
     hosts = copy.deepcopy(HOSTS)
 
     logger.info("Starting with CVE discovery of all hosts")
-    for _, host in hosts.items():
+    for ip, host in hosts.items():
         # get OS CVEs
         if "cpes" in host["os"]:
             os_cpes = host["os"]["cpes"]
             host["os"]["cpes"] = {}
             for cpe in os_cpes:
                 # get cpe cves
-                cves = get_cves(vulners_api, cpe)
-                CVE_AMOUNT += len(cves)
-                cves_dict = {}
-                for cve in cves:
-                    cves_dict[cve["id"]] = cve
-                host["os"]["cpes"][cpe] = cves_dict
+                all_cves = get_cves_to_cpe(vulners_api, cpe, NUM_CVES_PER_CPE_MAX)
+                for cur_cpe, cves in all_cves.items():
+                    if cur_cpe not in host["os"]["cpes"]:
+                        host["os"]["cpes"][cur_cpe] = cves
+                        CVE_AMOUNT += len(cves)
+                    else:
+                        logger.warning("CPE '%s' already stored in host '%s'\'s OS information; " % (cur_cpe, ip) +
+                            "check whether program correctly replaced vaguer CPEs with more specific CPEs")
         else:
             # TODO: implement
             pass
@@ -154,22 +169,65 @@ def slim_cve_results(cve_results: list):
         slimmed_results.append(slimmed_result)
     return slimmed_results
 
+def get_all_related_cpes(cpe: str):
+    related_cpes = []
+    for cpe_item in CPE_DICT_ET_CPE_ITEMS:
+        cur_cpe = cpe_item.attrib.get("name", "")
+        if cur_cpe.startswith(cpe) and not cur_cpe == cpe:
+            related_cpes.append(cur_cpe)
+    return related_cpes
 
-def get_cves(vulners_api, cpe: str):
+def get_cves_to_cpe(vulners_api, cpe: str, max_vulnerabilities = 500):
+    def process_cve_results(results: dict, max_vulns: int):
+        results = results.get("NVD", {})
+        results = results[:max_vulnerabilities]
+        if results:
+            results = slim_cve_results(results)
+            for result in results:
+                cve_id = result["id"]
+                add_additional_cve_info(result)
+        return results
+
+    def get_more_specific_cpe_cves(cpe):
+        logger.info("Trying to find more specific CPEs and look for CVEs again")
+        related_cpes = get_all_related_cpes(cpe)
+        logger.info("Done")
+        cve_results = {}
+        if related_cpes:
+            num_cves_per_cpe = (max_vulnerabilities // len(related_cpes)) + 1
+            logger.info("Found the following more specific CPEs: %s" % ",".join(related_cpes))
+            for cpe in related_cpes:
+                cves = get_cves_to_cpe(vulners_api, cpe, num_cves_per_cpe)
+                for cur_cpe, cves in cves.items():
+                    cve_results[cur_cpe] = cves
+        else:
+            logger.info("Could not find any more specific CPEs")
+        return cve_results
+
     with warnings.catch_warnings():  # ignore warnings that vulners might throw
-        warnings.simplefilter("ignore")
+        warnings.filterwarnings('error')
+        cve_results = {}
         try:
-            cve_results = vulners_api.cpeVulnerabilities(cpe, maxVulnerabilities=500)  # TODO: handle limit better?
-        except ValueError:
-            logger.warning("Getting CVEs for CPE '%s' resulted in a ValueError. Maybe CPE is malformed.")
-            cve_results = {}
+            cve_results = vulners_api.cpeVulnerabilities(cpe, maxVulnerabilities=VULNERS_MAX_VULNS)
+        except ValueError as e:
+            logger.warning("Getting CVEs for CPE '%s' resulted in the following ValueError: %s." % (cpe, e))
+        except Warning as w:
+            if str(w) == "Nothing found for Burpsuite search request":
+                logger.info("Getting CVEs for CPE '%s' resulted in no CVEs" % cpe)
+                return get_more_specific_cpe_cves(cpe)
+            elif str(w) == "Software name or version is not provided":
+                logger.info("Getting CPE '%s' is missing sotware name or version" % cpe)
+                return get_more_specific_cpe_cves(cpe)
 
-    cve_results = cve_results.get("NVD", [])
     if cve_results:
-        cve_results = slim_cve_results(cve_results)
-        for cve_result in cve_results:
-            cve_id = cve_result["id"]
-            add_additional_cve_info(cve_result)
+        cves = process_cve_results(cve_results, max_vulnerabilities)
+        cves_dict = {}
+        for cve in cves:
+            cves_dict[cve["id"]] = cve
+        cve_results = {cpe: cves_dict}
+    else:
+        cve_results = {cpe: {}}
+
     return cve_results
 
 
