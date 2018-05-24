@@ -18,7 +18,7 @@ HOSTS = {}  # a string representing the network to analyze
 VERBOSE = False  # specifying whether to provide verbose output or not
 LOGFILE = ""
 
-CPE_DICT_FILEPATH = ".." + os.sep + ".." + os.sep + ".." + os.sep + "official-cpe-dictionary_v2.2.xml"
+CPE_DICT_FILEPATH = "..{0}..{0}..{0}resources{0}official-cpe-dictionary_v2.2.xml".format(os.sep)
 CVE_AMOUNT = 0
 CPE_DICT_ET_CPE_ITEMS = None
 NUM_CVES_PER_CPE_MAX = 25
