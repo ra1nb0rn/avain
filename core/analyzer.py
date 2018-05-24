@@ -136,7 +136,7 @@ class Analyzer():
             self.logger.info("Analysis %d of %d done" % (i+1, len(self.analysis_modules)))
 
         if len(self.analysis_modules) == 1:
-            print(util.GREEN + "Analyis completed.")
+            print(util.GREEN + "Analysis completed.")
         else:
             print(util.GREEN + "All %d analyses completed." % len(self.analysis_modules))
         print(util.SANE)
