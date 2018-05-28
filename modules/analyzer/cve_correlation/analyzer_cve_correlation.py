@@ -192,7 +192,7 @@ def get_cves_to_cpe(vulners_api, cpe: str, max_vulnerabilities = 500):
         logger.info("Trying to find more specific CPEs and look for CVEs again")
         related_cpes = get_all_related_cpes(cpe)
         logger.info("Done")
-        cve_results = {}
+        cve_results = {cpe: {}}
         if related_cpes:
             num_cves_per_cpe = (max_vulnerabilities // len(related_cpes)) + 1
             logger.info("Found the following more specific CPEs: %s" % ",".join(related_cpes))
