@@ -83,7 +83,7 @@ def conduct_scan(results: list):
     # call nmap with the created command
     subprocess.call(nmap_call, stdout=redr_file, stderr=subprocess.STDOUT)
 
-    # close /dev/null file again
+    # close redirect file again
     redr_file.close()
 
     logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'." % TEXT_NMAP_OUTPUT_PATH +
