@@ -41,9 +41,12 @@ def conduct_analysis(results: list):
             if "cpes" in portinfo:
                 service_cpes = portinfo["cpes"]
                 portinfo["cpes"] = {}
+                broad_cpes = set()
                 for cpe in service_cpes:
                     # get cpe cves
-                    all_cves = get_cves_to_cpe(vulners_api, cpe, NUM_CVES_PER_CPE_MAX)
+                    all_cves, broad_search = get_cves_to_cpe(vulners_api, cpe, NUM_CVES_PER_CPE_MAX)
+                    if broad_search:
+                        broad_cpes.add(cpe)
                     for cur_cpe, cves in all_cves.items():
                         if cur_cpe not in portinfo["cpes"]:
                             portinfo["cpes"][cur_cpe] = cves
@@ -51,6 +54,13 @@ def conduct_analysis(results: list):
                         else:
                             logger.warning("CPE '%s' already stored in host '%s'\'s information of port '%s'; " % (cur_cpe, host["ip"]["addr"], portid) +
                                 "check whether program correctly replaced vaguer CPEs with more specific CPEs")
+
+                if len(broad_cpes) == 1:
+                    portinfo["cve_extrainfo"] = ("Original CPE '%s' was too unspecific. " % next(iter(broad_cpes))) + \
+                        "Determined more specific CPEs and included some of their CVEs."
+                elif len(broad_cpes) > 1:
+                    portinfo["cve_extrainfo"] = ("Original CPEs '%s' were too unspecific. " % ", ".join(broad_cpes)) + \
+                        "Determined more specific CPEs and included some of their CVEs."
             else:
                 # TODO: implement
                 pass
@@ -71,16 +81,27 @@ def conduct_analysis(results: list):
         if "cpes" in host["os"]:
             os_cpes = host["os"]["cpes"]
             host["os"]["cpes"] = {}
+            broad_cpes = set()
             for cpe in os_cpes:
                 # get cpe cves
-                all_cves = get_cves_to_cpe(vulners_api, cpe, NUM_CVES_PER_CPE_MAX)
+                all_cves, broad_search = get_cves_to_cpe(vulners_api, cpe, NUM_CVES_PER_CPE_MAX)
                 for cur_cpe, cves in all_cves.items():
+                    if broad_search:
+                        broad_cpes.add(cpe)
+
                     if cur_cpe not in host["os"]["cpes"]:
                         host["os"]["cpes"][cur_cpe] = cves
                         CVE_AMOUNT += len(cves)
                     else:
                         logger.warning("CPE '%s' already stored in host '%s'\'s OS information; " % (cur_cpe, ip) +
                             "check whether program correctly replaced vaguer CPEs with more specific CPEs")
+
+            if len(broad_cpes) == 1:
+                host["os"]["cve_extrainfo"] = ("Original CPE '%s' was too unspecific. " % next(iter(broad_cpes))) + \
+                    "Determined more specific CPEs and included some of their CVEs."
+            elif len(broad_cpes) > 1:
+                host["os"]["cve_extrainfo"] = ("Original CPEs '%s' were too unspecific. " % ", ".join(broad_cpes)) + \
+                    "Determined more specific CPEs and included some of their CVEs."
         else:
             # TODO: implement
             pass
@@ -195,16 +216,20 @@ def get_cves_to_cpe(vulners_api, cpe: str, max_vulnerabilities = 500):
         logger.info("Trying to find more specific CPEs and look for CVEs again")
         related_cpes = get_all_related_cpes(cpe)
         logger.info("Done")
-        cve_results = {cpe: {}}
+        cve_results = {}
         if related_cpes:
             num_cves_per_cpe = (max_vulnerabilities // len(related_cpes)) + 1
             logger.info("Found the following more specific CPEs: %s" % ",".join(related_cpes))
             for cpe in related_cpes:
-                cves = get_cves_to_cpe(vulners_api, cpe, num_cves_per_cpe)
+                cves, _ = get_cves_to_cpe(vulners_api, cpe, num_cves_per_cpe)
                 for cur_cpe, cves in cves.items():
                     cve_results[cur_cpe] = cves
         else:
             logger.info("Could not find any more specific CPEs")
+
+        if not cve_results:
+            cve_results = {cpe: {}}
+
         return cve_results
 
     with warnings.catch_warnings():  # ignore warnings that vulners might throw
@@ -217,10 +242,10 @@ def get_cves_to_cpe(vulners_api, cpe: str, max_vulnerabilities = 500):
         except Warning as w:
             if str(w) == "Nothing found for Burpsuite search request":
                 logger.info("Getting CVEs for CPE '%s' resulted in no CVEs" % cpe)
-                return get_more_specific_cpe_cves(cpe)
+                return get_more_specific_cpe_cves(cpe), True
             elif str(w) == "Software name or version is not provided":
                 logger.info("Getting CPE '%s' is missing sotware name or version" % cpe)
-                return get_more_specific_cpe_cves(cpe)
+                return get_more_specific_cpe_cves(cpe), True
 
     if cve_results:
         cves = process_cve_results(cve_results, max_vulnerabilities)
@@ -231,7 +256,7 @@ def get_cves_to_cpe(vulners_api, cpe: str, max_vulnerabilities = 500):
     else:
         cve_results = {cpe: {}}
 
-    return cve_results
+    return cve_results, False
 
 
 def add_additional_cve_info(cve: dict):
