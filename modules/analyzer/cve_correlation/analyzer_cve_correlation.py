@@ -157,7 +157,7 @@ def slim_cve_results(cve_results: list):
     slimmed_results = []
     for cve_result in cve_results:
         slimmed_result = {}
-        for attr in {"description", "id"}:
+        for attr in {"description", "id", "published", "modified"}:
             slimmed_result[attr] = cve_result.get(attr, "")
         # slimmed_result["href"] = cve_results.get("href", "")  # TODO: use vulners or harcoded link?
         slimmed_result["href"] = "https://nvd.nist.gov/vuln/detail/%s" % slimmed_result["id"]
