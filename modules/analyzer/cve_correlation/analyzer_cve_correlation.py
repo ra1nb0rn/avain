@@ -55,16 +55,11 @@ def conduct_analysis(results: list):
                 # TODO: implement
                 pass
 
-    global CVE_AMOUNT, logger, CPE_DICT_ET_CPE_ITEMS
+    global CVE_AMOUNT, logger
 
     # setup logger
     logger = util.get_logger(__name__, LOGFILE)
     logger.info("Starting with CVE analysis")
-
-    # open file descriptor for CPE dict in case further lookup has to be done
-    logger.info("Parsing CPE dictionary in case of further lookups")
-    CPE_DICT_ET_CPE_ITEMS = ET.parse(CPE_DICT_FILEPATH).getroot().getchildren()[1:]  # first child needs to be skipped, because it's generator
-    logger.info("Done")
 
     cve_results = {}
     vulners_api = vulners.Vulners()
@@ -170,6 +165,14 @@ def slim_cve_results(cve_results: list):
     return slimmed_results
 
 def get_all_related_cpes(cpe: str):
+    global CPE_DICT_ET_CPE_ITEMS
+
+    if not CPE_DICT_ET_CPE_ITEMS:
+        # open file descriptor for CPE dict in case further lookup has to be done
+        logger.info("Parsing CPE dictionary for further lookups")
+        CPE_DICT_ET_CPE_ITEMS = ET.parse(CPE_DICT_FILEPATH).getroot().getchildren()[1:]  # first child needs to be skipped, because it's generator
+        logger.info("Done")
+
     related_cpes = []
     for cpe_item in CPE_DICT_ET_CPE_ITEMS:
         cur_cpe = cpe_item.attrib.get("name", "")
