@@ -128,10 +128,12 @@ class Analyzer():
                     file_out_dir = os.path.join(module_output_dir, rel_dir)
                     os.makedirs(file_out_dir, exist_ok=True)
                     file_out_path = os.path.join(file_out_dir, os.path.basename(file))
-                    if os.path.isabs(file):
+                    if os.path.isabs(file) and os.path.isfile(file):
                         shutil.move(file, file_out_path)
                     else:
-                        shutil.move(os.path.join(module_dir, file), file_out_path)
+                        abs_file = os.path.join(module_dir, file)
+                        if os.path.isfile(abs_file):
+                            shutil.move(abs_file, file_out_path)
 
             self.logger.info("Analysis %d of %d done" % (i+1, len(self.analysis_modules)))
 
@@ -178,7 +180,47 @@ class Analyzer():
             return {}
         elif len(self.results) == 1:
             return self.results[list(self.results.keys())[0]]
-
-        # TODO: implement
         else:
-            return {}
+            result_counts = {}
+            result_weights = {}
+            result = {}
+
+            for module_name, module_result in self.results.items():
+                for host, score in module_result.items():
+                    try:  # catch potential 'N/A'
+                        score = float(score)
+                    except ValueError:
+                        continue
+
+                    if host in result_counts:
+                        result_counts[host] += 1
+                    else:
+                        result_counts[host] = 1
+
+            for host in result_counts:
+                result_weights[host] = 0
+                result[host] = 0
+
+            for module_name, module_result in self.results.items():
+                for host, score in module_result.items():
+                    if host in result_counts:
+                        score = float(score)
+                        weight = (1/result_counts[host]) * score**2 * (score/10)
+                        result_weights[host] += weight
+                        result[host] += weight * score
+
+            for host, unnormalized_score_sum in result.items():
+                if not result_weights[host]:
+                    result[host] = "N/A"
+                else:
+                    end_score = unnormalized_score_sum / result_weights[host]
+                    end_score = max(0, end_score)  # ensure score is greater than 0
+                    end_score = min(10, end_score)  # ensure score is less than 10
+                    end_score = str(end_score)  # turn into str (to have an alternative if no score exists, i.e. N/A)
+                    result[host] = end_score
+
+            for host in self.hosts:  # catch all the hosts that did not get a score
+                if host not in result:
+                    result[host] = "N/A"
+
+            return result
