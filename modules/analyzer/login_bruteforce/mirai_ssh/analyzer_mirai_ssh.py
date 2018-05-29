@@ -30,6 +30,7 @@ def conduct_analysis(results: list):
     global logger
     logger = util.get_logger(__name__, LOGFILE)
     logger.info("Starting with Mirai SSH susceptibility analysis")
+    wrote_target = False
 
     cleanup()  # cleanup potentially old files
     with open(HYDRA_TARGETS_FILE, "w") as f:
@@ -37,19 +38,30 @@ def conduct_analysis(results: list):
             for portid, portinfo in host["tcp"].items():
                 if portid == "22" or "ssh" in portinfo["name"].lower() or "ssh" in portinfo["product"].lower():
                     f.write("%s:%s" % (ip, portid))
+                    wrote_target = True
 
     hydra_call = ["hydra", "-C", WORDLIST_PATH, "-M", HYDRA_TARGETS_FILE, "-b", "json", "-o", HYDRA_JSON_OUTPUT, "ssh"]
 
-    logger.info("Beginning Hydra Brute Force with command: %s" % " ".join(hydra_call))
-    redr_file = open(HYDRA_TEXT_OUTPUT, "w")
-    subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
-    redr_file.close()
-    logger.info("Done")
+    if wrote_target:
+        logger.info("Beginning Hydra Brute Force with command: %s" % " ".join(hydra_call))
+        redr_file = open(HYDRA_TEXT_OUTPUT, "w")
+        subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
+        redr_file.close()
+        logger.info("Done")
 
-    logger.info("Processing Hydra Output")
-    result = process_hydra_output()
-    logger.info("Done")
-    created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
+        logger.info("Processing Hydra Output")
+        if os.path.isfile(HYDRA_JSON_OUTPUT):
+            result = process_hydra_output()
+        else:
+            result = {}
+        logger.info("Done")
+        created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
+    else:
+        os.remove(HYDRA_TARGETS_FILE)
+        logger.info("Did not receive any targets. Skipping analysis.")
+        result = {}
+        created_files = []
+
     results.append((result, created_files))
 
 
