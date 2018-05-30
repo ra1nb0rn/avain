@@ -56,10 +56,10 @@ def conduct_analysis(results: list):
                                 "check whether program correctly replaced vaguer CPEs with more specific CPEs")
 
                 if len(broad_cpes) == 1:
-                    portinfo["cve_extrainfo"] = ("Original CPE '%s' was too unspecific. " % next(iter(broad_cpes))) + \
+                    portinfo["cve_extrainfo"] = ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
                         "Determined more specific CPEs and included some of their CVEs."
                 elif len(broad_cpes) > 1:
-                    portinfo["cve_extrainfo"] = ("Original CPEs '%s' were too unspecific. " % ", ".join(broad_cpes)) + \
+                    portinfo["cve_extrainfo"] = ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
                         "Determined more specific CPEs and included some of their CVEs."
             else:
                 # TODO: implement
@@ -97,10 +97,10 @@ def conduct_analysis(results: list):
                             "check whether program correctly replaced vaguer CPEs with more specific CPEs")
 
             if len(broad_cpes) == 1:
-                host["os"]["cve_extrainfo"] = ("Original CPE '%s' was too unspecific. " % next(iter(broad_cpes))) + \
+                host["os"]["cve_extrainfo"] = ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
                     "Determined more specific CPEs and included some of their CVEs."
             elif len(broad_cpes) > 1:
-                host["os"]["cve_extrainfo"] = ("Original CPEs '%s' were too unspecific. " % ", ".join(broad_cpes)) + \
+                host["os"]["cve_extrainfo"] = ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
                     "Determined more specific CPEs and included some of their CVEs."
         else:
             # TODO: implement
