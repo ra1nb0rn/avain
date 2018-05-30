@@ -30,7 +30,7 @@ def conduct_analysis(results: list):
     """
     Analyze the specified hosts in HOSTS for CVEs belonging regarding its software.
 
-    Returns a tuple contaiging the analyis results/scores and a list of created files by writing it into the result list.
+    :return: a tuple contaiging the analyis results/scores and a list of created files by writing it into the result list.
     """
     
     def process_port_cves(protocol):

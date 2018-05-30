@@ -31,7 +31,7 @@ def conduct_scan(results: list):
     Scan the specified networks above with the following nmap command:
     sudo nmap -Pn -n -A --osscan-guess -T3 'networks' -sSU --script=${NMAP_SCRIPTS}
 
-    Returns a tuple contaiging the scan results and a list of created files by writing it into the result list.
+    :return: a tuple containing the scan results and a list of created files by writing it into the result list.
     """
 
     # setup logger
