@@ -241,6 +241,8 @@ def get_cves_to_cpe(vulners_api, cpe: str, max_vulnerabilities = 500):
             logger.warning("Getting CVEs for CPE '%s' resulted in the following ValueError: %s" % (cpe, e))
             if str(e) == "Malformed CPE string. Please, refer to the https://cpe.mitre.org/specification/. Awaiting like 'cpe:/a:cybozu:garoon:4.2.1'":
                 return get_more_specific_cpe_cves(cpe), True
+        except AttributeError as e:
+            logger.warning("Getting CVEs for CPE '%s' resulted in the following AttributeError: %s . Can be caused by Vulners not handling Burpsuite's 'internal server error'" % (cpe, e))
         except Warning as w:
             if str(w) == "Nothing found for Burpsuite search request":
                 logger.info("Getting CVEs for CPE '%s' resulted in no CVEs" % cpe)

@@ -409,9 +409,9 @@ def discard_unuseful_info(parsed_host):
         """
         if dict_key in parsed_host:
             for service_elem in parsed_host[dict_key]:
+                found_supstring = False
                 if "cpes" in service_elem:
                     # check if a CPE of the current OS is a prefix of a CPE already saved in potential_oses
-                    found_supstring = False
                     for cpe in service_elem["cpes"]:
                         for pot_os in potential_oses:
                             if "cpes" in pot_os:
@@ -450,9 +450,12 @@ def discard_unuseful_info(parsed_host):
                                 break
 
                     # if the CPE is not stored yet in any way, append the current OS to the list of potential OSes
-                    if not found_supstring and not replaced_one:
-                        potential_oses.append({"name": service_elem["name"], "cpes": service_elem[cpes],
+                    if not found_supstring and not replaced_os:
+                        potential_oses.append({"name": service_elem["name"],
                             "accuracy": "100", "type": service_elem.get("devicetype", "")})
+                        if "cpes" in service_elem:
+                            potential_oses[-1]["cpes"] = service_elem["cpes"]
+
                 else:
                     # if there is no CPE, add the OS without a CPE
                     potential_oses.append({"name": service_elem["name"], "accuracy": "100", "type": service_elem.get("devicetype", "")})

@@ -39,7 +39,13 @@ def conduct_analysis(results: list):
     with open(HYDRA_TARGETS_FILE, "w") as f:
         for ip, host in HOSTS.items():
             for portid, portinfo in host["tcp"].items():
-                if portid == "22" or "ssh" in portinfo["name"].lower() or "ssh" in portinfo["product"].lower():
+                if portid == "22":
+                    f.write("%s:%s" % (ip, portid))
+                    wrote_target = True
+                elif "name" in portinfo and "ssh" in portinfo["name"].lower():
+                    f.write("%s:%s" % (ip, portid))
+                    wrote_target = True
+                elif "product" in portinfo and "ssh" in portinfo["product"].lower():
                     f.write("%s:%s" % (ip, portid))
                     wrote_target = True
 
