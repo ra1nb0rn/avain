@@ -34,8 +34,7 @@ class Cli():
         required_args.add_argument("-n", "--networks", nargs="+", help="Specify networks to scan in CIDR or wildcard notation. If given argument does not contain a CIDR "
                                                            "or wildcard, the host at the given IP is scanned.")
         required_args.add_argument("-nL", "--network-list", help="A list that specifies networks/hosts to add to or omit from the scan.")
-
-
+        required_args.add_argument("-uD", "--update-databases", action="store_true", help="Make all databases update.")
         optional_args.add_argument("-aR", "--analysis-results", nargs="+", help="Addtional analysis results to include into the analysis result. "
                                                                                       "Multiple files or folders can be specified.")
         optional_args.add_argument("-o", "--output", help="Specify the output file name. If name collisions occur, the output files are prefixed "
@@ -48,8 +47,8 @@ class Cli():
 
 
         self.args = parser.parse_args()
-        if (not self.args.networks) and (not self.args.network_list):
-            parser.error("at least one of the following arguments is required: -n/--network or -nL/--network-list")
+        if (not self.args.networks) and (not self.args.network_list) and (not self.args.update_databases):
+            parser.error("at least one of the following arguments is required: -n/--network, -nL/--network-list or -uD/--update_databases")
 
         self.parse_network_list(parser)
         self.validate_input(parser)
@@ -113,9 +112,9 @@ class Cli():
         Parse the program arguments and initiate the vulnerability analysis.
         """
 
-        controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.ports, self.args.output, 
-                                self.args.scan_results, self.args.analysis_results, self.args.time, self.args.verbose)
-        controller.do_analysis()
+        controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.update_databases, self.args.ports,
+                                    self.args.output, self.args.scan_results, self.args.analysis_results, self.args.time, self.args.verbose)
+        controller.run()
 
     def parse_network_list(self, parser: argparse.ArgumentParser):
         """

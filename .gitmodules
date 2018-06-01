@@ -1,0 +1,6 @@
+[submodule "modules/analyzer/cve_correlation/db_creation_src/SQLiteCpp"]
+	path = modules/analyzer/cve_correlation/db_creation_src/SQLiteCpp
+	url = https://github.com/SRombauts/SQLiteCpp.git
+[submodule "modules/analyzer/cve_correlation/db_creation_src/json"]
+	path = modules/analyzer/cve_correlation/db_creation_src/json
+	url = https://github.com/nlohmann/json.git

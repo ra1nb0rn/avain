@@ -2,15 +2,15 @@
 
 install_brew_packages() {
     # Use brew to install macOS software packages
-    BREW_PACKAGES="python wget nmap"
+    BREW_PACKAGES="python wget nmap sqlite3"
 
     which brew &> /dev/null
     if [ $? != 0 ]; then
-        printf "Could not find brew command.\nPlease install Homebrew first."
+        printf "Could not find brew command.\\nPlease install Homebrew first."
         exit 1
     fi
 
-    eval brew install ${BREW_PACKAGES}
+    eval brew install "${BREW_PACKAGES}"
     if [ $? != 0 ]; then
         printf "Installation of basic brew packages was not successful."
         exit 1
@@ -26,14 +26,14 @@ install_brew_packages() {
 
 install_apt_packages() {
     # Use apt to install Linux software packages
-    APT_PACKAGES="python3 python3-pip nmap libssh-dev hydra wget"
+    APT_PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev"
     which apt-get &> /dev/null
     if [ $? != 0 ]; then
-        printf "Could not find apt-get command.\nPlease check your apt installation first."
+        printf "Could not find apt-get command.\\nPlease check your apt installation first."
         exit 1
     fi
 
-    eval sudo apt-get -y install ${APT_PACKAGES}
+    eval sudo apt-get -y install "${APT_PACKAGES}"
     if [ $? != 0 ]; then
         printf "Installation of apt packages was not successful."
         exit 1
@@ -43,16 +43,16 @@ install_apt_packages() {
 
 echo "Installing software packages ..."
 KERNEL=$(uname)
-if [ ${KERNEL} == "Darwin" ]; then
+if [ "${KERNEL}" == "Darwin" ]; then
     echo "Identified OS as: macOS"
     echo "Using packet manager: brew"
     install_brew_packages
-elif [ ${KERNEL} == "Linux" ]; then
+elif [ "${KERNEL}" == "Linux" ]; then
     echo "Identified OS as: Linux"
     echo "Using packet manager: apt"
     install_apt_packages
 else
-    printf "Could not identify running OS.\nPlease install software packages manually."
+    printf "Could not identify running OS.\\nPlease install software packages manually."
 fi
 
 echo ""
@@ -60,7 +60,7 @@ echo "Installing python packages ..."
 which pip3 &> /dev/null
 
 if [ $? != 0 ]; then
-    printf "Could not find pip3.\nPlease install it first or install python packages manually"
+    printf "Could not find pip3.\\nPlease install it first or install python packages manually"
     exit 1
 fi
 
@@ -78,5 +78,21 @@ wget https://nvd.nist.gov/feeds/xml/cpe/dictionary/official-cpe-dictionary_v2.2.
 unzip -o -d resources official-cpe-dictionary_v2.2.xml.zip
 rm official-cpe-dictionary_v2.2.xml.zip
 echo "Done."
+
+echo ""
+echo "Building modules ..."
+echo ""
+CWD=$(pwd)
+find ./modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
+    cd "$(dirname ${file})"
+    ./avain_build.sh
+    if [ $? != 0 ]; then
+        printf "Could not successfully build module in %s\\n\\n" "$(dirname "${file}")"
+        exit 1
+    fi
+
+    cd "${CWD}"
+done
+echo "Done"
 
 echo "That's it. Installation finished."

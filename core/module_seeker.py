@@ -18,6 +18,15 @@ def find_all_analyzer_modules():
 
     return find_all_prefixed_modules("modules/analyzer", "analyzer_")
 
+def find_all_database_updater_modules():
+    """
+    Find all modules/files prefixed with 'database_updater' located in the subdirectory 'modules'.
+
+    :return: all filenames of database updater modules
+    """
+
+    return find_all_prefixed_modules("modules", "database_updater")
+
 def find_all_prefixed_modules(start_dir: str, prefix: str):
     """
     Recursively find all modules/files prefixed with the specified prefix
