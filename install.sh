@@ -70,8 +70,22 @@ if [ $? != 0 ]; then
     exit 1
 fi
 echo "Done."
-
 echo ""
+
+echo "Setting up git submodules ..."
+git submodule init
+if [ $? != 0 ]; then
+    printf "Could not initialize git submodules."
+    exit 1
+fi
+git submodule update
+if [ $? != 0 ]; then
+    printf "Could not update git submodules."
+    exit 1
+fi
+echo "Done."
+echo ""
+
 echo "Downloading CPE 2.2 dictionary ..."
 mkdir -p resources
 wget https://nvd.nist.gov/feeds/xml/cpe/dictionary/official-cpe-dictionary_v2.2.xml.zip
