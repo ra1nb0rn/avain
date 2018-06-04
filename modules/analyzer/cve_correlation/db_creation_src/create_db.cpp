@@ -24,8 +24,8 @@ void handle_exception(SQLite::Exception &e) {
 int add_to_db(SQLite::Database &db, const std::string &filepath) {
     // Begin transaction
     SQLite::Transaction transaction(db);
-    SQLite::Statement cve_cpe_query(db, "INSERT INTO cve_cpe VALUES (?, ?)");
     SQLite::Statement cve_query(db, "INSERT INTO cve VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    SQLite::Statement cve_cpe_query(db, "INSERT INTO cve_cpe VALUES (?, ?, ?, ?, ?, ?, ?)");
 
     // read a JSON file
     std::ifstream input_file(filepath);
@@ -34,7 +34,7 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
 
     json impact_entry;
     std::string cve_id, description, published, last_modified, vector_string, severity, cvss_version;
-    std::string cpe, descr_line;
+    std::string cpe, descr_line, cpe_version, affected_versions, vendor_name, product_name, version_value;
     bool vulnerable, no_cvss;
     double base_score;
 
@@ -90,7 +90,44 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
         cve_query.exec();
         cve_query.reset();
 
+        // Just extract the necessary CPE affected versions information from the JSON file
+        affected_versions = "";
+        if (cve_entry["cve"].find("affects") != cve_entry["cve"].end()) {
+            if (cve_entry["cve"]["affects"].find("vendor") != cve_entry["cve"]["affects"].end()) {
+                if (cve_entry["cve"]["affects"]["vendor"].find("vendor_data") != cve_entry["cve"]["affects"]["vendor"].end()) {
+                    for (auto &vendor_data_entry : cve_entry["cve"]["affects"]["vendor"]["vendor_data"]) {
+                        vendor_name = vendor_data_entry["vendor_name"];  // field must exist afaik
+                        if (vendor_data_entry.find("product") != vendor_data_entry.end()) {
+                            if (vendor_data_entry["product"].find("product_data") != vendor_data_entry["product"].end()) {
+                                for (auto &product_data_entry : vendor_data_entry["product"]["product_data"]) {
+                                    product_name = product_data_entry["product_name"];  // field must exist afaik
+                                    if (product_data_entry.find("version") != product_data_entry.end()) {
+                                        if (product_data_entry["version"].find("version_data") != product_data_entry["version"].end()) {
+                                            for (auto &version_data_entry : product_data_entry["version"]["version_data"]) {
+                                                if (version_data_entry.find("version_value") != version_data_entry.end()) {
+                                                    version_value = version_data_entry["version_value"];
+                                                    affected_versions += vendor_name + ":" + product_name + ":" + version_value + ", ";
+                                                }
+                                            }
+                                        }  
+                                    }  
+                                }
+                            }
+                        }  
+                    }  
+                }
+            }  
+        } 
+        
         cve_cpe_query.bind(1, cve_id);
+        if (affected_versions != "") {
+            affected_versions.pop_back();  // pop last ' '
+            affected_versions.pop_back();  // pop last ','
+            cve_cpe_query.bind(7, affected_versions);
+        }
+        else
+            cve_cpe_query.bind(7, NULL);
+
         for (auto &config_nodes_entry : cve_entry["configurations"]["nodes"]) {
             for (auto &cpe_entry : config_nodes_entry["cpe"]) {
                 vulnerable = cpe_entry["vulnerable"];
@@ -100,6 +137,35 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
                 cpe = cpe_entry["cpe22Uri"];
                 cve_cpe_query.bind(2, cpe);
 
+                if (cpe_entry.find("versionStartIncluding") != cpe_entry.end()) {
+                    cpe_version = cpe_entry["versionStartIncluding"];
+                    cve_cpe_query.bind(3, cpe_version);
+                    cve_cpe_query.bind(4, "Including");
+                }
+                else if (cpe_entry.find("versionStartExcluding") != cpe_entry.end()) {
+                    cpe_version = cpe_entry["versionStartExcluding"];
+                    cve_cpe_query.bind(3, cpe_version);
+                    cve_cpe_query.bind(4, "Excluding");
+                }
+                else {
+                    cve_cpe_query.bind(3, NULL);
+                    cve_cpe_query.bind(4, NULL);
+                }
+
+                if (cpe_entry.find("versionEndIncluding") != cpe_entry.end()) {
+                    cpe_version = cpe_entry["versionEndIncluding"];
+                    cve_cpe_query.bind(5, cpe_version);
+                    cve_cpe_query.bind(6, "Including");
+                }
+                else if (cpe_entry.find("versionEndExcluding") != cpe_entry.end()) {
+                    cpe_version = cpe_entry["versionEndExcluding"];
+                    cve_cpe_query.bind(5, cpe_version);
+                    cve_cpe_query.bind(6, "Excluding");
+                }
+                else {
+                    cve_cpe_query.bind(5, NULL);
+                    cve_cpe_query.bind(6, NULL);
+                }
 
                 try {
                     cve_cpe_query.exec();
@@ -148,8 +214,11 @@ int main(int argc, char *argv[]) {
         db.exec("DROP TABLE IF EXISTS cve");
         db.exec("DROP TABLE IF EXISTS cve_cpe");
 
-        db.exec("CREATE TABLE cve (cve_id VARCHAR(25), description TEXT, published DATETIME, last_modified DATETIME, cvss_version CHAR(3), base_score CHAR(3), vector VARCHAR(60), severity VARCHAR(15), PRIMARY KEY(cve_id))");
-        db.exec("CREATE TABLE cve_cpe (cve_id VARCHAR(25), cpe TEXT, PRIMARY KEY(cve_id, cpe))");
+        db.exec("CREATE TABLE cve (cve_id VARCHAR(25), description TEXT, published DATETIME, last_modified DATETIME, \
+            cvss_version CHAR(3), base_score CHAR(3), vector VARCHAR(60), severity VARCHAR(15), PRIMARY KEY(cve_id))");
+        db.exec("CREATE TABLE cve_cpe (cve_id VARCHAR(25), cpe TEXT, cpe_version_start VARCHAR(255), cpe_version_start_type VARCHAR(50), \
+            cpe_version_end VARCHAR(255), cpe_version_end_type VARCHAR(50), add_cpes TEXT, PRIMARY KEY(cve_id, cpe, cpe_version_start, \
+            cpe_version_start_type, cpe_version_end, cpe_version_end_type, add_cpes))");
 
         DIR *dir;
         struct dirent *ent;
