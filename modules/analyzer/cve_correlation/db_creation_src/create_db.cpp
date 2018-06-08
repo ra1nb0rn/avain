@@ -14,6 +14,14 @@ extern "C" {
 
 using json = nlohmann::json;
 
+struct VagueCpeInfo {
+    std::string vague_cpe;
+    std::string version_start;
+    std::string version_start_type;
+    std::string version_end;
+    std::string version_end_type;
+};
+
 void handle_exception(SQLite::Exception &e) {
     std::string msg = e.what();
     if (msg.find("UNIQUE constraint failed") == std::string::npos) {
@@ -89,44 +97,9 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
 
         cve_query.exec();
         cve_query.reset();
-
-        // Just extract the necessary CPE affected versions information from the JSON file
-        affected_versions = "";
-        if (cve_entry["cve"].find("affects") != cve_entry["cve"].end()) {
-            if (cve_entry["cve"]["affects"].find("vendor") != cve_entry["cve"]["affects"].end()) {
-                if (cve_entry["cve"]["affects"]["vendor"].find("vendor_data") != cve_entry["cve"]["affects"]["vendor"].end()) {
-                    for (auto &vendor_data_entry : cve_entry["cve"]["affects"]["vendor"]["vendor_data"]) {
-                        vendor_name = vendor_data_entry["vendor_name"];  // field must exist afaik
-                        if (vendor_data_entry.find("product") != vendor_data_entry.end()) {
-                            if (vendor_data_entry["product"].find("product_data") != vendor_data_entry["product"].end()) {
-                                for (auto &product_data_entry : vendor_data_entry["product"]["product_data"]) {
-                                    product_name = product_data_entry["product_name"];  // field must exist afaik
-                                    if (product_data_entry.find("version") != product_data_entry.end()) {
-                                        if (product_data_entry["version"].find("version_data") != product_data_entry["version"].end()) {
-                                            for (auto &version_data_entry : product_data_entry["version"]["version_data"]) {
-                                                if (version_data_entry.find("version_value") != version_data_entry.end()) {
-                                                    version_value = version_data_entry["version_value"];
-                                                    affected_versions += vendor_name + ":" + product_name + ":" + version_value + ", ";
-                                                }
-                                            }
-                                        }  
-                                    }  
-                                }
-                            }
-                        }  
-                    }  
-                }
-            }  
-        } 
         
         cve_cpe_query.bind(1, cve_id);
-        if (affected_versions != "") {
-            affected_versions.pop_back();  // pop last ' '
-            affected_versions.pop_back();  // pop last ','
-            cve_cpe_query.bind(7, affected_versions);
-        }
-        else
-            cve_cpe_query.bind(7, NULL);
+        std::vector<VagueCpeInfo> vague_cpe_infos;
 
         for (auto &config_nodes_entry : cve_entry["configurations"]["nodes"]) {
             for (auto &cpe_entry : config_nodes_entry["cpe"]) {
@@ -135,37 +108,38 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
                     continue;
 
                 cpe = cpe_entry["cpe22Uri"];
-                cve_cpe_query.bind(2, cpe);
+
+                VagueCpeInfo vague_cpe_info = {cpe, "", "", "", ""};
 
                 if (cpe_entry.find("versionStartIncluding") != cpe_entry.end()) {
-                    cpe_version = cpe_entry["versionStartIncluding"];
-                    cve_cpe_query.bind(3, cpe_version);
-                    cve_cpe_query.bind(4, "Including");
+                    vague_cpe_info.version_start = cpe_entry["versionStartIncluding"];
+                    vague_cpe_info.version_start_type = "Including";
                 }
                 else if (cpe_entry.find("versionStartExcluding") != cpe_entry.end()) {
-                    cpe_version = cpe_entry["versionStartExcluding"];
-                    cve_cpe_query.bind(3, cpe_version);
-                    cve_cpe_query.bind(4, "Excluding");
-                }
-                else {
-                    cve_cpe_query.bind(3, NULL);
-                    cve_cpe_query.bind(4, NULL);
+                    vague_cpe_info.version_start = cpe_entry["versionStartExcluding"];
+                    vague_cpe_info.version_start_type = "Excluding";
                 }
 
                 if (cpe_entry.find("versionEndIncluding") != cpe_entry.end()) {
-                    cpe_version = cpe_entry["versionEndIncluding"];
-                    cve_cpe_query.bind(5, cpe_version);
-                    cve_cpe_query.bind(6, "Including");
+                    vague_cpe_info.version_end = cpe_entry["versionEndIncluding"];
+                    vague_cpe_info.version_end_type = "Including";
                 }
                 else if (cpe_entry.find("versionEndExcluding") != cpe_entry.end()) {
-                    cpe_version = cpe_entry["versionEndExcluding"];
-                    cve_cpe_query.bind(5, cpe_version);
-                    cve_cpe_query.bind(6, "Excluding");
+                    vague_cpe_info.version_end = cpe_entry["versionEndExcluding"];
+                    vague_cpe_info.version_end_type = "Excluding";
                 }
-                else {
-                    cve_cpe_query.bind(5, NULL);
-                    cve_cpe_query.bind(6, NULL);
+
+                if (vague_cpe_info.version_start != "" || vague_cpe_info.version_end != "") {
+                    vague_cpe_infos.push_back(vague_cpe_info);
+                    continue;
                 }
+
+                cve_cpe_query.bind(2, cpe);
+                cve_cpe_query.bind(3, NULL);
+                cve_cpe_query.bind(4, NULL);
+                cve_cpe_query.bind(5, NULL);
+                cve_cpe_query.bind(6, NULL);
+                cve_cpe_query.bind(7, NULL);
 
                 try {
                     cve_cpe_query.exec();
@@ -180,6 +154,80 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
                 catch (SQLite::Exception& e) {
                     handle_exception(e);
                 }
+            }
+        }
+
+        std::string cpe_part_str, cpe_str;
+        if (vague_cpe_infos.size() > 0) {
+            for (auto &vendor_data_entry : cve_entry["cve"]["affects"]["vendor"]["vendor_data"]) {
+                auto &vendor_name_ref = vendor_data_entry["vendor_name"];  // field must exist afaik
+                if (vendor_data_entry.find("product") != vendor_data_entry.end()) {
+                    if (vendor_data_entry["product"].find("product_data") != vendor_data_entry["product"].end()) {
+                        for (auto &product_data_entry : vendor_data_entry["product"]["product_data"]) {
+                            auto &product_name_ref = product_data_entry["product_name"];  // field must exist afaik
+                            cpe_part_str = vendor_name_ref.get<std::string>() + ":" + product_name_ref.get<std::string>();
+                            for (VagueCpeInfo &vi : vague_cpe_infos) {
+                                if (vi.vague_cpe.find(cpe_part_str) != std::string::npos) {                                        
+                                    if (product_data_entry.find("version") != product_data_entry.end()) {
+                                        if (product_data_entry["version"].find("version_data") != product_data_entry["version"].end()) {
+                                            for (auto &version_data_entry : product_data_entry["version"]["version_data"]) {
+                                                if (version_data_entry.find("version_value") != version_data_entry.end()) {
+                                                    auto &version_value_ref = version_data_entry["version_value"];
+                                                    cpe_str = vi.vague_cpe + ":" + version_value_ref.get<std::string>();
+
+                                                    cve_cpe_query.bind(2, cpe_str);
+                                                    cve_cpe_query.bind(3, NULL);
+                                                    cve_cpe_query.bind(4, NULL);
+                                                    cve_cpe_query.bind(5, NULL);
+                                                    cve_cpe_query.bind(6, NULL);
+                                                    cve_cpe_query.bind(7, NULL);
+
+                                                    try {
+                                                        cve_cpe_query.exec();
+                                                    }
+                                                    catch (SQLite::Exception& e) {
+                                                        handle_exception(e);
+                                                    }
+
+                                                    try {
+                                                        cve_cpe_query.reset();
+                                                    }
+                                                    catch (SQLite::Exception& e) {
+                                                        handle_exception(e);
+                                                    }
+                                                }
+                                            }
+                                        }  
+                                    }
+                                    // TODO: can this case realistically even happen?
+                                    else {
+                                        cve_cpe_query.bind(2, vi.vague_cpe);
+                                        cve_cpe_query.bind(3, vi.version_start);
+                                        cve_cpe_query.bind(4, vi.version_start_type);
+                                        cve_cpe_query.bind(5, vi.version_end);
+                                        cve_cpe_query.bind(6, vi.version_end_type);
+                                        cve_cpe_query.bind(7, NULL);
+
+                                        try {
+                                            cve_cpe_query.exec();
+                                        }
+                                        catch (SQLite::Exception& e) {
+                                            handle_exception(e);
+                                        }
+
+                                        try {
+                                            cve_cpe_query.reset();
+                                        }
+                                        catch (SQLite::Exception& e) {
+                                            handle_exception(e);
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }  
             }
         }
     }
