@@ -33,7 +33,7 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
     // Begin transaction
     SQLite::Transaction transaction(db);
     SQLite::Statement cve_query(db, "INSERT INTO cve VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    SQLite::Statement cve_cpe_query(db, "INSERT INTO cve_cpe VALUES (?, ?, ?, ?, ?, ?, ?)");
+    SQLite::Statement cve_cpe_query(db, "INSERT INTO cve_cpe VALUES (?, ?, ?, ?, ?, ?)");
 
     // read a JSON file
     std::ifstream input_file(filepath);
@@ -131,15 +131,13 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
 
                 if (vague_cpe_info.version_start != "" || vague_cpe_info.version_end != "") {
                     vague_cpe_infos.push_back(vague_cpe_info);
-                    continue;
                 }
 
                 cve_cpe_query.bind(2, cpe);
-                cve_cpe_query.bind(3, NULL);
-                cve_cpe_query.bind(4, NULL);
-                cve_cpe_query.bind(5, NULL);
-                cve_cpe_query.bind(6, NULL);
-                cve_cpe_query.bind(7, NULL);
+                cve_cpe_query.bind(3, vague_cpe_info.version_start);
+                cve_cpe_query.bind(4, vague_cpe_info.version_start_type);
+                cve_cpe_query.bind(5, vague_cpe_info.version_end);
+                cve_cpe_query.bind(6, vague_cpe_info.version_end_type);
 
                 try {
                     cve_cpe_query.exec();
@@ -176,11 +174,10 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
                                                     cpe_str = vi.vague_cpe + ":" + version_value_ref.get<std::string>();
 
                                                     cve_cpe_query.bind(2, cpe_str);
-                                                    cve_cpe_query.bind(3, NULL);
-                                                    cve_cpe_query.bind(4, NULL);
-                                                    cve_cpe_query.bind(5, NULL);
-                                                    cve_cpe_query.bind(6, NULL);
-                                                    cve_cpe_query.bind(7, NULL);
+                                                    cve_cpe_query.bind(3, "");
+                                                    cve_cpe_query.bind(4, "");
+                                                    cve_cpe_query.bind(5, "");
+                                                    cve_cpe_query.bind(6, "");
 
                                                     try {
                                                         cve_cpe_query.exec();
@@ -199,31 +196,8 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
                                             }
                                         }  
                                     }
-                                    // TODO: can this case realistically even happen?
-                                    else {
-                                        cve_cpe_query.bind(2, vi.vague_cpe);
-                                        cve_cpe_query.bind(3, vi.version_start);
-                                        cve_cpe_query.bind(4, vi.version_start_type);
-                                        cve_cpe_query.bind(5, vi.version_end);
-                                        cve_cpe_query.bind(6, vi.version_end_type);
-                                        cve_cpe_query.bind(7, NULL);
-
-                                        try {
-                                            cve_cpe_query.exec();
-                                        }
-                                        catch (SQLite::Exception& e) {
-                                            handle_exception(e);
-                                        }
-
-                                        try {
-                                            cve_cpe_query.reset();
-                                        }
-                                        catch (SQLite::Exception& e) {
-                                            handle_exception(e);
-                                        }
-                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
@@ -265,8 +239,8 @@ int main(int argc, char *argv[]) {
         db.exec("CREATE TABLE cve (cve_id VARCHAR(25), description TEXT, published DATETIME, last_modified DATETIME, \
             cvss_version CHAR(3), base_score CHAR(3), vector VARCHAR(60), severity VARCHAR(15), PRIMARY KEY(cve_id))");
         db.exec("CREATE TABLE cve_cpe (cve_id VARCHAR(25), cpe TEXT, cpe_version_start VARCHAR(255), cpe_version_start_type VARCHAR(50), \
-            cpe_version_end VARCHAR(255), cpe_version_end_type VARCHAR(50), add_cpes TEXT, PRIMARY KEY(cve_id, cpe, cpe_version_start, \
-            cpe_version_start_type, cpe_version_end, cpe_version_end_type, add_cpes))");
+            cpe_version_end VARCHAR(255), cpe_version_end_type VARCHAR(50), PRIMARY KEY(cve_id, cpe, cpe_version_start, \
+            cpe_version_start_type, cpe_version_end, cpe_version_end_type))");
 
         DIR *dir;
         struct dirent *ent;
