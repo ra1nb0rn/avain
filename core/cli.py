@@ -44,7 +44,7 @@ class Cli():
         optional_args.add_argument("-t", "--time", action="store_true", help="Specifies whether to time the scan or not.")
         optional_args.add_argument("-p", "--ports", help="Specifies which ports to scan on every host.")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
-
+        optional_args.add_argument("-oo", "--online-only", action="store_true", help="Only look up information online (where applicable)")
 
         self.args = parser.parse_args()
         if (not self.args.networks) and (not self.args.network_list) and (not self.args.update_databases):
@@ -113,7 +113,8 @@ class Cli():
         """
 
         controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.update_databases, self.args.ports,
-                                    self.args.output, self.args.scan_results, self.args.analysis_results, self.args.time, self.args.verbose)
+                                    self.args.output, self.args.online_only, self.args.scan_results, self.args.analysis_results, self.args.time,
+                                    self.args.verbose)
         controller.run()
 
     def parse_network_list(self, parser: argparse.ArgumentParser):

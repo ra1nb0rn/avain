@@ -15,7 +15,8 @@ SCANNER_JOIN_TIMEOUT = 0.38
 
 class Scanner():
 
-    def __init__(self, networks: list, add_networks: list, omit_networks: list, ports: str, output_dir: str, verbose: bool, logfile: str):
+    def __init__(self, networks: list, add_networks: list, omit_networks: list, ports: str, output_dir: str, online_only: bool,
+                verbose: bool, logfile: str):
         """
         Create a Scanner object with the given networks and output_directory
 
@@ -23,6 +24,7 @@ class Scanner():
         :param add_networks: A list of networks as strings to additionally analyze
         :param omit_networks: A list of networks as strings to omit from the analysis
         :param output_dir: A string specifying the output directory of the analysis
+        :param online_only: Specifying whether to look up information only online (where applicable) 
         :param verbose: Specifying whether to provide verbose output or not
         :param logfile: a logfile for logging information
         """
@@ -30,6 +32,7 @@ class Scanner():
         self.add_networks = add_networks
         self.omit_networks = omit_networks
         self.output_dir = output_dir
+        self.online_only = online_only
         self.scanner_modules = module_seeker.find_all_scanners_modules()
         self.verbose = verbose
         self.ports = ports
@@ -181,6 +184,9 @@ class Scanner():
             if not self.hosts:
                 controller.extend_networks_to_hosts()
             module.HOSTS = self.hosts
+
+        if "ONLINE_ONLY" in all_module_attributes:
+            module.ONLINE_ONLY = self.online_only
 
         if "LOGFILE" in all_module_attributes:
             module.LOGFILE = self.logfile

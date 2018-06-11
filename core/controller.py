@@ -16,7 +16,7 @@ UPDATER_JOIN_TIMEOUT = 0.38
 class Controller():
 
     def __init__(self, networks: list, add_networks: list, omit_networks: list, update_databases: bool, ports: list, output_dir: str,
-                    scan_results: list, analysis_results: list, time: bool, verbose: bool):
+                    online_only: bool, scan_results: list, analysis_results: list, time: bool, verbose: bool):
         """
         Create a Controller object.
 
@@ -25,6 +25,7 @@ class Controller():
         :param omit_networks: A list of networks as strings to omit from the analysis
         :param update_databases: Whether databases should be upgraded or created if they do not exist
         :param output_dir: A string specifying the output directory of the analysis
+        :param online_only: Specifying whether to look up information only online (where applicable) 
         :param scan_results: A list of filenames whose files contain additional scan results
         :param analysis_results: A list of filenames whose files contain additional analysis results
         :param time: A boolean specifying whether to measure the required ananlysis time
@@ -40,6 +41,7 @@ class Controller():
             self.output_dir = "avain_output-" + util.get_current_timestamp()
             # self.output_dir = "avain_output"  # for debugging purposes
         os.makedirs(self.output_dir, exist_ok=True)
+        self.online_only = online_only
         self.scan_results = scan_results
         self.analysis_results = analysis_results
         self.time = time
@@ -146,10 +148,11 @@ class Controller():
         of the specified network for vulnerabilities.
         """
 
-        scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.ports, self.output_dir, self.verbose, self.logfile)
+        scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.ports, self.output_dir, self.online_only,
+                            self.verbose, self.logfile)
         hosts = scanner.conduct_scans()
 
-        analyzer = Analyzer(hosts, self.output_dir, self.verbose, self.logfile) 
+        analyzer = Analyzer(hosts, self.output_dir, self.online_only, self.verbose, self.logfile) 
         scores = analyzer.conduct_analyses()
 
         outfile = os.path.join(self.output_dir, "results.txt")
