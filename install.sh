@@ -2,7 +2,7 @@
 
 install_brew_packages() {
     # Use brew to install macOS software packages
-    BREW_PACKAGES="python wget nmap sqlite3"
+    BREW_PACKAGES="python wget nmap sqlite3 cmake"  # gcc should be available by default
 
     which brew &> /dev/null
     if [ $? != 0 ]; then
@@ -26,7 +26,7 @@ install_brew_packages() {
 
 install_apt_packages() {
     # Use apt to install Linux software packages
-    APT_PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev"
+    APT_PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev cmake gcc"
     which apt-get &> /dev/null
     if [ $? != 0 ]; then
         printf "Could not find apt-get command.\\nPlease check your apt installation first."
