@@ -1,3 +1,4 @@
+import copy
 import importlib
 import inspect
 import json
@@ -167,7 +168,7 @@ class Analyzer():
             module.VERBOSE = self.verbose
 
         if "HOSTS" in all_module_attributes:
-            module.HOSTS = self.hosts
+            module.HOSTS = copy.deepcopy(self.hosts)
 
         if "ONLINE_ONLY" in all_module_attributes:
             module.ONLINE_ONLY = self.online_only

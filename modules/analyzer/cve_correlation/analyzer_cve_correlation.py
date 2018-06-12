@@ -89,7 +89,7 @@ def conduct_analysis(results: list):
     logger.info("Starting with CVE analysis")
 
     cve_results = {}
-    hosts = copy.deepcopy(HOSTS)
+    hosts = HOSTS
 
     db_conn = None
     if ONLINE_ONLY:
