@@ -101,7 +101,7 @@ class Analyzer():
             os.makedirs(module_output_dir, exist_ok=True)
 
             # process this module's analysis results
-            if isinstance(result, str):  # if analysis module provides json output
+            if isinstance(result, str):  # if analysis module provides json output file
                 # add result file to created_files (in case module has not)
                 created_files = set(created_files)
                 created_files.add(result)
@@ -113,7 +113,7 @@ class Analyzer():
                 with open(result_path) as f:
                     self.results[analysis_module] = json.load(f)
             elif isinstance(result, dict):  # if analysis module provides output as python dict
-                analysis_result_path = os.path.join(module_output_dir, analysis_module + "_result.json")
+                analysis_result_path = os.path.join(module_output_dir, "result.json")
                 with open(analysis_result_path, "w") as f:  # write dict output to json file
                     f.write(json.dumps(result, ensure_ascii=False, indent=3))
                 self.results[analysis_module] = result

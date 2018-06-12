@@ -118,7 +118,7 @@ class Scanner():
                 with open(result_path) as f:
                     self.results[scanner_module] = json.load(f)
             elif isinstance(result, dict):  # if scanner module provides output as python dict
-                scan_result_path = os.path.join(module_output_dir, scanner_module + "_result.json")
+                scan_result_path = os.path.join(module_output_dir, "result.json")
                 with open(scan_result_path, "w") as f:  # write dict output to json file
                     f.write(json.dumps(result, ensure_ascii=False, indent=3))
                 self.results[scanner_module] = result
