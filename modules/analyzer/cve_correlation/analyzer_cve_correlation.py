@@ -458,11 +458,12 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                 found_cves_dict[cve_id]["cvssv2"] = score
                 found_cves_dict[cve_id]["vector_short"] = vector
                 transform_cvssv2_to_cvssv3(found_cves_dict[cve_id])
-                add_detailed_vector(found_cves_dict[cve_id])
                 found_cves_dict[cve_id]["extrainfo"] = "Specified CVSSv3 score was converted from CVSSv2 score because there was no CVSSv3 score available."
             else:
                 found_cves_dict[cve_id]["cvssv3"] = score
                 found_cves_dict[cve_id]["vector_short"] = vector
+
+            add_detailed_vector(found_cves_dict[cve_id])
 
         cve_results[cpe] = found_cves_dict
     else:
