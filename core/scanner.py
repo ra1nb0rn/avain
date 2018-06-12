@@ -15,22 +15,25 @@ SCANNER_JOIN_TIMEOUT = 0.38
 
 class Scanner():
 
-    def __init__(self, networks: list, add_networks: list, omit_networks: list, ports: str, output_dir: str, online_only: bool,
-                verbose: bool, logfile: str):
+    def __init__(self, networks: list, add_networks: list, omit_networks: list, config: dict, ports: list, output_dir: str,
+                online_only: bool, verbose: bool, logfile: str):
         """
         Create a Scanner object with the given networks and output_directory
 
         :param network: A string representing the network to analyze
         :param add_networks: A list of networks as strings to additionally analyze
         :param omit_networks: A list of networks as strings to omit from the analysis
+        :param config: A dict with config parameters in it
+        :param ports: A list of port expressions
         :param output_dir: A string specifying the output directory of the analysis
-        :param online_only: Specifying whether to look up information only online (where applicable) 
+        :param online_only: Specifying whether to look up information only online (where applicable)
         :param verbose: Specifying whether to provide verbose output or not
         :param logfile: a logfile for logging information
         """
         self.networks = networks
         self.add_networks = add_networks
         self.omit_networks = omit_networks
+        self.config = config
         self.output_dir = output_dir
         self.online_only = online_only
         self.scanner_modules = module_seeker.find_all_scanners_modules()
@@ -191,6 +194,12 @@ class Scanner():
 
         if "LOGFILE" in all_module_attributes:
             module.LOGFILE = self.logfile
+
+        if "CONFIG" in all_module_attributes:
+            module.CONFIG = self.config.get(module.__name__, {})
+
+        if "CORE_CONFIG" in all_module_attributes:
+            module.CONFIG = copy.deepcopy(self.config.get("core", {}))
 
     def construct_result(self):
         """

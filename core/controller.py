@@ -12,11 +12,12 @@ import visualizer
 
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
 UPDATER_JOIN_TIMEOUT = 0.38
+DEFAULT_CONFIG_PATH = "default_config.txt"
 
 class Controller():
 
-    def __init__(self, networks: list, add_networks: list, omit_networks: list, update_databases: bool, ports: list, output_dir: str,
-                    online_only: bool, scan_results: list, analysis_results: list, time: bool, verbose: bool):
+    def __init__(self, networks: list, add_networks: list, omit_networks: list, update_databases: bool, config_path: str,
+                ports: list, output_dir: str, online_only: bool, scan_results: list, analysis_results: list, time: bool, verbose: bool):
         """
         Create a Controller object.
 
@@ -24,6 +25,8 @@ class Controller():
         :param add_networks: A list of networks as strings to additionally analyze
         :param omit_networks: A list of networks as strings to omit from the analysis
         :param update_databases: Whether databases should be upgraded or created if they do not exist
+        :param config_path: The path to a config file
+        :param ports: A list of port expressions
         :param output_dir: A string specifying the output directory of the analysis
         :param online_only: Specifying whether to look up information only online (where applicable) 
         :param scan_results: A list of filenames whose files contain additional scan results
@@ -41,6 +44,18 @@ class Controller():
             self.output_dir = "avain_output-" + util.get_current_timestamp()
             # self.output_dir = "avain_output"  # for debugging purposes
         os.makedirs(self.output_dir, exist_ok=True)
+
+        if not config_path and os.path.isfile(DEFAULT_CONFIG_PATH):
+            config_path = DEFAULT_CONFIG_PATH
+        elif not config_path:
+            print(util.MAGENTA + "Warning: Could not find default config.\n" + util.SANE, file=sys.stderr)
+
+        if config_path:
+            try:
+                self.config = util.parse_config(config_path)
+            except:
+                print(util.MAGENTA + "Warning: Could not parse config file. Proceeding without config.\n" + util.SANE, file=sys.stderr)
+
         self.online_only = online_only
         self.scan_results = scan_results
         self.analysis_results = analysis_results
@@ -62,6 +77,7 @@ class Controller():
             print(util.MAGENTA + "Warning: not running this program as root user leads"
                 " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
 
+        print(self.config)
 
     def run(self):
         """
@@ -148,11 +164,11 @@ class Controller():
         of the specified network for vulnerabilities.
         """
 
-        scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.ports, self.output_dir, self.online_only,
-                            self.verbose, self.logfile)
+        scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.config, self.ports, self.output_dir,
+                            self.online_only, self.verbose, self.logfile)
         hosts = scanner.conduct_scans()
 
-        analyzer = Analyzer(hosts, self.output_dir, self.online_only, self.verbose, self.logfile) 
+        analyzer = Analyzer(hosts, self.config, self.output_dir, self.online_only, self.verbose, self.logfile) 
         scores = analyzer.conduct_analyses()
 
         outfile = os.path.join(self.output_dir, "results.txt")

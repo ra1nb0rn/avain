@@ -1,0 +1,13 @@
+////////////////////////////////////////////////
+//////// An example configuration file ////////
+//////////////////////////////////////////////
+
+
+// here defined are default configuration settings
+[core]
+DB_expire = 20160  // in minutes, i.e. every other week
+
+
+// here defined are module specific configuration settings
+[modules.analyzer.cve_correlation.analyzer_cve_correlation]
+DB_expire = 10080  // in minutes, i.e. every week

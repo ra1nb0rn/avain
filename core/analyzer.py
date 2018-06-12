@@ -16,11 +16,12 @@ ANALYZER_JOIN_TIMEOUT = 0.38
 
 class Analyzer():
 
-    def __init__(self, hosts: dict, output_dir: str, online_only: bool, verbose: bool, logfile: str):
+    def __init__(self, hosts: dict, config: dict, output_dir: str, online_only: bool, verbose: bool, logfile: str):
         """
         Create an Analyzer object to analyze the given hosts.
 
         :param hosts: The hosts to analyze for vulnerabilities
+        :param config: The used config
         :param output_dir: A string specifying the output directory of the analysis
         :param online_only: Specifying whether to look up information only online (where applicable) 
         :param verbose: Specifying whether to provide verbose output or not
@@ -28,6 +29,7 @@ class Analyzer():
         """
 
         self.hosts = hosts
+        self.config = config
         self.output_dir = output_dir
         self.online_only = online_only
         self.analysis_modules = module_seeker.find_all_analyzer_modules()
@@ -175,6 +177,12 @@ class Analyzer():
 
         if "LOGFILE" in all_module_attributes:
             module.LOGFILE = self.logfile
+
+        if "CONFIG" in all_module_attributes:
+            module.CONFIG = self.config.get(module.__name__, {})
+
+        if "CORE_CONFIG" in all_module_attributes:
+            module.CONFIG = copy.deepcopy(self.config.get("core", {}))
 
     def construct_result(self):
         """

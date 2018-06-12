@@ -164,3 +164,37 @@ def hide_cursor():
 
 def show_cursor():
     print("\033[?25h", end="")
+
+
+def parse_config(filepath: str):
+    def remove_quotes(text: str):
+        text = text.replace("\"", "")
+        text = text.replace("'", "")
+        return text
+
+    config = {}
+    with open(filepath) as f:
+        cur_module = "core"  # default to core
+        config[cur_module] = {}
+        
+        for line in f.readlines():
+            line = line.strip()
+            comment_start = line.find("//")
+            if comment_start != -1:
+                line = line[:comment_start]
+            if line == "":
+                continue
+
+            # start of module specification
+            if line.startswith("["):
+                cur_module = line[1:line.find("]")]
+                config[cur_module] = {}
+            else:
+                k, v = line.split("=")
+                k = k.strip()
+                v = v.strip()
+                k = remove_quotes(k)
+                v = remove_quotes(v)
+                config[cur_module][k] = v
+
+    return config

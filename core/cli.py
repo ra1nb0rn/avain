@@ -35,16 +35,18 @@ class Cli():
                                                            "or wildcard, the host at the given IP is scanned.")
         required_args.add_argument("-nL", "--network-list", help="A list that specifies networks/hosts to add to or omit from the scan.")
         required_args.add_argument("-uD", "--update-databases", action="store_true", help="Make all databases update.")
+
+        optional_args.add_argument("-c", "--config", help="Specify a different config file to use.")
         optional_args.add_argument("-aR", "--analysis-results", nargs="+", help="Addtional analysis results to include into the analysis result. "
                                                                                       "Multiple files or folders can be specified.")
         optional_args.add_argument("-o", "--output", help="Specify the output file name. If name collisions occur, the output files are prefixed "
                                                           "with the specified output file name.")
+        optional_args.add_argument("-oo", "--online-only", action="store_true", help="Only look up information online (where applicable)")
+        optional_args.add_argument("-p", "--ports", help="Specifies which ports to scan on every host.")
         optional_args.add_argument("-sR", "--scan-results", nargs="+", help="Addtional scan results to include into the scanning result. "
                                                                             "Multiple files or folders can be specified.")
         optional_args.add_argument("-t", "--time", action="store_true", help="Specifies whether to time the scan or not.")
-        optional_args.add_argument("-p", "--ports", help="Specifies which ports to scan on every host.")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
-        optional_args.add_argument("-oo", "--online-only", action="store_true", help="Only look up information online (where applicable)")
 
         self.args = parser.parse_args()
         if (not self.args.networks) and (not self.args.network_list) and (not self.args.update_databases):
@@ -86,6 +88,10 @@ class Cli():
                 if not os.path.isfile(r):
                     parser.error("scan result %s does not exist" % r)
 
+        if self.args.config:
+            if not os.path.isfile(self.args.config):
+                parser.error("config %s does not exist" % r)
+
         if self.args.ports:
             def check_port(port_expr: str):
                 try:
@@ -112,9 +118,9 @@ class Cli():
         Parse the program arguments and initiate the vulnerability analysis.
         """
 
-        controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.update_databases, self.args.ports,
-                                    self.args.output, self.args.online_only, self.args.scan_results, self.args.analysis_results, self.args.time,
-                                    self.args.verbose)
+        controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.update_databases, self.args.config,
+                                self.args.ports, self.args.output, self.args.online_only, self.args.scan_results, self.args.analysis_results,
+                                self.args.time, self.args.verbose)
         controller.run()
 
     def parse_network_list(self, parser: argparse.ArgumentParser):
