@@ -16,7 +16,7 @@ install_brew_packages() {
         exit 1
     fi
 
-    eval brew instal hydra --with-libssh
+    eval brew install hydra --with-libssh
     if [ $? != 0 ]; then
         printf "Installation of hydra with libssh using brew was not successful."
         exit 1
