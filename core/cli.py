@@ -90,7 +90,7 @@ class Cli():
 
         if self.args.config:
             if not os.path.isfile(self.args.config):
-                parser.error("config %s does not exist" % r)
+                parser.error("config %s does not exist" % self.args.config)
 
         if self.args.ports:
             def check_port(port_expr: str):
