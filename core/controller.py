@@ -45,16 +45,19 @@ class Controller():
             # self.output_dir = "avain_output"  # for debugging purposes
         os.makedirs(self.output_dir, exist_ok=True)
 
-        if not config_path and os.path.isfile(DEFAULT_CONFIG_PATH):
-            config_path = DEFAULT_CONFIG_PATH
+        if os.path.isfile(DEFAULT_CONFIG_PATH):
+            try:
+                self.config = util.parse_config(DEFAULT_CONFIG_PATH)
+            except:
+                print(util.MAGENTA + "Warning: Could not parse default config file. Proceeding without default config.\n" + util.SANE, file=sys.stderr)
         elif not config_path:
             print(util.MAGENTA + "Warning: Could not find default config.\n" + util.SANE, file=sys.stderr)
 
         if config_path:
             try:
-                self.config = util.parse_config(config_path)
+                util.upgrade_config(config_path, self.config)
             except:
-                print(util.MAGENTA + "Warning: Could not parse config file. Proceeding without config.\n" + util.SANE, file=sys.stderr)
+                print(util.MAGENTA + "Warning: Could not parse custom config file. Proceeding without custom config.\n" + util.SANE, file=sys.stderr)
 
         self.online_only = online_only
         self.scan_results = scan_results
@@ -76,8 +79,6 @@ class Controller():
         if (networks or add_networks) and os.getuid() != 0:
             print(util.MAGENTA + "Warning: not running this program as root user leads"
                 " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
-
-        print(self.config)
 
     def run(self):
         """
