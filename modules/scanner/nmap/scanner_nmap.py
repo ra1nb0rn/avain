@@ -54,6 +54,8 @@ def conduct_scan(results: list):
     # prepare the base of the nmap call
     if not fast_scan:
         nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T3", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
+    elif PORTS:
+        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T5", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
     else:
         nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T5", "-F", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
 
@@ -62,11 +64,12 @@ def conduct_scan(results: list):
         nmap_call.insert(0, "sudo")
         nmap_call.append("-sSU")  #  scan for TCP and UDP (UDP requires root privilege)
 
-    # add nmap scripts to nmap call
-    nmap_call.append("--script=%s" % ",".join(NMAP_SCRIPTS))
+    if not fast_scan:
+        # add nmap scripts to nmap call
+        nmap_call.append("--script=%s" % ",".join(NMAP_SCRIPTS))
 
     # if only specific ports should be scanned, append that to the nmap call
-    if PORTS and not fast_scan:
+    if PORTS:
         nmap_call.append("-p%s" % PORTS)
 
     # if nmap output should be verbose
