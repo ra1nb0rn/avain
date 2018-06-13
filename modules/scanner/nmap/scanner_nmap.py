@@ -20,6 +20,7 @@ OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
 VERBOSE = False  # specifying whether to provide verbose output or not
 PORTS = None  # the ports to scan
 LOGFILE = ""
+CONFIG = {}
 
 DETECTED_OSES = {}
 
@@ -38,6 +39,10 @@ def conduct_scan(results: list):
     logger = util.get_logger(__name__, LOGFILE)
     logger.info("Setting up Nmap scan")
 
+    fast_scan = False
+    if "FAST" in CONFIG and CONFIG["FAST"] == "True":
+        fast_scan = True
+
     # write the networks to scan into a file to give to nmap
     logger.info("Writing networks to scan into '%s'" % NETWORKS_PATH)
     with open(NETWORKS_PATH, "w") as file:
@@ -47,7 +52,10 @@ def conduct_scan(results: list):
             file.write(net + "\n")
 
     # prepare the base of the nmap call
-    nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T3", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
+    if not fast_scan:
+        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T3", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
+    else:
+        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T5", "-F", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
 
     # check if process owner is root and change nmap call accordingly
     if os.getuid() == 0:
