@@ -66,7 +66,7 @@ def conduct_scan(results: list):
     nmap_call.append("--script=%s" % ",".join(NMAP_SCRIPTS))
 
     # if only specific ports should be scanned, append that to the nmap call
-    if PORTS:
+    if PORTS and not fast_scan:
         nmap_call.append("-p%s" % PORTS)
 
     # if nmap output should be verbose
