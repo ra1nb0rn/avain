@@ -10,6 +10,13 @@ install_brew_packages() {
         exit 1
     fi
 
+    echo "Updating Homebrew and upgrading installed packages to latest version."
+    eval brew update && brew upgrade && brew cleanup
+    if [ $? != 0 ]; then
+        printf "Installation of basic brew packages was not successful."
+        exit 1
+    fi
+
     eval brew install "${BREW_PACKAGES}"
     if [ $? != 0 ]; then
         printf "Installation of basic brew packages was not successful."
