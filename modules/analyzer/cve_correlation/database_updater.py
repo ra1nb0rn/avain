@@ -10,6 +10,10 @@ import zipfile
 CVE_DATAFEED_DIR = "cve_data_feeds"
 
 def update_database():
+    # Remove old database to refresh CreationDate
+    if os.path.isfile("cve_db.db3"):
+        os.remove("cve_db.db3")
+
     cve_data_feeds_dir = CVE_DATAFEED_DIR
     if os.path.exists(CVE_DATAFEED_DIR):
         shutil.rmtree(CVE_DATAFEED_DIR)
