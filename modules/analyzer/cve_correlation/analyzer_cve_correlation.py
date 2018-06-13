@@ -177,7 +177,7 @@ def create_cve_summary(hosts, scores):
                         cve_count = 0
                         for _, cves in v.items():
                             cve_count += len(cves.keys())
-                            total_cve_count += cve_count
+                        total_cve_count += cve_count
                         host_summary[protocol][portid]["cve_count"] = str(cve_count)
 
                     try:
@@ -199,9 +199,10 @@ def create_cve_summary(hosts, scores):
             assessment = "Critical"
         return assessment 
 
-    summary, total_cve_count = {}, 0
+    summary = {}
     for ip, host in hosts.items():
         host_summary = {}
+        total_cve_count = 0
         host_summary["os"] = {}
         if "os" in host:
             for k, v in host["os"].items():
@@ -213,7 +214,7 @@ def create_cve_summary(hosts, scores):
                     cve_count = 0
                     for _, cves in host["os"]["cpes"].items():
                         cve_count += len(cves.keys())
-                        total_cve_count += cve_count
+                    total_cve_count += cve_count
                     host_summary["os"]["cve_count"] = str(cve_count)
 
             try:
