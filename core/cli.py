@@ -49,7 +49,7 @@ class Cli():
         optional_args.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
 
         self.args = parser.parse_args()
-        if (not self.args.networks) and (not self.args.network_list) and (not self.args.update_databases):
+        if (not self.args.networks) and (not self.args.network_list) and (not self.args.scan_results) and (not self.args.update_databases):
             parser.error("at least one of the following arguments is required: -n/--network, -nL/--network-list or -uD/--update_databases")
 
         self.parse_network_list(parser)
