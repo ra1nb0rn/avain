@@ -397,32 +397,35 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
         return False
 
     cve_results = {}
-    concrete_cve_ids = db_cursor.execute("SELECT DISTINCT cve_id FROM cve_cpe WHERE cpe=\"%s\"" % (cpe)).fetchall()
     values = cpe[7:].split(":")
     general_cpe = cpe[:7] + ":".join(values[:2])
+
+    # if len(values) > 3:
+    #     cpe = cpe[:7] + ":".join(values[:3])  # nvd.nist seems to do this with e.g. cpe:/o:microsoft:windows_10:1607::~~~~x64~
+    found_cves = db_cursor.execute("SELECT DISTINCT cve_id, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % (cpe)).fetchall()
 
     if len(values) == 2:
         cpe_version = None
     elif len(values) > 2:
         cpe_version = values[2]
-    general_cve_data = db_cursor.execute("SELECT cve_id, cpe_version_start, cpe_version_start_type, " +
-                                        "cpe_version_end, cpe_version_end_type FROM cve_cpe WHERE cpe=\"%s\"" % (general_cpe)).fetchall()
+    general_cve_cpe_data = db_cursor.execute("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end," +
+                                        "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % (general_cpe)).fetchall()
 
-    found_cve_ids = [cve[0] for cve in concrete_cve_ids]
     if cpe_version:
         broad_search = False
         if cpe_version == "-":  # '-' stands for all versions
-            all_version_cve_ids = db_cursor.execute("SELECT cve_id FROM cve_cpe WHERE cpe LIKE \"%s:%%\"" % (general_cpe)).fetchall()
-            for cve_id_entry in all_version_cve_ids:
-                found_cve_ids.append(cve_id_entry[0])
+            all_version_cves = db_cursor.execute("SELECT cve_id, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s:%%\"" % (general_cpe)).fetchall()
+            found_cves += all_version_cves
         else:
             broad_search = is_broad_version()
 
             cpe_version = version.parse(cpe_version)
 
-            for general_cve_entry in general_cve_data:
-                version_start, version_start_type = general_cve_entry[1], general_cve_entry[2]
-                version_end, version_end_type = general_cve_entry[3], general_cve_entry[4]
+            for entry in general_cve_cpe_data:
+                version_start, version_start_type = entry[1], entry[2]
+                version_end, version_end_type = entry[3], entry[4]
+                with_cpes = entry[5]
+
                 cpe_in = False
                 if version_start and version_end:
                     if version_start_type == "Including" and version_end_type == "Including":
@@ -445,11 +448,11 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                         cpe_in = cpe_version < version.parse(version_end)
 
                 if cpe_in:
-                    found_cve_ids.append(general_cve_entry[0])
+                    found_cves.append((entry[0], with_cpes))
 
-        found_cve_ids = sorted(set(found_cve_ids), reverse=True)
+        found_cves = sorted(set(found_cves), key=lambda cve: cve[0],reverse=True)
         found_cves_dict = {}
-        for cve_id in found_cve_ids:
+        for cve_id, with_cpes in found_cves:
             descr, publ, last_mod, cvss_ver, score, vector = db_cursor.execute("SELECT description, published, last_modified, " +
                 "cvss_version, base_score, vector FROM cve WHERE cve_id = \"%s\"" % (cve_id)).fetchone()
             found_cves_dict[cve_id] = {"id": cve_id, "description": descr, "published": publ, "modified": last_mod,
@@ -465,6 +468,20 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                 found_cves_dict[cve_id]["vector_short"] = vector
 
             add_detailed_vector(found_cves_dict[cve_id])
+
+            if with_cpes != "":
+                field = "extrainfo"
+                if field in found_cves_dict[cve_id]:
+                    for i in range(1, 10):
+                        field = "extrainfo%d" % i
+                        if not field in found_cves_dict[cve_id]:
+                             break
+
+                with_cpes_list = with_cpes.split(",")
+                if len(with_cpes_list) == 1:
+                    found_cves_dict[cve_id][field] = "Note - only vulnerable in conjunction with '%s'" % ", ".join(with_cpes_list)
+                else:
+                    found_cves_dict[cve_id][field] = "Note - only vulnerable in conjunction with either one of {%s}" % ", ".join(with_cpes_list)
 
         cve_results[cpe] = found_cves_dict
     else:
