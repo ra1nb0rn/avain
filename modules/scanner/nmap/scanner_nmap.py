@@ -324,6 +324,12 @@ def parse_nmap_xml(filepath: str):
 
     for host_elem in nmaprun_elem.findall("host"):
         host = {}
+        status_elem = host_elem.find("status")
+        if status_elem is not None:
+            if "state" in status_elem.attrib:
+                if status_elem.attrib["state"] == "down":
+                    continue
+
         parse_addresses()
 
         # TODO: Hostnames ?
