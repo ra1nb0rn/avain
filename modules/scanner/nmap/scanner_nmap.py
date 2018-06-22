@@ -489,6 +489,7 @@ def discard_unuseful_info(parsed_host):
 
     potential_oses = []
     # start looking for potential OSes in the nmap osmatch information
+
     if "osmatches" in parsed_host:
         for osmatch in parsed_host["osmatches"]:
             if "osclasses" in osmatch:
@@ -501,7 +502,9 @@ def discard_unuseful_info(parsed_host):
                     if "osgen" in osclass:
                         name += osclass["osgen"]
 
-                    if "cpes" in osclass:
+                    name = name.strip()
+
+                    if osclass.get("cpes", []):
                         for cpe in osclass["cpes"]:
                             store_os = True
                             if potential_oses:
@@ -533,7 +536,7 @@ def discard_unuseful_info(parsed_host):
     is_os, highest_sim, = None, -1
     for pot_os in potential_oses:
         sim = util.compute_cosine_similarity(matching_string, pot_os["name"].lower())
-        if "cpes" in pot_os:
+        if pot_os.get("cpes", []):
             highest_cpe_sim = max(util.compute_cosine_similarity(matching_string, cpe.lower()) for cpe in pot_os["cpes"])
             sim = (sim + highest_cpe_sim) / 2
 
