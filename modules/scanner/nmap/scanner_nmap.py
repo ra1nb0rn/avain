@@ -197,8 +197,7 @@ def parse_nmap_xml(filepath: str):
                     cpe_elems = osclass_elem.findall("cpe")
                     cpes = []
                     for cpe_elem in cpe_elems:
-                        if cpe_elem.text.startswith("cpe:/o:"):  # confirm it is an OS CPE
-                            cpes.append(cpe_elem.text)
+                        cpes.append(cpe_elem.text)
 
                     osclass["cpes"] = cpes
                     osclasses.append(osclass)
