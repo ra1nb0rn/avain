@@ -166,7 +166,7 @@ class Controller():
         """
 
         scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.config, self.ports, self.output_dir,
-                            self.online_only, self.verbose, self.logfile)
+                            self.online_only, self.verbose, self.logfile, self.scan_results)
         hosts = scanner.conduct_scans()
 
         analyzer = Analyzer(hosts, self.config, self.output_dir, self.online_only, self.verbose, self.logfile) 

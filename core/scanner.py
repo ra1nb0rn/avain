@@ -16,7 +16,7 @@ SCANNER_JOIN_TIMEOUT = 0.38
 class Scanner():
 
     def __init__(self, networks: list, add_networks: list, omit_networks: list, config: dict, ports: list, output_dir: str,
-                online_only: bool, verbose: bool, logfile: str):
+                online_only: bool, verbose: bool, logfile: str, scan_results: list):
         """
         Create a Scanner object with the given networks and output_directory
 
@@ -29,6 +29,7 @@ class Scanner():
         :param online_only: Specifying whether to look up information only online (where applicable)
         :param verbose: Specifying whether to provide verbose output or not
         :param logfile: a logfile for logging information
+        :param scan_results: additional scan results to include in the final result
         """
         self.networks = networks
         self.add_networks = add_networks
@@ -41,18 +42,12 @@ class Scanner():
         self.ports = ports
         self.logfile = logfile
         self.logger = util.get_logger(__name__, logfile)
+        self.add_scan_results = scan_results
 
-    def conduct_scans(self):
+    def conduct_module_scans(self):
         """
-        Conduct all available scans and accumulate potentially conflicting results into one.
-
-        :return: A dict having the host IPs as keys and their scan results as values
+        Do the different module scans
         """
-
-        self.results = {}
-        # create the output directory for all scan results
-        scan_result_out_dir = os.path.join(self.output_dir, SCAN_OUT_DIR)
-        os.makedirs(scan_result_out_dir, exist_ok=True)
 
         # util.hide_cursor()  # hide cursor
         self.logger.info("Starting network scan(s)")
@@ -106,7 +101,7 @@ class Scanner():
 
             # create output directory for this module's scan results
             module_dir_no_prefix = scanner_module.replace("modules.scanner.", "", 1)
-            module_output_dir = os.path.join(scan_result_out_dir, ".".join(module_dir_no_prefix.split(".")[:-1]))
+            module_output_dir = os.path.join(self.scan_result_out_dir, ".".join(module_dir_no_prefix.split(".")[:-1]))
             os.makedirs(module_output_dir, exist_ok=True)
 
             # process this module's scan results
@@ -152,6 +147,41 @@ class Scanner():
             print(util.GREEN + "All %d scans completed." % len(self.scanner_modules))
         print(util.SANE)
         self.logger.info("All scans completed")
+
+    def include_additional_scan_results(self):
+        """
+        Include additional scan results given by the user
+        """
+
+        if self.add_scan_results:
+            self.logger.info("Including additional scan results: %s" % ", ".join(self.add_scan_results))
+        for filepath in self.add_scan_results:
+            scan_result = None
+            if not os.path.isfile(filepath):
+                self.logger.warning("Specified scan result '%s' is not a file" % filepath)
+            try:
+                with open(filepath) as f:
+                    scan_result = json.load(f)
+            except IOError:
+                self.logger.warning("Specified scan result '%s' cannot be opened" % filepath)
+
+            if scan_result:
+                self.results[filepath] = scan_result
+        self.logger.info("Done.")
+
+    def conduct_scans(self):
+        """
+        Conduct all available scans and accumulate potentially conflicting results into one.
+
+        :return: A dict having the host IPs as keys and their scan results as values
+        """
+
+        self.results = {}
+        # create the output directory for all scan results
+        self.scan_result_out_dir = os.path.join(self.output_dir, SCAN_OUT_DIR)
+        os.makedirs(self.scan_result_out_dir, exist_ok=True)
+        self.conduct_module_scans()
+        self.include_additional_scan_results()
         self.logger.info("Aggregating results")
         self.result = self.construct_result()
         self.logger.info("Done")
@@ -212,10 +242,15 @@ class Scanner():
             return {}
         elif len(self.results) == 1:
             return self.results[list(self.results.keys())[0]]
-
-        # TODO: implement
         else:
-            return {}
+            results = {}
+            for result in self.results.values():
+                for ip, host in result.items():
+                    if not ip in results:
+                        results[ip] = host
+                    else:
+                        ...  # TODO: implement
+            return results
 
     def extend_networks_to_hosts(self):
         """
