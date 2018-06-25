@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import subprocess
@@ -423,9 +424,13 @@ def discard_unuseful_info(parsed_host):
 
         :param dict_key: the key that identifies the service field within a host dict
         """
+        added_in_service = set()
+
         if dict_key in parsed_host:
             for service_elem in parsed_host[dict_key]:
                 found_supstring = False
+                if "cpe" in service_elem:
+                    service_elem["cpes"] = [service_elem["cpe"]]
                 if "cpes" in service_elem:
                     # check if a CPE of the current OS is a prefix of a CPE already saved in potential_oses
                     for cpe in service_elem["cpes"]:
@@ -439,19 +444,21 @@ def discard_unuseful_info(parsed_host):
 
                 replaced_os = False
                 # now check for a substring of name or CPE
-                for i, pot_os in enumerate(potential_oses):
-                    # if there this OS of potential_oses is a prefix of the current OS mentioned in the services
-                    if pot_os["name"].replace(" ", "").lower() in service_elem["name"].replace(" ", "").lower():
-                        del potential_oses[i]
-                        new_pot_os = {"name": service_elem["name"], "accuracy": "100"}
-                        if "cpes" in service_elem:
-                            new_pot_os["cpes"] = service_elem["cpes"]
+                potential_os_cpy = copy.deepcopy(potential_oses)
+                for i, pot_os in enumerate(potential_os_cpy):
+                    pot_os_cmp, service_os_cmp = pot_os["name"].replace(" ", "").lower(), service_elem["name"].replace(" ", "").lower()
+                    if pot_os_cmp in service_os_cmp:
+                        if pot_os_cmp != service_os_cmp:
+                            del potential_oses[i]
+                            new_pot_os = {"name": service_elem["name"], "accuracy": "100", "type": service_elem.get("devicetype", "")}
+                            if "cpes" in service_elem:
+                                new_pot_os["cpes"] = service_elem["cpes"]
 
-                        if not replaced_os:
-                            potential_oses.insert(i, new_pot_os)
-                            replaced_os = True
-                        break
-                    # if there this OS of potential_oses has a CPE that is a prefix
+                            if not replaced_os:
+                                potential_oses.insert(i, new_pot_os)
+                                replaced_os = True
+                            break
+                    # if this OS of potential_oses has a CPE that is a prefix
                     # of a CPE of the current OS mentioned in the services
                     elif "cpes" in service_elem and "cpes" in pot_os:
                         for cpe in service_elem["cpes"]:
@@ -466,16 +473,12 @@ def discard_unuseful_info(parsed_host):
                                 break
 
                     # if the CPE is not stored yet in any way, append the current OS to the list of potential OSes
-                    if not found_supstring and not replaced_os:
+                    if not found_supstring and not replaced_os and not service_elem["name"] in added_in_service:
                         potential_oses.append({"name": service_elem["name"],
                             "accuracy": "100", "type": service_elem.get("devicetype", "")})
+                        added_in_service.add(service_elem["name"])
                         if "cpes" in service_elem:
                             potential_oses[-1]["cpes"] = service_elem["cpes"]
-
-                else:
-                    # if there is no CPE, add the OS without a CPE
-                    potential_oses.append({"name": service_elem["name"], "accuracy": "100", "type": service_elem.get("devicetype", "")})
-
 
     host = {}
     matching_string = ""
