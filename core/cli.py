@@ -42,6 +42,8 @@ class Cli():
         optional_args.add_argument("-o", "--output", help="Specify the output file name. If name collisions occur, the output files are prefixed "
                                                           "with the specified output file name.")
         optional_args.add_argument("-oo", "--online-only", action="store_true", help="Only look up information online (where applicable)")
+        optional_args.add_argument("-so", "--scan-only", action="store_true", help="Only do a network scan")
+        optional_args.add_argument("-ao", "--analysis-only", action="store_true", help="Only do an anaylsis with the provided scan results")
         optional_args.add_argument("-p", "--ports", help="Specifies which ports to scan on every host.")
         optional_args.add_argument("-sR", "--scan-results", nargs="+", help="Addtional scan results to include into the scanning result. "
                                                                             "Multiple files or folders can be specified.")
@@ -49,8 +51,10 @@ class Cli():
         optional_args.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
 
         self.args = parser.parse_args()
-        if (not self.args.networks) and (not self.args.network_list) and (not self.args.scan_results) and (not self.args.update_databases):
-            parser.error("at least one of the following arguments is required: -n/--network, -nL/--network-list or -uD/--update_databases")
+        if (not self.args.networks) and (not self.args.network_list) and (not self.args.scan_results) \
+                and (not self.args.update_databases) and (not self.args.analysis_only):
+            parser.error("at least one of the following arguments is required: -n/--network," +
+                            "-nL/--network-list, -uD/--update_databases or -aO/--analysis-only")
 
         self.parse_network_list(parser)
         self.validate_input(parser)
@@ -92,6 +96,10 @@ class Cli():
             if not os.path.isfile(self.args.config):
                 parser.error("config %s does not exist" % self.args.config)
 
+        if self.args.analysis_only:
+            if not self.args.scan_results:
+                parser.error("existing scan results are required to do only an analysis")
+
         if self.args.ports:
             def check_port(port_expr: str):
                 try:
@@ -120,7 +128,7 @@ class Cli():
 
         controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.update_databases, self.args.config,
                                 self.args.ports, self.args.output, self.args.online_only, self.args.scan_results, self.args.analysis_results,
-                                self.args.time, self.args.verbose)
+                                self.args.time, self.args.verbose, self.args.scan_only, self.args.analysis_only)
         controller.run()
 
     def parse_network_list(self, parser: argparse.ArgumentParser):

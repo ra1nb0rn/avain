@@ -16,7 +16,7 @@ SCANNER_JOIN_TIMEOUT = 0.38
 class Scanner():
 
     def __init__(self, networks: list, add_networks: list, omit_networks: list, config: dict, ports: list, output_dir: str,
-                online_only: bool, verbose: bool, logfile: str, scan_results: list):
+                online_only: bool, verbose: bool, logfile: str, scan_results: list, analysis_only: bool):
         """
         Create a Scanner object with the given networks and output_directory
 
@@ -30,6 +30,7 @@ class Scanner():
         :param verbose: Specifying whether to provide verbose output or not
         :param logfile: a logfile for logging information
         :param scan_results: additional scan results to include in the final result
+        :param analysis_only: Whether to only do an analysis with the specified scan results
         """
         self.networks = networks
         self.add_networks = add_networks
@@ -43,6 +44,7 @@ class Scanner():
         self.logfile = logfile
         self.logger = util.get_logger(__name__, logfile)
         self.add_scan_results = scan_results
+        self.analysis_only = analysis_only
 
     def conduct_module_scans(self):
         """
@@ -155,19 +157,19 @@ class Scanner():
 
         if self.add_scan_results:
             self.logger.info("Including additional scan results: %s" % ", ".join(self.add_scan_results))
-        for filepath in self.add_scan_results:
-            scan_result = None
-            if not os.path.isfile(filepath):
-                self.logger.warning("Specified scan result '%s' is not a file" % filepath)
-            try:
-                with open(filepath) as f:
-                    scan_result = json.load(f)
-            except IOError:
-                self.logger.warning("Specified scan result '%s' cannot be opened" % filepath)
+            for filepath in self.add_scan_results:
+                scan_result = None
+                if not os.path.isfile(filepath):
+                    self.logger.warning("Specified scan result '%s' is not a file" % filepath)
+                try:
+                    with open(filepath) as f:
+                        scan_result = json.load(f)
+                except IOError:
+                    self.logger.warning("Specified scan result '%s' cannot be opened" % filepath)
 
-            if scan_result:
-                self.results[filepath] = scan_result
-        self.logger.info("Done.")
+                if scan_result:
+                    self.results[filepath] = scan_result
+            self.logger.info("Done.")
 
     def conduct_scans(self):
         """
@@ -180,7 +182,8 @@ class Scanner():
         # create the output directory for all scan results
         self.scan_result_out_dir = os.path.join(self.output_dir, SCAN_OUT_DIR)
         os.makedirs(self.scan_result_out_dir, exist_ok=True)
-        self.conduct_module_scans()
+        if not self.analysis_only:
+            self.conduct_module_scans()
         self.include_additional_scan_results()
         self.logger.info("Aggregating results")
         self.result = self.construct_result()

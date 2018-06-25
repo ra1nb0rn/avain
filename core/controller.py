@@ -17,7 +17,8 @@ DEFAULT_CONFIG_PATH = "default_config.txt"
 class Controller():
 
     def __init__(self, networks: list, add_networks: list, omit_networks: list, update_databases: bool, config_path: str,
-                ports: list, output_dir: str, online_only: bool, scan_results: list, analysis_results: list, time: bool, verbose: bool):
+                ports: list, output_dir: str, online_only: bool, scan_results: list, analysis_results: list, time: bool,
+                verbose: bool, scan_only: bool, analysis_only: bool):
         """
         Create a Controller object.
 
@@ -33,6 +34,8 @@ class Controller():
         :param analysis_results: A list of filenames whose files contain additional analysis results
         :param time: A boolean specifying whether to measure the required ananlysis time
         :param vebose: Specifying whether to provide verbose output or not
+        :param scan_only: Whether to only do a network scan
+        :param analysis_only: Whether to only do an analysis with the specified scan results
         """
 
         self.networks = networks
@@ -67,6 +70,8 @@ class Controller():
         self.hosts = set()
         self.ports = ports
         self.update_databases = update_databases
+        self.scan_only = scan_only
+        self.analysis_only = analysis_only
 
         # setup logging
         self.logfile = os.path.abspath(os.path.join(self.output_dir, "avain.log"))
@@ -166,18 +171,20 @@ class Controller():
         """
 
         scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.config, self.ports, self.output_dir,
-                            self.online_only, self.verbose, self.logfile, self.scan_results)
+                            self.online_only, self.verbose, self.logfile, self.scan_results, self.analysis_only)
         hosts = scanner.conduct_scans()
 
-        analyzer = Analyzer(hosts, self.config, self.output_dir, self.online_only, self.verbose, self.logfile) 
-        scores = analyzer.conduct_analyses()
+        if not self.scan_only:
+            analyzer = Analyzer(hosts, self.config, self.output_dir, self.online_only, self.verbose, self.logfile) 
+            scores = analyzer.conduct_analyses()
+            outfile = os.path.join(self.output_dir, "results.txt")
+            visualizer.visualize_dict_results(scores, outfile)
+            self.logger.info("The main output file is called '%s'" % outfile)
 
-        outfile = os.path.join(self.output_dir, "results.txt")
-        visualizer.visualize_dict_results(scores, outfile)
         self.logger.info("All created files have been written to '%s'" % self.output_dir)
-        self.logger.info("The main output file is called '%s'" % outfile)
         print("All created files have been written to: %s" % self.output_dir)
-        print("The main output file is called: %s" % outfile)
+        if not self.scan_only:
+            print("The main output file is called: %s" % outfile)
 
     def print_arguments(self):
         print("Network: %s" % self.networks)
