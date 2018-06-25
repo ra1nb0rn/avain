@@ -532,16 +532,36 @@ def discard_unuseful_info(parsed_host):
     add_potential_oses_from_service("os_si")
     add_potential_oses_from_service("os_smb_discv")
 
+    # Put vendor name in front of name if not existent
+    for pot_os in potential_oses:
+        if "cpes" in pot_os:
+            cpes = pot_os["cpes"]
+            vendor = ""
+            if len(cpes) == 1:
+                cpe_vend = cpes[0][7:]
+                vendor = cpe_vend[:cpe_vend.find(":")]
+            elif len(cpes) > 1:
+                pass  # TODO: implement
+
+            if vendor and not pot_os["name"].lower().startswith(vendor):
+                pot_os["name"] = vendor[0].upper() + vendor[1:] + " " + pot_os["name"]
+
     DETECTED_OSES[parsed_host["ip"]["addr"]] = potential_oses
 
     # compute similarities of potential OSes to matching string
     is_os, highest_sim, = None, -1
     for pot_os in potential_oses:
-        sim = util.compute_cosine_similarity(matching_string, pot_os["name"].lower())
-        if pot_os.get("cpes", []):
-            highest_cpe_sim = max(util.compute_cosine_similarity(matching_string, cpe.lower()) for cpe in pot_os["cpes"])
-            sim = (sim + highest_cpe_sim) / 2
+        split_os_names, cur_name, sim_sum = [], "", -1
+        for word in pot_os["name"].split(" "):
+            cur_name += word.lower()
+            cur_sim = util.compute_cosine_similarity(matching_string, cur_name)
+            sim_sum += cur_sim
+            cur_name += " "
+        sim = sim_sum / len(pot_os["name"].split(" "))
 
+        if pot_os.get("cpes", []):
+            avg_cpe_sim = sum(util.compute_cosine_similarity(matching_string, cpe[7:].lower()) for cpe in pot_os["cpes"]) / len(pot_os["cpes"])
+            sim = (sim + avg_cpe_sim) / 2
         sim *= float(pot_os["accuracy"])/100
 
         # print("%s --> %f with %s%%" % (pot_os["name"], sim, pot_os["accuracy"]))
