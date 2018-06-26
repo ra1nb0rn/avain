@@ -157,12 +157,16 @@ class Scanner():
 
         if self.add_scan_results:
             self.logger.info("Including additional scan results: %s" % ", ".join(self.add_scan_results))
+            add_results_dir = os.path.join(os.path.join(self.output_dir, SCAN_OUT_DIR), "add_scan_results")
+            os.makedirs(add_results_dir)
             for filepath in self.add_scan_results:
                 scan_result = None
                 if not os.path.isfile(filepath):
                     self.logger.warning("Specified scan result '%s' is not a file" % filepath)
                 try:
-                    with open(filepath) as f:
+                    copy_filepath = os.path.join(add_results_dir, os.path.basename(filepath))
+                    shutil.copyfile(filepath, copy_filepath)
+                    with open(copy_filepath) as f:
                         scan_result = json.load(f)
                 except IOError:
                     self.logger.warning("Specified scan result '%s' cannot be opened" % filepath)
