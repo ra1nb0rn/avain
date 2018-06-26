@@ -29,7 +29,7 @@ def conduct_analysis(results: list):
     """
 
     # setup logger
-    global logger
+    global logger, created_files
     logger = util.get_logger(__name__, LOGFILE)
     logger.info("Starting with Mirai SSH susceptibility analysis")
     wrote_target = False
@@ -40,16 +40,16 @@ def conduct_analysis(results: list):
         for ip, host in HOSTS.items():
             for portid, portinfo in host["tcp"].items():
                 if portid == "22":
-                    f.write("%s:%s" % (ip, portid))
+                    f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
                 elif "name" in portinfo and "ssh" in portinfo["name"].lower():
-                    f.write("%s:%s" % (ip, portid))
+                    f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
                 elif "product" in portinfo and "ssh" in portinfo["product"].lower():
-                    f.write("%s:%s" % (ip, portid))
+                    f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
 
-    hydra_call = ["hydra", "-C", WORDLIST_PATH, "-M", HYDRA_TARGETS_FILE, "-b", "json", "-o", HYDRA_JSON_OUTPUT, "ssh"]
+    hydra_call = ["hydra", "-C", WORDLIST_PATH, "-I", "-M", HYDRA_TARGETS_FILE, "-b", "json", "-o", HYDRA_JSON_OUTPUT, "ssh"]
 
     if wrote_target:
         # execute hydra command if at least one target exists
@@ -61,12 +61,12 @@ def conduct_analysis(results: list):
 
         # parse and process Hydra output
         logger.info("Processing Hydra Output")
+        created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
         if os.path.isfile(HYDRA_JSON_OUTPUT):
             result = process_hydra_output()
         else:
             result = {}
         logger.info("Done")
-        created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
     else:
         # remove created but empty targets file
         os.remove(HYDRA_TARGETS_FILE)
@@ -99,6 +99,8 @@ def process_hydra_output():
     :return: all vulnerable hosts as dict with their score as value
     """
 
+    global created_files
+
     def process_hydra_result(hydra_result):
         nonlocal vuln_hosts
         for entry in hydra_result["results"]:
@@ -110,10 +112,24 @@ def process_hydra_output():
         try:
             hydra_results = json.load(f)
         except json.decoder.JSONDecodeError:
-            # Hydra seems to output a malformed JSON file if only one host is scanned
-            # and it refuses connection. In that case it should be fine to return no results.
+            # Hydra seems to sometimes output a malformed JSON file.
             logger.warning("Got JSONDecodeError when parsing %s" % HYDRA_JSON_OUTPUT)
-            return {}
+            logger.info("Trying to parse again by replacing ', ,' with ','")
+
+            replaced_file_name = os.path.splitext(HYDRA_JSON_OUTPUT)[0] + "_replaced.json"
+
+            with open(replaced_file_name, "w") as fr:
+                text = f.read()
+                text = text.replace(", ,", ", ")
+                fr.write(text)
+                created_files.append(replaced_file_name)
+
+            with open(replaced_file_name, "r") as fr:
+                try:
+                    hydra_results = json.load(fr)
+                except json.decoder.JSONDecodeError:
+                    logger.warning("Got JSONDecodeError when parsing %s" % HYDRA_JSON_OUTPUT)
+                return {}
 
     if isinstance(hydra_results, list):
         for hydra_result in hydra_results:
