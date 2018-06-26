@@ -47,6 +47,7 @@ class Controller():
             self.output_dir = output_dir
         else:
             self.output_dir = "avain_output-" + util.get_current_timestamp()
+        self.orig_out_dir = self.output_dir
         self.output_dir = os.path.abspath(self.output_dir)
         os.makedirs(self.output_dir, exist_ok=True)
 
@@ -195,6 +196,7 @@ class Controller():
             self.logger.info("The main output file is called '%s'" % outfile)
 
         self.logger.info("All created files have been written to '%s'" % self.output_dir)
-        print("All created files have been written to: %s" % self.output_dir)
+        print("All created files have been written to: %s" % self.orig_out_dir)
         if not self.scan_only:
+            outfile = os.path.join(self.orig_out_dir, "results.txt")
             print("The main output file is called: %s" % outfile)
