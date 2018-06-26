@@ -157,7 +157,7 @@ class Scanner():
 
         if self.add_scan_results:
             self.logger.info("Including additional scan results: %s" % ", ".join(self.add_scan_results))
-            add_results_dir = os.path.join(os.path.join(self.output_dir, SCAN_OUT_DIR), "add_scan_results")
+            add_results_dir = os.path.join(self.scan_result_out_dir, "add_scan_results")
             os.makedirs(add_results_dir)
             for filepath in self.add_scan_results:
                 scan_result = None
@@ -191,6 +191,9 @@ class Scanner():
         self.include_additional_scan_results()
         self.logger.info("Aggregating results")
         self.result = self.construct_result()
+        result_file = os.path.join(self.scan_result_out_dir, "results.json")
+        with open(result_file, "w") as f:
+            f.write(json.dumps(self.result, ensure_ascii=False, indent=3))
         self.logger.info("Done")
         self.logger.info("Network scans completed")
         # util.show_cursor()  # show cursor again
