@@ -41,13 +41,22 @@ class Controller():
         self.networks = networks
         self.add_networks = add_networks
         self.omit_networks = omit_networks
+
+        # determine output directory
         if output_dir:
             self.output_dir = output_dir
         else:
             self.output_dir = "avain_output-" + util.get_current_timestamp()
-            # self.output_dir = "avain_output"  # for debugging purposes
+        self.output_dir = os.path.abspath(self.output_dir)
         os.makedirs(self.output_dir, exist_ok=True)
 
+        # change into AVAIN directory
+        self.original_cwd = os.getcwd()
+        core_dir = os.path.dirname(os.path.join(os.path.realpath(__file__)))
+        avain_dir = os.path.abspath(os.path.join(core_dir, os.pardir))
+        os.chdir(avain_dir)
+
+        # parse configs
         if os.path.isfile(DEFAULT_CONFIG_PATH):
             try:
                 self.config = util.parse_config(DEFAULT_CONFIG_PATH)
@@ -62,6 +71,7 @@ class Controller():
             except:
                 print(util.MAGENTA + "Warning: Could not parse custom config file. Proceeding without custom config.\n" + util.SANE, file=sys.stderr)
 
+        # set variables
         self.online_only = online_only
         self.scan_results = scan_results
         self.analysis_results = analysis_results
@@ -95,6 +105,9 @@ class Controller():
 
         if self.networks or self.add_networks:
             self.do_analysis()
+
+        # change back to original directory
+        os.chdir(self.original_cwd)
 
     def start_database_updates(self):
         """
@@ -185,13 +198,3 @@ class Controller():
         print("All created files have been written to: %s" % self.output_dir)
         if not self.scan_only:
             print("The main output file is called: %s" % outfile)
-
-    def print_arguments(self):
-        print("Network: %s" % self.networks)
-        print("Additional networks: {}".format(self.add_networks))
-        print("Omitted networks: {}".format(self.omit_networks))
-        print("Output: %s" % self.output)
-        print("Additional scan results: {}".format(self.scan_results))
-        print("Additional analysis results: {}".format(self.analysis_results))
-        print("Time: %r" % self.time)
-        print("Verbose: %r" % self.verbose)
