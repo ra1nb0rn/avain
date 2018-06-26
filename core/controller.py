@@ -104,7 +104,7 @@ class Controller():
         if self.update_databases:
             self.start_database_updates()
 
-        if self.networks or self.add_networks:
+        if self.networks or self.add_networks or self.analysis_only:
             self.do_analysis()
 
         # change back to original directory
