@@ -2,7 +2,7 @@
 
 install_brew_packages() {
     # Use brew to install macOS software packages
-    BREW_PACKAGES="python wget nmap sqlite3 cmake"  # gcc should be available by default
+    BREW_PACKAGES="python wget nmap sqlite3 cmake coreutils"  # gcc should be available by default
 
     which brew &> /dev/null
     if [ $? != 0 ]; then
@@ -47,6 +47,10 @@ install_apt_packages() {
     fi
     echo "Done."
 }
+
+# cd into AVAIN directory
+PREV_CWD=$(pwd)
+cd "$(dirname "${BASH_SOURCE[0]}")"
 
 echo "Installing software packages ..."
 KERNEL=$(uname)
@@ -115,5 +119,29 @@ find ./modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
     cd "${CWD}"
 done
 echo "Done"
+
+# Install AVAIN script and link it
+echo "Creating avain executable ..."
+if [ "${KERNEL}" == "Darwin" ]; then
+    CORE_DIR=$(dirname "$(greadlink -f core/cli.py)")
+else
+    CORE_DIR=$(dirname "$(readlink -f core/cli.py)")
+fi
+
+cat << EOF > avain
+#!/bin/sh
+CORE_DIR="${CORE_DIR}"
+exec "\${CORE_DIR}/cli.py" "\$@"
+EOF
+
+chmod +x avain
+AVAIN_DIR=$(pwd -P)
+ln -sf "${AVAIN_DIR}/avain" /usr/local/bin/avain
+
+echo "Done"
+echo ""
+
+# cd into original directory
+cd "${PREV_CWD}"
 
 echo "That's it. Installation finished."
