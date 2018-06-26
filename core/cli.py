@@ -41,9 +41,9 @@ class Cli():
                                                                                       "Multiple files or folders can be specified.")
         optional_args.add_argument("-o", "--output", help="Specify the output file name. If name collisions occur, the output files are prefixed "
                                                           "with the specified output file name.")
-        optional_args.add_argument("-oo", "--online-only", action="store_true", help="Only look up information online (where applicable)")
-        optional_args.add_argument("-so", "--scan-only", action="store_true", help="Only do a network scan")
-        optional_args.add_argument("-ao", "--analysis-only", action="store_true", help="Only do an anaylsis with the provided scan results")
+        optional_args.add_argument("-oO", "--online-only", action="store_true", help="Only look up information online (where applicable)")
+        optional_args.add_argument("-sO", "--scan-only", action="store_true", help="Only do a network scan")
+        optional_args.add_argument("-aO", "--analysis-only", action="store_true", help="Only do an anaylsis with the provided scan results")
         optional_args.add_argument("-p", "--ports", help="Specifies which ports to scan on every host.")
         optional_args.add_argument("-sR", "--scan-results", nargs="+", help="Addtional scan results to include into the scanning result. "
                                                                             "Multiple files or folders can be specified.")
