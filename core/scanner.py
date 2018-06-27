@@ -166,7 +166,16 @@ class Scanner():
                 if not os.path.isfile(filepath):
                     self.logger.warning("Specified scan result '%s' is not a file" % filepath)
                 try:
+                    copy_name = os.path.basename(filepath)
                     copy_filepath = os.path.join(add_results_dir, os.path.basename(filepath))
+                    i = 1
+                    while os.path.isfile(copy_filepath):
+                        alt_name, ext = os.path.splitext(os.path.basename(copy_filepath))
+                        if not alt_name.endswith("_%d" % i):
+                            if alt_name.endswith("_%d" % (i-1)):
+                                alt_name = alt_name[:alt_name.rfind("_%d" % (i-1))]
+                            copy_filepath = os.path.join(add_results_dir, alt_name + "_%d" % i + ext)
+                        i += 1
                     shutil.copyfile(filepath, copy_filepath)
                     with open(copy_filepath) as f:
                         scan_result = json.load(f)
