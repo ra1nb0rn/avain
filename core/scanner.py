@@ -103,7 +103,7 @@ class Scanner():
 
             # create output directory for this module's scan results
             module_dir_no_prefix = scanner_module.replace("modules.scanner.", "", 1)
-            module_output_dir = os.path.join(self.scan_result_out_dir, ".".join(module_dir_no_prefix.split(".")[:-1]))
+            module_output_dir = os.path.join(self.scan_result_out_dir, os.sep.join(module_dir_no_prefix.split(".")[:-1]))
             os.makedirs(module_output_dir, exist_ok=True)
 
             # process this module's scan results

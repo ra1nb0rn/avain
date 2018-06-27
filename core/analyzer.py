@@ -101,7 +101,7 @@ class Analyzer():
 
             # create output directory for this module's analysis results
             module_dir_no_prefix = analysis_module.replace("modules.analyzer.", "", 1)
-            module_output_dir = os.path.join(analysis_result_out_dir, ".".join(module_dir_no_prefix.split(".")[:-1]))
+            module_output_dir = os.path.join(analysis_result_out_dir, os.sep.join(module_dir_no_prefix.split(".")[:-1]))
             os.makedirs(module_output_dir, exist_ok=True)
 
             # process this module's analysis results
