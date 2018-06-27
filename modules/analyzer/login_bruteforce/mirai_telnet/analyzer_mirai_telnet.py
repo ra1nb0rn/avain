@@ -8,6 +8,7 @@ from .... import utility as util
 HYDRA_TEXT_OUTPUT = "hydra_output.txt"
 HYDRA_JSON_OUTPUT = "hydra_output.json"
 HYDRA_TARGETS_FILE = "targets.txt"
+TIMEOUT_FILE = "timeout.txt"
 
 # Module parameters
 HOSTS = {}  # a string representing the network to analyze
@@ -16,6 +17,7 @@ LOGFILE = ""
 
 # Module variables
 WORDLIST_PATH = "..{0}wordlists{0}mirai_user_pass.txt".format(os.sep)
+HYDRA_TIMEOUT = 300  # in seconds
 logger = None
 
 ### Calculation in CVSS v3 for default credential vulnerability resulted in:
@@ -55,13 +57,22 @@ def conduct_analysis(results: list):
         # execute hydra command if at least one target exists
         logger.info("Beginning Hydra Brute Force with command: %s" % " ".join(hydra_call))
         redr_file = open(HYDRA_TEXT_OUTPUT, "w")
-        subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
+        created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
+        try:
+            subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT, timeout=HYDRA_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            with open(TIMEOUT_FILE, "w") as f:
+                f.write("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful." % HYDRA_TIMEOUT)
+            logger.warning("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful.")
+            created_files.append(TIMEOUT_FILE)
+            results.append(({}, created_files))
+            return
+
         redr_file.close()
         logger.info("Done")
 
         # parse and process Hydra output
         logger.info("Processing Hydra Output")
-        created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
         if os.path.isfile(HYDRA_JSON_OUTPUT):
             result = process_hydra_output()
         else:
@@ -90,6 +101,7 @@ def cleanup():
     remove_file(HYDRA_TEXT_OUTPUT)
     remove_file(HYDRA_JSON_OUTPUT)
     remove_file(HYDRA_TARGETS_FILE)
+    remove_file(TIMEOUT_FILE)
 
 
 def process_hydra_output():
