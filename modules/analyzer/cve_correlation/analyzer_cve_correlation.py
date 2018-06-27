@@ -29,6 +29,7 @@ CPE_DICT_FILEPATH = "..{0}..{0}..{0}resources{0}official-cpe-dictionary_v2.2.xml
 CPE_DICT_ET_CPE_ITEMS = None
 NUM_CVES_PER_CPE_MAX = 25
 VULNERS_MAX_VULNS = 1000
+MAX_LOG_CPES = 30
 
 logger = None
 
@@ -376,7 +377,7 @@ def get_more_specific_cpe_cves(cpe: str, cve_gathering_function, max_vulnerabili
         cve_results = {}
         if related_cpes:
             num_cves_per_cpe = (max_vulnerabilities // len(related_cpes)) + 1
-            logger.info("Found the following more specific CPEs: %s" % ",".join(related_cpes))
+            logger.info("Found the following more specific CPEs: %s" % ",".join(related_cpes[:MAX_LOG_CPES]))
             for cpe in related_cpes:
                 cves, _ = cve_gathering_function(cpe, num_cves_per_cpe)
                 for cur_cpe, cves in cves.items():
