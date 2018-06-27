@@ -23,6 +23,7 @@ HOSTS = {}  # a string representing the network to analyze
 ONLINE_ONLY = False
 VERBOSE = False  # specifying whether to provide verbose output or not
 LOGFILE = ""
+CONFIG = {}
 
 CPE_DICT_FILEPATH = "..{0}..{0}..{0}resources{0}official-cpe-dictionary_v2.2.xml".format(os.sep)
 CPE_DICT_ET_CPE_ITEMS = None
@@ -243,6 +244,7 @@ def create_cve_summary(hosts, scores):
         f.write(json.dumps(summary, ensure_ascii=False, indent=3))
 
 def check_database():
+    # TODO: implement
     pass
 
 def calculate_final_scores(hosts: dict):
