@@ -61,6 +61,7 @@ class Analyzer():
             # get analyzer module name
             analysis_module = analysis_module_path.replace(os.sep, ".")
             analysis_module = analysis_module.replace(".py", "")
+            module_no_prefix = analysis_module.replace("modules.analyzer.", "", 1)
 
             # import the respective python module
             module = importlib.import_module(analysis_module)
@@ -74,7 +75,7 @@ class Analyzer():
             self.set_module_parameters(module)
 
             # conduct the module's analyis
-            self.logger.info("Starting analysis %d of %d" % (i+1, len(self.analysis_modules)))
+            self.logger.info("Starting analysis %d of %d - %s" % (i+1, len(self.analysis_modules), module_no_prefix))
             analysis_result = []
             analysis_thread = threading.Thread(target=module.conduct_analysis, args=(analysis_result,))
 
@@ -83,8 +84,10 @@ class Analyzer():
             show_progress_state = 0
             while analysis_thread.is_alive():
                 analysis_thread.join(timeout=ANALYZER_JOIN_TIMEOUT)
-                print(util.GREEN + "Conducting analysis %d of %d  " % (i+1, len(self.analysis_modules)), end="")
+                print(util.GREEN + "Conducting analysis %d of %d - " % (i+1, len(self.analysis_modules)), end="")
+                print(util.SANE + module_no_prefix + "  ", end="")
                 print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
+
                 util.clear_previous_line()
                 if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
                     show_progress_state = 0
@@ -100,8 +103,7 @@ class Analyzer():
             os.chdir(main_cwd)
 
             # create output directory for this module's analysis results
-            module_dir_no_prefix = analysis_module.replace("modules.analyzer.", "", 1)
-            module_output_dir = os.path.join(analysis_result_out_dir, os.sep.join(module_dir_no_prefix.split(".")[:-1]))
+            module_output_dir = os.path.join(analysis_result_out_dir, os.sep.join(module_no_prefix.split(".")[:-1]))
             os.makedirs(module_output_dir, exist_ok=True)
 
             # process this module's analysis results

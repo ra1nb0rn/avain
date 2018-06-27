@@ -63,6 +63,7 @@ class Scanner():
             # get scanner module name
             scanner_module = scanner_module_path.replace(os.sep, ".")
             scanner_module = scanner_module.replace(".py", "")
+            module_no_prefix = scanner_module.replace("modules.scanner.", "", 1)
 
             # import the respective python module
             module = importlib.import_module(scanner_module)
@@ -76,7 +77,7 @@ class Scanner():
             self.set_module_parameters(module)
 
             # conduct the module's scan
-            self.logger.info("Starting scan %d of %d" % (i+1, len(self.scanner_modules)))
+            self.logger.info("Starting scan %d of %d - %s " % (i+1, len(self.scanner_modules), module_no_prefix))
             scan_info = []
             scan_thread = threading.Thread(target=module.conduct_scan, args=(scan_info,))
 
@@ -85,8 +86,10 @@ class Scanner():
             show_progress_state = 0
             while scan_thread.is_alive():
                 scan_thread.join(timeout=SCANNER_JOIN_TIMEOUT)
-                print(util.GREEN + "Conducting scan %d of %d  " % (i+1, len(self.scanner_modules)), end="")
+                print(util.GREEN + "Conducting scan %d of %d - " % (i+1, len(self.scanner_modules)), end="")
+                print(util.SANE + module_no_prefix + "  ", end="")
                 print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
+
                 util.clear_previous_line()
                 if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
                     show_progress_state = 0
@@ -102,8 +105,7 @@ class Scanner():
             os.chdir(main_cwd)
 
             # create output directory for this module's scan results
-            module_dir_no_prefix = scanner_module.replace("modules.scanner.", "", 1)
-            module_output_dir = os.path.join(self.scan_result_out_dir, os.sep.join(module_dir_no_prefix.split(".")[:-1]))
+            module_output_dir = os.path.join(self.scan_result_out_dir, os.sep.join(module_no_prefix.split(".")[:-1]))
             os.makedirs(module_output_dir, exist_ok=True)
 
             # process this module's scan results
