@@ -50,6 +50,8 @@ class Controller():
         self.orig_out_dir = self.output_dir
         self.output_dir = os.path.abspath(self.output_dir)
         os.makedirs(self.output_dir, exist_ok=True)
+        self.scan_results = [os.path.abspath(scan_result) for scan_result in scan_results] if scan_results else None
+        self.analysis_results = [os.path.abspath(analysis_result) for analysis_result in analysis_results] if analysis_results else None
 
         # change into AVAIN directory
         self.original_cwd = os.getcwd()
@@ -74,8 +76,6 @@ class Controller():
 
         # set variables
         self.online_only = online_only
-        self.scan_results = scan_results
-        self.analysis_results = analysis_results
         self.time = time
         self.verbose = verbose
         self.hosts = set()
