@@ -612,7 +612,7 @@ def add_additional_cve_info(cve: dict):
         for i, strong_tag in enumerate(strong_tags):
             span_tag = span_tags[i]
             for br in span_tag.find_all("br"):
-                br.replace_with("\n")
+                br.replace_with("")
             attr = strong_tag.text.strip()[:-1]  # ignore last text character (a colon)
             value = span_tag.text.strip()
             cve["vector_detail"][attr] = value  # replace possible HTML <br> tags with newline character
