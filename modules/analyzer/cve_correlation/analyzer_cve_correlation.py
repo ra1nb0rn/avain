@@ -227,7 +227,7 @@ def create_cve_summary(hosts, scores):
         if "ip" in host:
             host_summary["ip"] = host["ip"]
         if "mac" in host:
-            host_summary["ip"] = host["ip"]
+            host_summary["mac"] = host["mac"]
 
         process_port("tcp")
         process_port("udp")
