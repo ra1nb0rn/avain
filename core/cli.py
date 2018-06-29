@@ -35,6 +35,7 @@ class Cli():
                                                            "or wildcard, the host at the given IP is scanned.")
         required_args.add_argument("-nL", "--network-list", help="A list that specifies networks/hosts to add to or omit from the scan.")
         required_args.add_argument("-uD", "--update-databases", action="store_true", help="Make all databases update.")
+        required_args.add_argument("-aO", "--analysis-only", action="store_true", help="Only do an anaylsis with the provided scan results")
 
         optional_args.add_argument("-c", "--config", help="Specify a different config file to use.")
         optional_args.add_argument("-aR", "--analysis-results", nargs="+", help="Addtional analysis results to include into the analysis result. "
@@ -43,7 +44,6 @@ class Cli():
                                                           "with the specified output file name.")
         optional_args.add_argument("-oO", "--online-only", action="store_true", help="Only look up information online (where applicable)")
         optional_args.add_argument("-sO", "--scan-only", action="store_true", help="Only do a network scan")
-        optional_args.add_argument("-aO", "--analysis-only", action="store_true", help="Only do an anaylsis with the provided scan results")
         optional_args.add_argument("-p", "--ports", help="Specifies which ports to scan on every host.")
         optional_args.add_argument("-sR", "--scan-results", nargs="+", help="Addtional scan results to include into the scanning result. "
                                                                             "Multiple files or folders can be specified.")
