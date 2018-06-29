@@ -48,7 +48,7 @@ def conduct_analysis(results: list):
 
     :return: a tuple contaiging the analyis results/scores and a list of created files by writing it into the result list.
     """
-    
+
     def process_port_cves(protocol):
         nonlocal hosts
 
@@ -414,7 +414,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     general_cve_cpe_data = db_cursor.execute("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end," +
                                         "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % (general_cpe)).fetchall()
 
-    if cpe_version:
+    if cpe_version and len(found_cves) > 0:
         broad_search = False
         if cpe_version == "-":  # '-' stands for all versions
             all_version_cves = db_cursor.execute("SELECT cve_id, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s:%%\"" % (general_cpe)).fetchall()
@@ -488,10 +488,16 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
         cve_results[cpe] = found_cves_dict
     else:
-        logger.info("Finding CVEs for CPE '%s' resulted in missing CPE version" % cpe)
+        if cpe_version:
+            logger.info("Finding CVEs for CPE '%s' resulted in too broad CPE version" % cpe)
+            cpe_to_search = cpe
+        else:
+            logger.info("Finding CVEs for CPE '%s' resulted in missing CPE version" % cpe)
+            cpe_to_search = general_cpe
+
         broad_search = True
-        more_specifc_cves = get_more_specific_cpe_cves(general_cpe, get_cves_to_cpe, max_vulnerabilities)
-        logger.info("Retrieved CVEs for all more specific CPEs to '%s'" % cpe)
+        more_specifc_cves = get_more_specific_cpe_cves(cpe_to_search, get_cves_to_cpe, max_vulnerabilities)
+        logger.info("Retrieved CVEs for all more specific CPEs to '%s'" % cpe_to_search)
         for cpe, cves in more_specifc_cves.items():
             cve_results[cpe] = cves
 
