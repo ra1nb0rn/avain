@@ -63,7 +63,7 @@ def conduct_analysis(results: list):
         except subprocess.TimeoutExpired:
             with open(TIMEOUT_FILE, "w") as f:
                 f.write("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful." % HYDRA_TIMEOUT)
-            logger.warning("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful.")
+            logger.warning("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful." % HYDRA_TIMEOUT)
             created_files.append(TIMEOUT_FILE)
             results.append(({}, created_files))
             return
