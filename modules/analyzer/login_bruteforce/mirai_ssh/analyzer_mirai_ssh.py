@@ -42,10 +42,10 @@ def conduct_analysis(results: list):
                 if portid == "22":
                     f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
-                elif "name" in portinfo and "ssh" in portinfo["name"].lower():
+                elif "service" in portinfo and "ssh" in portinfo["service"].lower():
                     f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
-                elif "product" in portinfo and "ssh" in portinfo["product"].lower():
+                elif "name" in portinfo and "ssh" in portinfo["name"].lower():
                     f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
 

@@ -111,7 +111,41 @@ def conduct_scan(results: list):
         f.write(json.dumps(DETECTED_OSES, ensure_ascii=False, indent=3))
     logger.info("Done")
 
+    adjust_port_info_keys(result[0])
     results.append(result)
+
+def adjust_port_info_keys(result: dict):
+    """
+    Deletes the name, version and product keys of the port dicts of the result and instead adds
+    a name describing the running software and a service key naming the offered service.
+
+    :param result: the result to change the keys in
+    """
+
+    def adjust_port(protocol):
+        nonlocal host
+
+        for portid, port in host[protocol].items():
+            product, name, version = port.get("product", ""), port.get("name", ""), port.get("version", "")
+
+            keys = {"product", "name", "version"}
+            for k in keys:
+                if k in port:
+                    del port[k]
+
+            new_name = product
+            if version:
+                new_name += " " + version
+
+            port["name"] = new_name
+            port["service"] = name
+
+    for ip, host in result.items():
+        if "tcp" in host:
+            adjust_port("tcp")
+        if "udp" in host:
+            adjust_port("udp")
+
 
 def cleanup():
     """
