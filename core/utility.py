@@ -1,5 +1,8 @@
+from collections import Counter
 import ipaddress
 import logging
+import math
+import re
 import sys
 import datetime
 
@@ -21,7 +24,14 @@ MAGENTA = "\u001b[35m"
 CURSOR_PREV_LINE = "\033[F"
 CLEAR_UNTIL_EOL = "\033[K"
 
+
 def parse_wildcard_ipv4(network: str):
+    """
+    Parse an IPv4 wildcard expression (with range, prefix or '*')
+
+    :return: a list of all contained hosts within the IP expression
+    """
+
     def get_all_hosts(splits):
         if splits:
             if len(splits) == 1:
@@ -92,6 +102,7 @@ def parse_wildcard_ipv4(network: str):
 
         return all_hosts
 
+
 def is_cidr_ipv4(network: str):
     try:
         ipaddress.ip_network(network)
@@ -99,11 +110,13 @@ def is_cidr_ipv4(network: str):
     except ValueError:
         return False
 
+
 def parse_cidr_ipv4(network: str):
     if "/" in network:
         return list(str(ip) for ip in ipaddress.ip_network(network).hosts())
     else:
         return network
+
 
 def is_valid_net_addr(network):
     if not is_cidr_ipv4(network):
@@ -111,14 +124,17 @@ def is_valid_net_addr(network):
             return False
     return True
 
+
 def extend_network_to_hosts(network):
     if "*" in network or "-" in network:
         return parse_wildcard_ipv4(network)
     else:
         return parse_cidr_ipv4(network)
 
+
 def ip_str_to_number(ip):
     return int.from_bytes([int(ip) for ip in ip.split(".")], "big")
+
 
 def print_exception_and_continue(e):
     print("Original exception is: ", file=sys.stderr)
@@ -126,8 +142,10 @@ def print_exception_and_continue(e):
     print("===========================================================", file=sys.stderr)
     print("Continuing with scan ...", file=sys.stderr)
 
+
 def get_current_timestamp():
     return datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
 
 def get_logger(module_name: str, logfile: str):
     """
@@ -154,6 +172,7 @@ def get_logger(module_name: str, logfile: str):
 
     return logger
 
+
 def clear_previous_line():
     print(CURSOR_PREV_LINE, end="")
     print(CLEAR_UNTIL_EOL, end="")
@@ -161,6 +180,7 @@ def clear_previous_line():
 
 def hide_cursor():
     print("\033[?25l", end="")
+
 
 def show_cursor():
     print("\033[?25h", end="")
@@ -199,6 +219,7 @@ def parse_config(filepath: str):
 
     return config
 
+
 def upgrade_config(new_config_path: str, config: dict):
     def remove_quotes(text: str):
         text = text.replace("\"", "")
@@ -232,3 +253,36 @@ def upgrade_config(new_config_path: str, config: dict):
                 config[cur_module][k] = v
 
     return config
+
+
+def compute_cosine_similarity(text_1: str, text_2: str):
+    """
+    Compute the cosine similarity of two text strings.
+    :param text_1: the first text
+    :param text_2: the second text
+    :return: the cosine similarity of the two text strings
+    """
+
+    def text_to_vector(text: str):
+        """
+        Get the vector representation of a text. It stores the word frequency
+        of every word contained in the given text.
+        :return: a Counter object that stores the word frequencies in a dict with the respective word as key
+        """
+        word = re.compile(r'\w+')
+        words = word.findall(text)
+        return Counter(words)
+
+    text_vector_1, text_vector_2 = text_to_vector(text_1), text_to_vector(text_2)
+
+    intersecting_words = set(text_vector_1.keys()) & set(text_vector_2.keys())
+    inner_product = sum([text_vector_1[w] * text_vector_2[w] for w in intersecting_words])
+
+    abs_1 = math.sqrt(sum([cnt**2 for cnt in text_vector_1.values()]))
+    abs_2 = math.sqrt(sum([cnt**2 for cnt in text_vector_2.values()]))
+    normalization_factor = abs_1 * abs_2
+
+    if not normalization_factor:  # avoid divison by 0
+        return 0.0
+    else:
+        return float(inner_product)/float(normalization_factor)
