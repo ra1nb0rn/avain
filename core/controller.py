@@ -70,7 +70,7 @@ class Controller():
 
         if config_path:
             try:
-                util.upgrade_config(config_path, self.config)
+                self.config = util.parse_config(config_path, self.config)
             except:
                 print(util.MAGENTA + "Warning: Could not parse custom config file. Proceeding without custom config.\n" + util.SANE, file=sys.stderr)
 
@@ -100,11 +100,10 @@ class Controller():
         """
         Execute the main program depending on the given program parameters.
         """
-
         if self.update_databases:
             self.start_database_updates()
 
-        if self.networks or self.add_networks or self.analysis_only:
+        if self.networks or self.add_networks or self.scan_only or self.analysis_only:
             self.do_analysis()
 
         # change back to original directory

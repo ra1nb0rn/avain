@@ -1,4 +1,5 @@
 from collections import Counter
+import copy
 import ipaddress
 import logging
 import math
@@ -186,16 +187,17 @@ def show_cursor():
     print("\033[?25h", end="")
 
 
-def parse_config(filepath: str):
+def parse_config(filepath: str, base_config:dict = {}):
     def remove_quotes(text: str):
         text = text.replace("\"", "")
         text = text.replace("'", "")
         return text
 
-    config = {}
+    config = copy.deepcopy(base_config)
     with open(filepath) as f:
         cur_module = "core"  # default to core
-        config[cur_module] = {}
+        if cur_module not in config:
+            config[cur_module] = {}
 
         comment_started = False
         for line in f.readlines():
@@ -219,55 +221,7 @@ def parse_config(filepath: str):
             # start of module specification
             if line.startswith("["):
                 cur_module = line[1:line.find("]")]
-                config[cur_module] = {}
-            else:
-                k, v = line.split("=")
-                k = k.strip()
-                v = v.strip()
-                k = remove_quotes(k)
-                v = remove_quotes(v)
-                config[cur_module][k] = v
-
-    return config
-
-
-def upgrade_config(new_config_path: str, config: dict):
-    def remove_quotes(text: str):
-        text = text.replace("\"", "")
-        text = text.replace("'", "")
-        return text
-
-
-    with open(new_config_path) as f:
-        cur_module = "core"  # default to core
-        if not cur_module in config:
-            config[cur_module] = {}
-
-        comment_started = False
-        for line in f.readlines():
-            line = line.strip()
-
-            if comment_started:
-                if "*/" in line:
-                    comment_started = False
-                    line = line[line.find("/*")+2:]
-                else:
-                    continue
-
-            if "/*" in line:
-                comment_started = True
-                line = line[:line.find("/*")]
-
-            comment_start = line.find("//")
-            if comment_start != -1:
-                line = line[:comment_start]
-            if line == "":
-                continue
-
-            # start of module specification
-            if line.startswith("["):
-                cur_module = line[1:line.find("]")]
-                if not cur_module in config:
+                if cur_module not in config:
                     config[cur_module] = {}
             else:
                 k, v = line.split("=")
