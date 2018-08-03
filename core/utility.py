@@ -197,8 +197,19 @@ def parse_config(filepath: str):
         cur_module = "core"  # default to core
         config[cur_module] = {}
 
+        comment_started = False
         for line in f.readlines():
             line = line.strip()
+            if comment_started:
+                if "*/" in line:
+                    comment_started = False
+                    line = line[line.find("*/")+2:]
+                else:
+                    continue
+            if "/*" in line:
+                comment_started = True
+                line = line[:line.find("/*")]
+
             comment_start = line.find("//")
             if comment_start != -1:
                 line = line[:comment_start]
@@ -226,13 +237,27 @@ def upgrade_config(new_config_path: str, config: dict):
         text = text.replace("'", "")
         return text
 
+
     with open(new_config_path) as f:
         cur_module = "core"  # default to core
         if not cur_module in config:
             config[cur_module] = {}
 
+        comment_started = False
         for line in f.readlines():
             line = line.strip()
+
+            if comment_started:
+                if "*/" in line:
+                    comment_started = False
+                    line = line[line.find("/*")+2:]
+                else:
+                    continue
+
+            if "/*" in line:
+                comment_started = True
+                line = line[:line.find("/*")]
+
             comment_start = line.find("//")
             if comment_start != -1:
                 line = line[:comment_start]
