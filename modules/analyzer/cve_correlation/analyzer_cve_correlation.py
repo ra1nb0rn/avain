@@ -50,7 +50,7 @@ def conduct_analysis(results: list):
     """
 
     def process_port_cves(protocol):
-        nonlocal hosts
+        nonlocal host, ip
 
         for portid, portinfo in host[protocol].items():
             if "cpes" in portinfo:
@@ -71,7 +71,7 @@ def conduct_analysis(results: list):
                         if cur_cpe not in portinfo["cpes"]:
                             portinfo["cpes"][cur_cpe] = cves
                         else:
-                            logger.warning("CPE '%s' already stored in host '%s'\'s information of port '%s'; " % (cur_cpe, host["ip"]["addr"], portid) +
+                            logger.warning("CPE '%s' already stored in host '%s'\'s information of port '%s'; " % (cur_cpe, ip, portid) +
                                 "check whether program correctly replaced vaguer CPEs with more specific CPEs")
 
                 if len(broad_cpes) == 1:
@@ -82,7 +82,7 @@ def conduct_analysis(results: list):
                         "Determined more specific CPEs and included some of their CVEs."
             else:
                 # TODO: implement
-                pass
+                logger.warning("%s port %d of host %s does not have a cpe. Therefore no CVE analysis can be done for this port." % (protocol.upper(), portid, ip))
 
     global logger, vulners_api, db_cursor
 
@@ -142,7 +142,7 @@ def conduct_analysis(results: list):
                     "Determined more specific CPEs and included some of their CVEs."
         else:
             # TODO: implement
-            pass
+            logger.warning("OS of host %s does not have a cpe. Therefore no CVE analysis can be done for this host's OS." % ip)
 
         # get TCP and UDP cves
         process_port_cves("tcp")
