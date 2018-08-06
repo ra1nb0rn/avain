@@ -265,3 +265,7 @@ def compute_cosine_similarity(text_1: str, text_2: str):
         return 0.0
     else:
         return float(inner_product)/float(normalization_factor)
+
+
+def is_neq_prefix(a: str, b: str):
+    return a != b and a in b
