@@ -8,7 +8,7 @@ import subprocess
 import zipfile
 
 CVE_DATAFEED_DIR = "cve_data_feeds"
-WGET_OUTFILE = "wget_download_ouput.txt"
+WGET_OUTFILE = "wget_download_output.txt"
 CREATE_DB_OUTFILE = "db_creation.txt"
 
 def update_database(created_files: list):
@@ -37,6 +37,9 @@ def update_database(created_files: list):
             zipfiles.append(outname)
 
     created_files.append(WGET_OUTFILE)
+
+    if os.path.isfile("wget-log"):
+        os.remove("wget-log")
 
     if __name__ == "__main__":
         print("Unzipping data feeds ...")
