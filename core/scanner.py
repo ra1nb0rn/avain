@@ -117,7 +117,7 @@ class Scanner():
             if scan_info and len(scan_info[0]) == 2:
                 result, created_files = scan_info[0]
             else:
-                logger.info("Scanner module '%s' delivered an unprocessable result. " % scanner_module +
+                logger.warning("Scanner module '%s' delivered an unprocessable result. " % scanner_module +
                     "Its results have been discarded.")
                 result, created_files = {}, []
 
