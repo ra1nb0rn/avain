@@ -206,7 +206,11 @@ class Scanner():
                     # Copy and load the scan result
                     shutil.copyfile(filepath, copy_filepath)
                     with open(copy_filepath) as f:
-                        scan_result = json.load(f)
+                        try:
+                            scan_result = json.load(f)
+                        except json.decoder.JSONDecodeError:
+                            logger.warning("JSON of scan result stored in '%s' cannot be parsed." % filepath)
+                            continue
                 except IOError:
                     self.logger.warning("Specified scan result '%s' cannot be opened" % filepath)
 
