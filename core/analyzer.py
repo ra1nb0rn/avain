@@ -97,7 +97,7 @@ class Analyzer():
             if analysis_result and len(analysis_result[0]) == 2:
                 result, created_files = analysis_result[0]
             else:
-                logger.info("Analysis module '%s' delivered an unprocessable result. " % analysis_module +
+                self.logger.info("Analysis module '%s' delivered an unprocessable result. " % analysis_module +
                     "Its results have been discarded.")
                 result, created_files = {}, []
 

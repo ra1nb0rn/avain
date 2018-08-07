@@ -117,7 +117,7 @@ class Scanner():
             if scan_info and len(scan_info[0]) == 2:
                 result, created_files = scan_info[0]
             else:
-                logger.warning("Scanner module '%s' delivered an unprocessable result. " % scanner_module +
+                self.logger.warning("Scanner module '%s' delivered an unprocessable result. " % scanner_module +
                     "Its results have been discarded.")
                 result, created_files = {}, []
 
@@ -209,7 +209,7 @@ class Scanner():
                         try:
                             scan_result = json.load(f)
                         except json.decoder.JSONDecodeError:
-                            logger.warning("JSON of scan result stored in '%s' cannot be parsed." % filepath)
+                            self.logger.warning("JSON of scan result stored in '%s' cannot be parsed." % filepath)
                             continue
                 except IOError:
                     self.logger.warning("Specified scan result '%s' cannot be opened" % filepath)
