@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import copy
 from cvsslib import cvss3, calculate_vector
+from . import database_updater
 import datetime
 import json
 import os
@@ -84,14 +85,17 @@ def conduct_analysis(results: list):
                 # TODO: implement
                 logger.warning("%s port %d of host %s does not have a cpe. Therefore no CVE analysis can be done for this port." % (protocol.upper(), portid, ip))
 
-    global logger, vulners_api, db_cursor
+    global logger, vulners_api, db_cursor, created_files
 
     # setup logger
     logger = util.get_logger(__name__, LOGFILE)
     logger.info("Starting with CVE analysis")
 
     cve_results = {}
+    created_files = []
     hosts = HOSTS
+
+    check_database()
 
     db_conn = None
     if ONLINE_ONLY:
@@ -160,7 +164,7 @@ def conduct_analysis(results: list):
     create_cve_summary(hosts, scores)
     logger.info("Done")
 
-    created_files = [HOST_CVE_FILE, SUMMARY_FILE]
+    created_files += [HOST_CVE_FILE, SUMMARY_FILE]
     results.append((scores, created_files))
 
 def create_cve_summary(hosts, scores):
@@ -244,9 +248,59 @@ def create_cve_summary(hosts, scores):
     with open(SUMMARY_FILE, "w") as f:
         f.write(json.dumps(summary, ensure_ascii=False, indent=3))
 
+
 def check_database():
-    # TODO: implement
-    pass
+    """
+    Check the CVE database for validity. Validity means:
+    1.) it exists; 2.) it is up-to-date with regard to
+    the expire time stored in the used config file.
+    """
+
+    def get_creation_date(filepath):
+        """
+        Get the creation date of a file on a Unix based system.
+        If creation date is not available, return last-modified date.
+        Taken and adapted from https://stackoverflow.com/a/39501288 .
+        """
+        filestat = os.stat(filepath)
+        try:
+            return datetime.datetime.fromtimestamp(filestat.st_birthtime)
+        except AttributeError:
+            return datetime.datetime.fromtimestamp(filestat.st_mtime)
+
+    def do_db_update(log_msg: str):
+        """
+        Conduct a database update after logging the given message.
+        """
+        global created_files
+
+        update_files = []
+        logger.info(log_msg)
+        database_updater.update_database(update_files)
+        logger.info("Done.")
+        os.makedirs("db_update", exist_ok=True)
+        update_files_renamed = []
+        for file in update_files:
+            new_file = os.path.join("db_update", file)
+            os.rename(os.path.abspath(file), new_file)
+            update_files_renamed.append(new_file)
+        created_files += update_files_renamed
+
+    if os.path.isfile(DATABASE_FILE):
+        db_date = get_creation_date(DATABASE_FILE)
+        db_age = datetime.datetime.now() - db_date
+        try:
+            db_age_limit = datetime.timedelta(minutes = int(CONFIG["DB_expire"]))
+        except ValueError:
+            logger.warning("DB_expire is invalid and cannot be processed. Skipping check whether database is up-to-date.")
+
+        if db_age > db_age_limit:
+            do_db_update("Database has expired. Conducting update.")
+        else:
+            logger.info("Database is up-to-date; expires in %s" % str(db_age_limit - db_age))
+    else:
+        do_db_update("Database has expired. Conducting update.")
+
 
 def calculate_final_scores(hosts: dict):
     def calculate_weight(score: float, item_count: int):
