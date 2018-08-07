@@ -94,9 +94,11 @@ class Analyzer():
                 else:
                     show_progress_state += 1
 
-            if analysis_result:
+            if analysis_result and len(analysis_result[0]) == 2:
                 result, created_files = analysis_result[0]
             else:
+                logger.info("Analysis module '%s' delivered an unprocessable result. " % analysis_module +
+                    "Its results have been discarded.")
                 result, created_files = {}, []
 
             # change back into the main directory
