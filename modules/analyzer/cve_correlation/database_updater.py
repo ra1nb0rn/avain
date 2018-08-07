@@ -8,8 +8,10 @@ import subprocess
 import zipfile
 
 CVE_DATAFEED_DIR = "cve_data_feeds"
+WGET_OUTFILE = "wget_download_ouput.txt"
+CREATE_DB_OUTFILE = "db_creation.txt"
 
-def update_database():
+def update_database(created_files: list):
     # Remove old database to refresh CreationDate
     if os.path.isfile("cve_db.db3"):
         os.remove("cve_db.db3")
@@ -27,13 +29,14 @@ def update_database():
     jfeed_expr = re.compile("https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-\d\d\d\d.json.zip")
     cve_feed_urls = re.findall(jfeed_expr, nvd_nist_datafeed_html)
 
-    zipfiles = []
-    for cve_feed_url in cve_feed_urls:
-        json_response = requests.get(cve_feed_url)
-        outname = os.path.join(CVE_DATAFEED_DIR, cve_feed_url.split("/")[-1])
-        with open(outname, "wb") as f:
-            f.write(json_response.content)
-        zipfiles.append(outname)
+    with open(WGET_OUTFILE, "w") as f:
+        zipfiles = []
+        for cve_feed_url in cve_feed_urls:
+            outname = os.path.join(CVE_DATAFEED_DIR, cve_feed_url.split("/")[-1])
+            subprocess.call("wget %s -O %s" % (cve_feed_url, outname), stdout=f, stderr=subprocess.STDOUT, shell=True)
+            zipfiles.append(outname)
+
+    created_files.append(WGET_OUTFILE)
 
     if __name__ == "__main__":
         print("Unzipping data feeds ...")
@@ -51,10 +54,10 @@ def update_database():
     if __name__ == "__main__":
         subprocess.call(create_db_call)
     else:
-        f = open(os.devnull, "w")
-        subprocess.call(create_db_call, stdout=f, stderr=subprocess.STDOUT)
-        f.close()
+        with open(CREATE_DB_OUTFILE, "w") as f:
+            subprocess.call(create_db_call, stdout=f, stderr=subprocess.STDOUT)
 
+    created_files.append(CREATE_DB_OUTFILE)
     shutil.rmtree(CVE_DATAFEED_DIR)
 
 

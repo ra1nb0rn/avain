@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import os
+import shutil
 import sys
 import threading
 
@@ -13,6 +14,7 @@ import visualizer
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
 UPDATER_JOIN_TIMEOUT = 0.38
 DEFAULT_CONFIG_PATH = "default_config.txt"
+UPDATE_OUTPUT_DIR = "update_output"
 
 class Controller():
 
@@ -132,11 +134,16 @@ class Controller():
         self.logger.debug("The following database update modules have been found: %s"
             % ", ".join(update_modules))
 
+        # create output directory for file created by update modules
+        update_outdir = os.path.join(self.output_dir, UPDATE_OUTPUT_DIR)
+        os.makedirs(update_outdir, exist_ok=True)
+
         # iterate over all available update modules
         for i, update_module_path in enumerate(update_modules):
             # get update module name
             update_module = update_module_path.replace(os.sep, ".")
             update_module = update_module.replace(".py", "")
+            update_module_noprefix = update_module.replace("modules.", "", 1)
 
             # import the respective python module
             module = importlib.import_module(update_module)
@@ -151,15 +158,18 @@ class Controller():
 
             # initiate the module's update procedure
             self.logger.info("Starting database update %d of %d" % (i+1, len(update_modules)))
-            update_thread = threading.Thread(target=module.update_database)
+            created_files = []
+            update_thread = threading.Thread(target=module.update_database, args=(created_files,))
 
             update_thread.start()
             # TODO: Check for TTY (https://www.tutorialspoint.com/python/os_isatty.htm or other)
             show_progress_state = 0
             while update_thread.is_alive():
                 update_thread.join(timeout=UPDATER_JOIN_TIMEOUT)
-                print(util.GREEN + "Conducting update %d of %d  " % (i+1, len(update_modules)), end="")
+                print(util.GREEN + "Conducting update %d of %d - " % (i+1, len(update_modules)), end="")
+                print(util.SANE + update_module_noprefix + "  ", end="")
                 print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
+
                 util.clear_previous_line()
                 if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
                     show_progress_state = 0
@@ -168,6 +178,24 @@ class Controller():
 
             # change back into the main directory
             os.chdir(main_cwd)
+
+            # create output directory for this module's update results
+            module_output_dir = os.path.join(update_outdir, os.sep.join(update_module_noprefix.split(".")[:-1]))
+            os.makedirs(module_output_dir, exist_ok=True)
+
+            if created_files:
+                for file in created_files:
+                    rel_dir = os.path.dirname(file)
+                    if os.path.isabs(rel_dir):
+                        rel_dir = path.relpath(rel_dir, os.path.abspath(module_dir))
+                    file_out_dir = os.path.join(module_output_dir, rel_dir)
+                    os.makedirs(file_out_dir, exist_ok=True)
+                    file_out_path = os.path.join(file_out_dir, os.path.basename(file))
+                    if os.path.isabs(file):
+                        shutil.move(file, file_out_path)
+                    else:
+                        shutil.move(os.path.join(module_dir, file), file_out_path)
+
             self.logger.info("Database update %d of %d done" % (i+1, len(update_modules)))
 
         if len(update_modules) == 1:
