@@ -83,7 +83,7 @@ def conduct_analysis(results: list):
                         "Determined more specific CPEs and included some of their CVEs."
             else:
                 # TODO: implement
-                logger.warning("%s port %d of host %s does not have a cpe. Therefore no CVE analysis can be done for this port." % (protocol.upper(), portid, ip))
+                logger.warning("%s port %s of host %s does not have a CPE. Therefore no CVE analysis can be done for this port." % (protocol.upper(), str(portid), ip))
 
     global logger, vulners_api, db_cursor, created_files
 
@@ -146,7 +146,7 @@ def conduct_analysis(results: list):
                     "Determined more specific CPEs and included some of their CVEs."
         else:
             # TODO: implement
-            logger.warning("OS of host %s does not have a cpe. Therefore no CVE analysis can be done for this host's OS." % ip)
+            logger.warning("OS of host %s does not have a CPE. Therefore no CVE analysis can be done for this host's OS." % ip)
 
         # get TCP and UDP cves
         process_port_cves("tcp")
