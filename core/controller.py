@@ -18,7 +18,7 @@ UPDATE_OUTPUT_DIR = "update_output"
 
 class Controller():
 
-    def __init__(self, networks: list, add_networks: list, omit_networks: list, update_databases: bool, config_path: str,
+    def __init__(self, networks: list, add_networks: list, omit_networks: list, update_modules: bool, config_path: str,
                 ports: list, output_dir: str, online_only: bool, scan_results: list, analysis_results: list, time: bool,
                 verbose: bool, scan_only: bool, analysis_only: bool):
         """
@@ -27,7 +27,7 @@ class Controller():
         :param network: A string representing the network to analyze
         :param add_networks: A list of networks as strings to additionally analyze
         :param omit_networks: A list of networks as strings to omit from the analysis
-        :param update_databases: Whether databases should be upgraded or created if they do not exist
+        :param update_modules: Whether modules should be updated or initialized
         :param config_path: The path to a config file
         :param ports: A list of port expressions
         :param output_dir: A string specifying the output directory of the analysis
@@ -82,7 +82,7 @@ class Controller():
         self.verbose = verbose
         self.hosts = set()
         self.ports = ports
-        self.update_databases = update_databases
+        self.update_modules = update_modules
         self.scan_only = scan_only
         self.analysis_only = analysis_only
 
@@ -102,8 +102,8 @@ class Controller():
         """
         Execute the main program depending on the given program parameters.
         """
-        if self.update_databases:
-            self.start_database_updates()
+        if self.update_modules:
+            self.start_module_updates()
 
         if self.networks or self.add_networks or self.scan_only or self.analysis_only:
             self.do_analysis()
@@ -111,9 +111,9 @@ class Controller():
         # change back to original directory
         os.chdir(self.original_cwd)
 
-    def start_database_updates(self):
+    def start_module_updates(self):
         """
-        Update all databases by finding the responsible modules and calling their update method.
+        Update modules that have a separate update module by calling the update module's update method.
         """
 
         def set_module_parameters(module):
@@ -126,12 +126,12 @@ class Controller():
             if "LOGFILE" in all_module_attributes:
                 module.LOGFILE = self.logfile
 
-        update_modules = module_seeker.find_all_database_updater_modules()
+        update_modules = module_seeker.find_all_module_updater_modules()
         # util.hide_cursor()  # hide cursor
-        self.logger.info("Starting database update(s)")
-        print(util.BRIGHT_BLUE + "Starting database updates:")
-        self.logger.info("%d database update module(s) have been found" % len(update_modules))
-        self.logger.debug("The following database update modules have been found: %s"
+        self.logger.info("Starting module update(s)")
+        print(util.BRIGHT_BLUE + "Starting module updates:")
+        self.logger.info("%d module update module(s) have been found" % len(update_modules))
+        self.logger.debug("The following module update modules have been found: %s"
             % ", ".join(update_modules))
 
         # create output directory for file created by update modules
@@ -157,9 +157,9 @@ class Controller():
             set_module_parameters(module)
 
             # initiate the module's update procedure
-            self.logger.info("Starting database update %d of %d" % (i+1, len(update_modules)))
+            self.logger.info("Starting module update %d of %d" % (i+1, len(update_modules)))
             created_files = []
-            update_thread = threading.Thread(target=module.update_database, args=(created_files,))
+            update_thread = threading.Thread(target=module.update_module, args=(created_files,))
 
             update_thread.start()
             # TODO: Check for TTY (https://www.tutorialspoint.com/python/os_isatty.htm or other)
@@ -196,14 +196,14 @@ class Controller():
                     else:
                         shutil.move(os.path.join(module_dir, file), file_out_path)
 
-            self.logger.info("Database update %d of %d done" % (i+1, len(update_modules)))
+            self.logger.info("Module update %d of %d done" % (i+1, len(update_modules)))
 
         if len(update_modules) == 1:
             print(util.GREEN + "Update completed.")
         else:
             print(util.GREEN + "All %d updates completed." % len(update_modules))
         print(util.SANE)
-        self.logger.info("All database update(s) completed")
+        self.logger.info("All module update(s) completed")
 
     def do_analysis(self):
         """

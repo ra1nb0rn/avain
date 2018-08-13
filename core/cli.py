@@ -34,7 +34,7 @@ class Cli():
         required_args.add_argument("-n", "--networks", nargs="+", help="Specify networks to scan in CIDR or wildcard notation. If given argument does not contain a CIDR "
                                                            "or wildcard, the host at the given IP is scanned.")
         required_args.add_argument("-nL", "--network-list", help="A list that specifies networks/hosts to add to or omit from the scan.")
-        required_args.add_argument("-uD", "--update-databases", action="store_true", help="Make all databases update.")
+        required_args.add_argument("-uM", "--update-modules", action="store_true", help="Make the modules that have an update mechanism update.")
         required_args.add_argument("-aO", "--analysis-only", action="store_true", help="Only do an anaylsis with the provided scan results")
 
         optional_args.add_argument("-c", "--config", help="Specify a different config file to use.")
@@ -52,9 +52,9 @@ class Cli():
 
         self.args = parser.parse_args()
         if (not self.args.networks) and (not self.args.network_list) and (not self.args.scan_results) \
-                and (not self.args.update_databases) and (not self.args.analysis_only):
+                and (not self.args.update_modules) and (not self.args.analysis_only):
             parser.error("at least one of the following arguments is required: -n/--network," +
-                            "-nL/--network-list, -uD/--update_databases or -aO/--analysis-only")
+                            "-nL/--network-list, -uD/--update_modules or -aO/--analysis-only")
 
         self.parse_network_list(parser)
         self.validate_input(parser)
@@ -126,7 +126,7 @@ class Cli():
         Parse the program arguments and initiate the vulnerability analysis.
         """
 
-        controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.update_databases, self.args.config,
+        controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.update_modules, self.args.config,
                                 self.args.ports, self.args.output, self.args.online_only, self.args.scan_results, self.args.analysis_results,
                                 self.args.time, self.args.verbose, self.args.scan_only, self.args.analysis_only)
         controller.run()

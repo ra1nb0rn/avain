@@ -11,7 +11,7 @@ CVE_DATAFEED_DIR = "cve_data_feeds"
 WGET_OUTFILE = "wget_download_output.txt"
 CREATE_DB_OUTFILE = "db_creation.txt"
 
-def update_database(created_files: list):
+def update_module(created_files: list):
     # Remove old database to refresh CreationDate
     if os.path.isfile("cve_db.db3"):
         os.remove("cve_db.db3")

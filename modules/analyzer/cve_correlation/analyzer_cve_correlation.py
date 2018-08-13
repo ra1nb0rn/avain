@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import copy
 from cvsslib import cvss3, calculate_vector
-from . import database_updater
+from . import module_updater
 import datetime
 import json
 import os
@@ -276,7 +276,7 @@ def check_database():
 
         update_files = []
         logger.info(log_msg)
-        database_updater.update_database(update_files)
+        module_updater.update_module(update_files)
         logger.info("Done.")
         os.makedirs("db_update", exist_ok=True)
         update_files_renamed = []
