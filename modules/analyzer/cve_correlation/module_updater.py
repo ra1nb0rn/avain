@@ -65,4 +65,4 @@ def update_module(created_files: list):
 
 
 if __name__ == "__main__":
-    update_database()
+    update_module([])
