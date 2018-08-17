@@ -13,7 +13,7 @@ POT_OSES_PATH = "potential_oses.json"
 NETWORKS_PATH, NETWORKS_OMIT_PATH = "network_add.list", "network_omit.list"
 
 # additional nmap scripts to use
-NMAP_SCRIPTS = ["http-headers", "http-title", "smb-os-discovery", "banner"]  
+NMAP_SCRIPTS = ["http-headers", "smb-os-discovery", "banner"]
 
 NETWORKS = []  # a list representing the networks to analyze
 ADD_NETWORKS = []  # a list of networks as strings to additionally analyze
