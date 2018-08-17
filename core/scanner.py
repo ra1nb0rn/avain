@@ -508,7 +508,6 @@ class Scanner():
                 """
 
                 nonlocal ip, host, groups, cpy_results, module
-                import pprint
                 item_group = [item]  # group initially exists of base item
                 for module_iter, result_iter in cpy_results.items():  # iterate over every scan result
                     if module_iter == module:  # skip current module
