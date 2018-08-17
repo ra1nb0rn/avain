@@ -54,6 +54,8 @@ class Controller():
         os.makedirs(self.output_dir, exist_ok=True)
         self.scan_results = [os.path.abspath(scan_result) for scan_result in scan_results] if scan_results else None
         self.analysis_results = [os.path.abspath(analysis_result) for analysis_result in analysis_results] if analysis_results else None
+        if config_path:
+            config_path = os.path.abspath(config_path)
 
         # change into AVAIN directory
         self.original_cwd = os.getcwd()
