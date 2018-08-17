@@ -163,10 +163,12 @@ class Scanner():
                     file_out_dir = os.path.join(module_output_dir, rel_dir)
                     os.makedirs(file_out_dir, exist_ok=True)
                     file_out_path = os.path.join(file_out_dir, os.path.basename(file))
-                    if os.path.isabs(file):
+                    if os.path.isabs(file) and os.path.isfile(file):
                         shutil.move(file, file_out_path)
                     else:
-                        shutil.move(os.path.join(module_dir, file), file_out_path)
+                        abs_file = os.path.join(module_dir, file)
+                        if os.path.isfile(abs_file):
+                            shutil.move(abs_file, file_out_path)
 
             self.logger.info("Scan %d of %d done" % (i+1, len(self.scanner_modules)))
 
