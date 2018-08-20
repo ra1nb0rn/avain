@@ -507,7 +507,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                 if cpe_in:
                     found_cves.append((entry[0], with_cpes))
 
-        found_cves = sorted(set(found_cves), key=lambda cve: cve[0],reverse=True)
+        found_cves = sorted(set(found_cves), key=lambda cve: cve[0], reverse=True)
         found_cves_dict = {}
         for cve_id, with_cpes in found_cves:
             descr, publ, last_mod, cvss_ver, score, vector = db_cursor.execute("SELECT description, published, last_modified, " +
