@@ -224,8 +224,8 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
                     std::unordered_set<VagueCpeInfo> cpes;
                     for (auto &cpe_entry : children_entry["cpe"]) {
                         vulnerable = cpe_entry["vulnerable"];
-                        if (!vulnerable)
-                            continue;
+                        // if (!vulnerable)
+                        //     continue;
                         cpe = cpe_entry["cpe22Uri"];
 
                         VagueCpeInfo vague_cpe_info = {cpe, "", "", "", ""};
