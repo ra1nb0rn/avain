@@ -15,7 +15,7 @@ echo ""
 cp create_db ../../
 
 cd "../../"
-eval "./database_updater.py"
+eval "./module_updater.py"
 
 if [ $? != 0 ]; then
     echo "Could not update database"
