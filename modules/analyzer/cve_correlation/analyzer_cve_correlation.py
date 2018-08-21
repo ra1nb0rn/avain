@@ -734,7 +734,7 @@ def transform_cvssv2_to_cvssv3(cve: dict):
     else:
         converted_cvssv3_vector += "S:U/"
 
-    if "AC:H" in cve["vector_short"]:
+    if "AC:H" in cve["vector_short"] or "AC:M" in cve["vector_short"]:
         converted_cvssv3_vector += "UI:R/"
     else:
         converted_cvssv3_vector += "UI:N/"
