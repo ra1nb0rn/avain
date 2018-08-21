@@ -720,7 +720,7 @@ def transform_cvssv2_to_cvssv3(cve: dict):
             elif val == "ND":
                 val = "X"
             converted_cvssv3_vector += "%s:%s/" % (key, val)
-        elif key == "RL":
+        elif key == "RC":
             if val == "UR":
                 val = "R"
             elif val == "UC":
