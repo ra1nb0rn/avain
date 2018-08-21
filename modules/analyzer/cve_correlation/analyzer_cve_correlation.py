@@ -692,18 +692,16 @@ def transform_cvssv2_to_cvssv3(cve: dict):
     vector_fields = cve["vector_short"][1:-1].split("/")  # remove left and right parenthesis
     for vector_field in vector_fields:
         key, val = vector_field.split(":")
-        if key == "AV":
-            converted_cvssv3_vector += "%s:%s/" % (key, val)  # just copy AV field
-        elif key == "AC":
+        # key == "AV": just copy values
+        if key == "AC":
             if val == "M":
                 val = "H"
-            converted_cvssv3_vector += "%s:%s/" % (key, val)
         elif key == "Au":
             if val == "S":
                 val = "L"
             elif val == "M":
                 val = "H"
-            converted_cvssv3_vector += "%s:%s/" % ("PR", val)
+            key = "PR"
         elif key == "C" or key == "I" or key == "A":
             if val == "C":
                 val = "H"
@@ -711,7 +709,6 @@ def transform_cvssv2_to_cvssv3(cve: dict):
                 val = "L"
             elif val == "N":
                 val = "N"
-            converted_cvssv3_vector += "%s:%s/" % (key, val)
         elif key == "RL":
             if val == "OF":
                 val = "O"
@@ -719,7 +716,6 @@ def transform_cvssv2_to_cvssv3(cve: dict):
                 val = "T"
             elif val == "ND":
                 val = "X"
-            converted_cvssv3_vector += "%s:%s/" % (key, val)
         elif key == "RC":
             if val == "UR":
                 val = "R"
@@ -727,7 +723,8 @@ def transform_cvssv2_to_cvssv3(cve: dict):
                 val = "U"
             elif val == "ND":
                 val = "X"
-            converted_cvssv3_vector += "%s:%s/" % (key, val)
+
+        converted_cvssv3_vector += "%s:%s/" % (key, val)
 
     if "C:C" in converted_cvssv3_vector and "I:C" in converted_cvssv3_vector and "A:C" in converted_cvssv3_vector:
         converted_cvssv3_vector += "S:C/"
