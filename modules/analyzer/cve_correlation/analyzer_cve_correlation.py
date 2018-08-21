@@ -733,10 +733,6 @@ def transform_cvssv2_to_cvssv3(cve: dict):
     else:
         converted_cvssv3_vector += "UI:N/"
 
-    if "C:P" in cve["vector_short"] and "I:P" in cve["vector_short"] and "A:P" in cve["vector_short"]:
-        for metric in {"C", "I", "A"}:
-            converted_cvssv3_vector = re.sub("/%s:\w" % metric, "/%s:H" % metric, converted_cvssv3_vector)
-
     converted_cvssv3_vector = converted_cvssv3_vector[:-1]  # remove trailing /
 
     if "vector_detail" in cve:
