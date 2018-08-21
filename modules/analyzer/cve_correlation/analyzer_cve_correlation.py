@@ -704,12 +704,6 @@ def transform_cvssv2_to_cvssv3(cve: dict):
             elif val == "M":
                 val = "H"
             converted_cvssv3_vector += "%s:%s/" % ("PR", val)
-        elif key == "Au":
-            if val == "S":
-                val = "L"
-            elif val == "M":
-                val = "H"
-            converted_cvssv3_vector += "%s:%s/" % (key, val)
         elif key == "C" or key == "I" or key == "A":
             if val == "C":
                 val = "H"
