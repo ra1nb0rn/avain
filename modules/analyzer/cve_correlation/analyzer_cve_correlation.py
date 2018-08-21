@@ -695,7 +695,7 @@ def transform_cvssv2_to_cvssv3(cve: dict):
         # key == "AV": just copy values
         if key == "AC":
             if val == "M":
-                val = "H"
+                val = "L"
         elif key == "Au":
             if val == "S":
                 val = "L"
@@ -706,7 +706,7 @@ def transform_cvssv2_to_cvssv3(cve: dict):
             if val == "C":
                 val = "H"
             elif val == "P":
-                val = "L"
+                val = "H"
             elif val == "N":
                 val = "N"
         elif key == "RL":
@@ -726,15 +726,16 @@ def transform_cvssv2_to_cvssv3(cve: dict):
 
         converted_cvssv3_vector += "%s:%s/" % (key, val)
 
-    if "C:C" in converted_cvssv3_vector and "I:C" in converted_cvssv3_vector and "A:C" in converted_cvssv3_vector:
-        converted_cvssv3_vector += "S:C/"
-    else:
-        converted_cvssv3_vector += "S:U/"
+    converted_cvssv3_vector += "S:U/"
 
     if "AC:H" in cve["vector_short"] or "AC:M" in cve["vector_short"]:
         converted_cvssv3_vector += "UI:R/"
     else:
         converted_cvssv3_vector += "UI:N/"
+
+    if "C:P" in cve["vector_short"] and "I:P" in cve["vector_short"] and "A:P" in cve["vector_short"]:
+        for metric in {"C", "I", "A"}:
+            converted_cvssv3_vector = re.sub("/%s:\w" % metric, "/%s:H" % metric, converted_cvssv3_vector)
 
     converted_cvssv3_vector = converted_cvssv3_vector[:-1]  # remove trailing /
 
