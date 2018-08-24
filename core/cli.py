@@ -31,6 +31,14 @@ class Cli():
         required_args = parser.add_argument_group("required arguments")
         parser._action_groups.append(optional_args)
 
+        required_args.add_argument("-n", "--networks", nargs="+", help="Specify networks to scan in CIDR or wildcard notation.")
+        required_args.add_argument("-nL", "--network-list", help="A list that specifies networks to include into or " +
+            "exclude from the scan.")
+        required_args.add_argument("-uM", "--update-modules", action="store_true", help="Make the modules that have an "
+            + "update mechanism update.")
+        required_args.add_argument("-aO", "--analysis-only", action="store_true", help="Skip scanning phase. Only do an "
+            "analysis with the user provided scan results.")
+
         optional_args.add_argument("-c", "--config", help="Specify a config file to use.")
         optional_args.add_argument("-o", "--output", help="Specify the output folder name.")
         optional_args.add_argument("-p", "--ports", help="Specify which ports to scan on every host.")
@@ -45,14 +53,6 @@ class Cli():
         optional_args.add_argument("-oO", "--online-only", action="store_true", help="Only look up information online " +
             "(where applicable).")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
-
-        required_args.add_argument("-n", "--networks", nargs="+", help="Specify networks to scan in CIDR or wildcard notation.")
-        required_args.add_argument("-nL", "--network-list", help="A list that specifies networks to include into or " +
-            "exclude from the scan.")
-        required_args.add_argument("-uM", "--update-modules", action="store_true", help="Make the modules that have an "
-            + "update mechanism update.")
-        required_args.add_argument("-aO", "--analysis-only", action="store_true", help="Skip scanning phase. Only do an "
-            "analysis with the user provided scan results.")
 
         self.args = parser.parse_args()
         if (not self.args.networks) and (not self.args.network_list) and (not self.args.scan_results) \
