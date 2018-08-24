@@ -19,8 +19,8 @@ UPDATE_OUTPUT_DIR = "update_output"
 class Controller():
 
     def __init__(self, networks: list, add_networks: list, omit_networks: list, update_modules: bool, config_path: str,
-                ports: list, output_dir: str, online_only: bool, scan_results: list, analysis_results: list, time: bool,
-                verbose: bool, scan_only: bool, analysis_only: bool):
+                ports: list, output_dir: str, online_only: bool, scan_results: list, analysis_results: list,
+                single_network: bool, verbose: bool, scan_only: bool, analysis_only: bool):
         """
         Create a Controller object.
 
@@ -34,7 +34,8 @@ class Controller():
         :param online_only: Specifying whether to look up information only online (where applicable) 
         :param scan_results: A list of filenames whose files contain additional scan results
         :param analysis_results: A list of filenames whose files contain additional analysis results
-        :param time: A boolean specifying whether to measure the required ananlysis time
+        :param single_network: A boolean specifying whether all given networks are to be considered
+                               hosts in one single network
         :param vebose: Specifying whether to provide verbose output or not
         :param scan_only: Whether to only do a network scan
         :param analysis_only: Whether to only do an analysis with the specified scan results
@@ -80,7 +81,7 @@ class Controller():
 
         # set variables
         self.online_only = online_only
-        self.time = time
+        self.single_network = single_network
         self.verbose = verbose
         self.hosts = set()
         self.ports = ports

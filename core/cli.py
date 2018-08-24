@@ -31,24 +31,28 @@ class Cli():
         required_args = parser.add_argument_group("required arguments")
         parser._action_groups.append(optional_args)
 
-        required_args.add_argument("-n", "--networks", nargs="+", help="Specify networks to scan in CIDR or wildcard notation. If given argument does not contain a CIDR "
-                                                           "or wildcard, the host at the given IP is scanned.")
-        required_args.add_argument("-nL", "--network-list", help="A list that specifies networks/hosts to add to or omit from the scan.")
-        required_args.add_argument("-uM", "--update-modules", action="store_true", help="Make the modules that have an update mechanism update.")
-        required_args.add_argument("-aO", "--analysis-only", action="store_true", help="Only do an anaylsis with the provided scan results")
-
-        optional_args.add_argument("-c", "--config", help="Specify a different config file to use.")
-        optional_args.add_argument("-aR", "--analysis-results", nargs="+", help="Addtional analysis results to include into the analysis result. "
-                                                                                      "Multiple files or folders can be specified.")
-        optional_args.add_argument("-o", "--output", help="Specify the output file name. If name collisions occur, the output files are prefixed "
-                                                          "with the specified output file name.")
-        optional_args.add_argument("-oO", "--online-only", action="store_true", help="Only look up information online (where applicable)")
-        optional_args.add_argument("-sO", "--scan-only", action="store_true", help="Only do a network scan")
-        optional_args.add_argument("-p", "--ports", help="Specifies which ports to scan on every host.")
-        optional_args.add_argument("-sR", "--scan-results", nargs="+", help="Addtional scan results to include into the scanning result. "
-                                                                            "Multiple files or folders can be specified.")
-        optional_args.add_argument("-t", "--time", action="store_true", help="Specifies whether to time the scan or not.")
+        optional_args.add_argument("-c", "--config", help="Specify a config file to use.")
+        optional_args.add_argument("-o", "--output", help="Specify the output folder name.")
+        optional_args.add_argument("-p", "--ports", help="Specify which ports to scan on every host.")
+        optional_args.add_argument("-sN", "--single-network", action="store_true", help="Operate in " + 
+            "single network mode meaning that all specified networks are considered to be hosts in one single network.")
+        optional_args.add_argument("-sR", "--scan-results", nargs="+", help="Specify additional scan results to include " + 
+            "into the final scan result.")
+        optional_args.add_argument("-aR", "--analysis-results", nargs="+", help="Specify additional analysis results to " +
+            "include into the final analysis result.")
+        optional_args.add_argument("-sO", "--scan-only", action="store_true", help="Only do a network scan and omit the " +
+            "analysis phase.")
+        optional_args.add_argument("-oO", "--online-only", action="store_true", help="Only look up information online " +
+            "(where applicable).")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
+
+        required_args.add_argument("-n", "--networks", nargs="+", help="Specify networks to scan in CIDR or wildcard notation.")
+        required_args.add_argument("-nL", "--network-list", help="A list that specifies networks to include into or " +
+            "exclude from the scan.")
+        required_args.add_argument("-uM", "--update-modules", action="store_true", help="Make the modules that have an "
+            + "update mechanism update.")
+        required_args.add_argument("-aO", "--analysis-only", action="store_true", help="Skip scanning phase. Only do an "
+            "analysis with the user provided scan results.")
 
         self.args = parser.parse_args()
         if (not self.args.networks) and (not self.args.network_list) and (not self.args.scan_results) \
@@ -56,6 +60,7 @@ class Cli():
             parser.error("at least one of the following arguments is required: -n/--network," +
                             "-nL/--network-list, -uD/--update_modules or -aO/--analysis-only")
 
+        print(self.args.single_network)
         self.parse_network_list(parser)
         self.validate_input(parser)
 
@@ -128,7 +133,7 @@ class Cli():
 
         controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks, self.args.update_modules, self.args.config,
                                 self.args.ports, self.args.output, self.args.online_only, self.args.scan_results, self.args.analysis_results,
-                                self.args.time, self.args.verbose, self.args.scan_only, self.args.analysis_only)
+                                self.args.single_network, self.args.verbose, self.args.scan_only, self.args.analysis_only)
         controller.run()
 
     def parse_network_list(self, parser: argparse.ArgumentParser):
