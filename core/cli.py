@@ -61,7 +61,6 @@ class Cli():
             parser.error("at least one of the following arguments is required: -n/--network," +
                             "-nL/--network-list, -uD/--update-modules or -aO/--analysis-only")
 
-        print(self.args.single_network)
         self.parse_network_list(parser)
         self.validate_input(parser)
 
