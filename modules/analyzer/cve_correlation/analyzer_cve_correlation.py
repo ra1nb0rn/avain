@@ -171,8 +171,8 @@ def create_cve_summary(hosts, scores):
     def process_port(protocol):
         nonlocal host, host_summary, total_cve_count
         if protocol in host:
+            host_summary[protocol] = {}
             for portid, portinfo in host[protocol].items():
-                host_summary[protocol] = {}
                 host_summary[protocol][portid] = {}
                 for k, v in portinfo.items():
                     if k != "cpes" and k != "original_cpes":
