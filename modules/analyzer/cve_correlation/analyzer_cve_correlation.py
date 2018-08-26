@@ -1,7 +1,8 @@
+#!/usr/bin/env python3
+
 from bs4 import BeautifulSoup
 import copy
 from cvsslib import cvss3, calculate_vector
-from . import module_updater
 import datetime
 import json
 import os
@@ -14,7 +15,9 @@ import vulners
 import warnings
 import xml.etree.ElementTree as ET
 
-from ... import utility as util
+if __name__ != "__main__":
+    from . import module_updater
+    from ... import utility as util
 
 HOST_CVE_FILE = "found_cves.json"
 DATABASE_FILE = "cve_db.db3"
@@ -745,3 +748,21 @@ def transform_cvssv2_to_cvssv3(cve: dict):
     vector_v3 = "CVSS:3.0/" + converted_cvssv3_vector
     cvssv3 = str(calculate_vector(vector_v3, cvss3)[0])  # get base score of cvssv3 score vector
     cve["cvssv3"] = cvssv3
+
+if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        import logging
+        logger = logging.getLogger(__name__)
+        db_conn = sqlite3.connect(DATABASE_FILE)
+        db_cursor = db_conn.cursor()
+        cves = get_cves_to_cpe(sys.argv[1])[0]
+
+        result = {"Count": 0}
+        for k, v in cves.items():
+            result["Count"] += len(v)
+            result[k] = v
+        with open(sys.argv[2], "w") as f:
+            f.write(json.dumps(result, ensure_ascii=False, indent=3))
+    else:
+        print("Error: wrong number of arguments.")
+        print("usage: ./analyzer_cve_correlation.py [cpe] [outfile]")
