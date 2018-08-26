@@ -675,12 +675,23 @@ class Scanner():
         ##############################################
 
         if len(self.results) == 0:
-            return {}
+            results = {}
         elif len(self.results) == 1:
-            return self.results[list(self.results.keys())[0]]
+            results = self.results[list(self.results.keys())[0]]
         else:
             results = aggregate_results()
-            return results
+
+        # make sure every host contains an "os", "tcp" and "udp" field
+        for k, v in results.items():
+            if k != "trust":
+                if not "os" in v:
+                    v["os"] = {}
+                if not "tcp" in v:
+                    v["tcp"] = {}
+                if not "udp" in v:
+                    v["udp"] = {}
+
+        return results
 
     def extend_networks_to_hosts(self):
         """
