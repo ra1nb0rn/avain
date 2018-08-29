@@ -10,13 +10,12 @@ from ... import utility as util
 XML_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.xml"
 TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"
 POT_OSES_PATH = "potential_oses.json"
-NETWORKS_PATH, NETWORKS_OMIT_PATH = "network_add.list", "network_omit.list"
+NETWORKS_PATH, NETWORKS_OMIT_PATH = "networks.list", "networks_omit.list"
 
 # additional nmap scripts to use
 NMAP_SCRIPTS = ["http-headers", "smb-os-discovery", "banner"]
 
-NETWORKS = []  # a list representing the networks to analyze
-ADD_NETWORKS = []  # a list of networks as strings to additionally analyze
+NETWORKS = []  # a list representing the networks (as strings) to analyze
 OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
 VERBOSE = False  # specifying whether to provide verbose output or not
 PORTS = None  # the ports to scan
@@ -48,8 +47,6 @@ def conduct_scan(results: list):
     logger.info("Writing networks to scan into '%s'" % NETWORKS_PATH)
     with open(NETWORKS_PATH, "w") as file:
         for net in NETWORKS:
-            file.write(net + "\n")
-        for net in ADD_NETWORKS:
             file.write(net + "\n")
 
     # prepare the base of the nmap call

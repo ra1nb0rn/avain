@@ -211,10 +211,11 @@ class Controller():
     def do_analysis(self):
         """
         First conduct network reconnaissance and then analyze the hosts
-        of the specified network for vulnerabilities.
+        of the specified network(s) for vulnerabilities.
         """
 
-        scanner = Scanner(self.networks, self.add_networks, self.omit_networks, self.config, self.ports, self.output_dir,
+        networks = self.networks + self.add_networks
+        scanner = Scanner(networks, self.omit_networks, self.config, self.ports, self.output_dir,
                             self.online_only, self.verbose, self.logfile, self.scan_results, self.analysis_only)
         hosts = scanner.conduct_scans()
 

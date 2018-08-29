@@ -21,13 +21,12 @@ GROUP_SIM_THRES = 0.95  # barely tested value
 
 class Scanner():
 
-    def __init__(self, networks: list, add_networks: list, omit_networks: list, config: dict, ports: list, output_dir: str,
+    def __init__(self, networks: list, omit_networks: list, config: dict, ports: list, output_dir: str,
                 online_only: bool, verbose: bool, logfile: str, scan_results: list, analysis_only: bool):
         """
         Create a Scanner object with the given networks and output_directory
 
-        :param network: A string representing the network to analyze
-        :param add_networks: A list of networks as strings to additionally analyze
+        :param network: A list of strings representing the networks to analyze
         :param omit_networks: A list of networks as strings to omit from the analysis
         :param config: A dict with config parameters in it
         :param ports: A list of port expressions
@@ -39,7 +38,6 @@ class Scanner():
         :param analysis_only: Whether to only do an analysis with the specified scan results
         """
         self.networks = networks
-        self.add_networks = add_networks
         self.omit_networks = omit_networks
         self.config = config
         self.output_dir = output_dir
@@ -65,7 +63,7 @@ class Scanner():
         Do the different module scans
         """
 
-        if not self.networks and not self.add_networks:
+        if not self.networks:
             self.logger.info("No target networks were specified. Skipping module scanning.")
             return
 
@@ -293,9 +291,6 @@ class Scanner():
 
         if "NETWORKS" in all_module_attributes:
             module.NETWORKS = self.networks
-
-        if "ADD_NETWORKS" in all_module_attributes:
-            module.ADD_NETWORKS = self.add_networks
 
         if "OMIT_NETWORKS" in all_module_attributes:
             module.OMIT_NETWORKS = self.omit_networks
@@ -708,9 +703,6 @@ class Scanner():
 
         for net in self.networks:
             add_to_hosts(net)
-
-        for network in self.add_networks:
-            add_to_hosts(network)
 
         for network in self.omit_networks:
             hosts = util.extend_network_to_hosts(network)
