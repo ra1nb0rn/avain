@@ -242,12 +242,19 @@ class Scanner():
         # create the output directory for all scan results
         self.scan_result_out_dir = os.path.join(self.output_dir, SCAN_OUT_DIR)
         os.makedirs(self.scan_result_out_dir, exist_ok=True)
+        self.include_additional_scan_results()
         if not self.analysis_only:
             self.conduct_module_scans()
-        self.include_additional_scan_results()
         self.logger.info("Aggregating results")
         self.result = self.construct_result()
         self.remove_trust_values()
+
+        # "sort" results by IP
+        sorted_result = {}
+        for k_ip in sorted(self.result, key=lambda ip: util.ip_str_to_int(ip)):
+            sorted_result[k_ip] = self.result[k_ip]
+        self.result = sorted_result
+
         result_file = os.path.join(self.scan_result_out_dir, "results.json")
         with open(result_file, "w") as f:
             f.write(json.dumps(self.result, ensure_ascii=False, indent=3))
