@@ -3,9 +3,13 @@ import copy
 import ipaddress
 import logging
 import math
+import os
 import re
+import subprocess
 import sys
+import tempfile
 import datetime
+import xml.etree.ElementTree as ET
 
 # TODO: How to handle broadcast and network identifier addresses. Decide to include or not and fix.
 
@@ -25,116 +29,91 @@ MAGENTA = "\u001b[35m"
 CURSOR_PREV_LINE = "\033[F"
 CLEAR_UNTIL_EOL = "\033[K"
 
+parsed_network_exprs = {}
 
-def parse_wildcard_ipv4(network: str):
+
+def add_wildcard_ipv4(network: str, store_hosts: bool=True):
     """
-    Parse an IPv4 wildcard expression (with range, prefix or '*')
-
-    :return: a list of all contained hosts within the IP expression
+    Parse an IPv4 wildcard expression (with range, prefix or '*') using Nmap's "-sL" option
     """
 
-    def get_all_hosts(splits):
-        if splits:
-            if len(splits) == 1:
-                return [str(i) for i in splits[0]]
-            else:
-                all_concat = []
-                all_after = get_all_hosts(splits[1:])
-                for i in splits[0]:
-                    for j in all_after:
-                        all_concat.append("%d.%s" % (i, j))
-                return all_concat
-        else:
-            return []
+    if network in parsed_network_exprs:
+        if store_hosts and len(parsed_network_exprs[network]) > 1:  # hosts are already stored
+            return
+        elif not store_hosts:
+            return
 
-    cidr = None
-    if "/" in network:
-        cidr = "".join(network[network.rfind("/")+1:])
-        network = network[:network.rfind("/")]
-    split_ip = network.split(".")
+    hosts = []
+    host_ranges = []
+    prev_ip = None
 
-    for i, num in enumerate(split_ip):
-        # only digit no wildcard
-        try:
-            num_int = int(num)
-            if num_int in range(0, 256):
-                split_ip[i] = [num_int]
-            else:
-                raise ValueError("A textual IP address does not contain numbers above 255")
-        except ValueError:
-            if "*" in num:
-                if len(num) > 3:
-                    raise ValueError("A textual IP address does not contain four-digit numbers")
-                if num.count("*") > 1:
-                    raise ValueError("You cannot have two wildcard symbols within one IP number")
+    with tempfile.NamedTemporaryFile() as f:
+        devnull_fd = open(os.devnull)
+        subprocess.call(["nmap", "-n", "-sL", "-oX", f.name, network], stdout=devnull_fd, stderr=subprocess.STDOUT)
+        devnull_fd.close()
+        nm_xml_tree = ET.parse(f.name)
+        nmaprun_elem = nm_xml_tree.getroot()
+        host_elems = nmaprun_elem.findall("host")
 
-                if num[0] == "*":
-                    if len(num) == 3:
-                        for j in range(10):
-                            split_ip[i] += j * 100 + int(num[1:2])
-                    elif len(num) == 2:
-                        for j in range(10):
-                            split_ip[i] += j * 10 + int(num[1])
-                    else:
-                        split_ip[i] = list(range(0, 256))
-                elif num[1] == "*":
-                    if len(num) == 3:
-                        for j in range(10):
-                            split_ip[i] += int(num[0]) * 100 + j * 10 + int(num[2])
-                    elif len(num) == 2:
-                        for j in range(10):
-                            split_ip[i] += int(num[0]) * 10 + j
-                elif num[2] == "*":
-                    if len(num) == 3:
-                        for j in range(10):
-                            split_ip[i] += int(num[0]) * 100 + int(num[2]) * 10 + j 
-            elif "-" in num:
-                l, r = num.split("-")
-                split_ip[i] = range(int(l), int(r)+1)
-
-    if not cidr:
-        return get_all_hosts(split_ip)
-    else:
-        all_hosts_no_cidr = get_all_hosts(split_ip) 
-        all_hosts = []
-
-        for host in all_hosts_no_cidr:
-            all_hosts += parse_cidr_ipv4(host + "/" + cidr)
-
-        return all_hosts
-
-
-def is_cidr_ipv4(network: str):
-    try:
-        ipaddress.ip_network(network)
-        return True
-    except ValueError:
-        return False
-
-
-def parse_cidr_ipv4(network: str):
-    if "/" in network:
-        return list(str(ip) for ip in ipaddress.ip_network(network).hosts())
-    else:
-        return network
-
-
-def is_valid_net_addr(network):
-    if not is_cidr_ipv4(network):
-        if (not "-" in network) and (not "*" in network):
+        if not host_elems:  # nmap could not parse network expression
             return False
+
+        for host_elem in host_elems:
+            ip = host_elem.find("address").attrib["addr"]
+            if not host_ranges:
+                host_ranges.append([ip, ip])
+            elif prev_ip is not None:
+                if ip_str_to_int(ip) != (ip_str_to_int(prev_ip) + 1):
+                    host_ranges[-1][1] = prev_ip
+                    host_ranges.append([ip, ip])
+
+            if store_hosts:
+                hosts.append(ip)
+            prev_ip = ip
+
+    if host_ranges:
+        host_ranges[-1][1] = prev_ip  # close last IP range
+    if store_hosts:
+        parsed_network_exprs[network] = (hosts, host_ranges)
+    else:
+        parsed_network_exprs[network] = (host_ranges)
     return True
 
 
-def extend_network_to_hosts(network):
-    if "*" in network or "-" in network:
-        return parse_wildcard_ipv4(network)
-    else:
-        return parse_cidr_ipv4(network)
+def get_ip_ranges(network: str):
+    add_wildcard_ipv4(network)
+    return parsed_network_exprs[network][1]
 
 
-def ip_str_to_number(ip):
+def is_valid_net_addr(network: str):
+    return add_wildcard_ipv4(network)
+
+
+def extend_network_to_hosts(network: str):
+    add_wildcard_ipv4(network)
+    return parsed_network_exprs[network][0]
+
+
+def ip_str_to_int(ip):
     return int.from_bytes([int(ip) for ip in ip.split(".")], "big")
+
+
+def del_hosts_outside_net(hosts: dict, network: str):
+    """
+    Deletes all the hosts from the given dict that are
+    not a part of the given network expression.
+    """
+
+    network_ranges = get_ip_ranges(network)
+    network_ranges_int = [(ip_str_to_int(low), ip_str_to_int(high)) for (low, high) in network_ranges]
+    hosts_cpy = copy.deepcopy(hosts)  # because a dict cannot change size during iteration
+    for ip, _ in hosts_cpy.items():
+        try:
+            ip_int = ip_str_to_int(ip)
+        except ValueError:
+            continue
+        if not any(low <= ip_int and ip_int <= high for (low, high) in network_ranges_int):
+            del hosts[ip]
 
 
 def print_exception_and_continue(e):

@@ -11,6 +11,7 @@ import module_seeker
 import utility as util
 
 ANALYSIS_OUT_DIR = "analyis_results"
+HOST_SCORES_FILE = "host_scores.json"
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
 ANALYZER_JOIN_TIMEOUT = 0.38
 
@@ -39,15 +40,34 @@ class Analyzer():
 
     def conduct_analyses(self):
         """
-        Conduct all available analyses to obtain a vulnerability score for every host.
+        Enter analysis phase to obtain a security score for the network.
 
-        :return: A dict having the host IPs as keys and their scores as values
+        :return: The score as string
+        """
+        
+        self.run_module_analyses()
+        if len(self.analysis_modules) == 1:
+            print(util.GREEN + "Analysis completed.")
+        else:
+            print(util.GREEN + "All %d analyses completed." % len(self.analysis_modules))
+        print(util.SANE)
+        self.logger.info("All analyses completed")
+        self.logger.info("Aggregating results")
+        self.result = self.construct_result()
+        self.logger.info("Done")
+        self.logger.info("Hosts analyses completed")
+        # util.show_cursor()  # show cursor again
+        return str(self.result)
+
+    def run_module_analyses(self):
+        """
+        Conduct all avaulable analyses to retrieve for every module a dict with "host->score" entries.
         """
 
         self.results = {}
         # create the output directory for all analyses results
-        analysis_result_out_dir = os.path.join(self.output_dir, ANALYSIS_OUT_DIR)
-        os.makedirs(analysis_result_out_dir, exist_ok=True)
+        self.analysis_out_dir = os.path.join(self.output_dir, ANALYSIS_OUT_DIR)
+        os.makedirs(self.analysis_out_dir, exist_ok=True)
 
         # util.hide_cursor()  # hide cursor
         self.logger.info("Starting host analyses")
@@ -105,7 +125,7 @@ class Analyzer():
             os.chdir(main_cwd)
 
             # create output directory for this module's analysis results
-            module_output_dir = os.path.join(analysis_result_out_dir, os.sep.join(module_no_prefix.split(".")[:-1]))
+            module_output_dir = os.path.join(self.analysis_out_dir, os.sep.join(module_no_prefix.split(".")[:-1]))
             os.makedirs(module_output_dir, exist_ok=True)
 
             # process this module's analysis results
@@ -147,19 +167,6 @@ class Analyzer():
 
             self.logger.info("Analysis %d of %d done" % (i+1, len(self.analysis_modules)))
 
-        if len(self.analysis_modules) == 1:
-            print(util.GREEN + "Analysis completed.")
-        else:
-            print(util.GREEN + "All %d analyses completed." % len(self.analysis_modules))
-        print(util.SANE)
-        self.logger.info("All analyses completed")
-        self.logger.info("Aggregating results")
-        self.result = self.construct_result()
-        self.logger.info("Done")
-        self.logger.info("Hosts analyses completed")
-        # util.show_cursor()  # show cursor again
-        return self.result
-
 
     def set_module_parameters(self, module):
         """
@@ -192,54 +199,66 @@ class Analyzer():
         """
         Accumulate the results from all the different analysis modules into one analysis result.
 
-        :return: a dict having host IPs as keys and their analysis results as values
+        :return: the network's score as 0 <= score <= 10
         """
         
-        if len(self.results) == 0:
-            return {}
-        elif len(self.results) == 1:
-            return self.results[list(self.results.keys())[0]]
-        else:
-            result_counts = {}
-            result_weights = {}
-            result = {}
+        def aggregate_module_scores(module_results: dict):
+            """
+            Aggregate all module results into one dict having host IPs as
+            key and their analysis score as value.
+            """
 
-            for module_name, module_result in self.results.items():
+            host_scores = {}
+            for module_name, module_result in module_results.items():
                 for host, score in module_result.items():
-                    try:  # catch potential 'N/A'
+                    try:  # catch potential 'N/A' or other conversion exception
                         score = float(score)
                     except ValueError:
-                        continue
+                        if host in host_scores:
+                            continue
+                        else:
+                            host_scores[host] = "N/A"
 
-                    if host in result_counts:
-                        result_counts[host] += 1
-                    else:
-                        result_counts[host] = 1
+                    if host not in host_scores:
+                        host_scores[host] = score
+                    elif score > host_scores[host]:
+                        host_scores[host] = score
 
-            for host in result_counts:
-                result_weights[host] = 0
-                result[host] = 0
+            return host_scores
 
-            for module_name, module_result in self.results.items():
-                for host, score in module_result.items():
-                    if host in result_counts:
-                        score = float(score)
-                        weight = (1/result_counts[host]) * score**2 * (score/10)
-                        result_weights[host] += weight
-                        result[host] += weight * score
+        def aggregate_host_scores(host_scores: dict):
+            """
+            Aggregate all host scores into one final network score.
+            """
+            weights, weight_sum = {}, 0
+            for host, score in host_scores.items():
+                try:
+                    score = float(score)
+                except ValueError:
+                    continue
+                weight = (1 / (10 - score))**0.8
+                weights[host] = weight
+                weight_sum += weight
 
-            for host, unnormalized_score_sum in result.items():
-                if not result_weights[host]:
-                    result[host] = "N/A"
-                else:
-                    end_score = unnormalized_score_sum / result_weights[host]
-                    end_score = max(0, end_score)  # ensure score is greater than 0
-                    end_score = min(10, end_score)  # ensure score is less than 10
-                    end_score = str(end_score)  # turn into str (to have an alternative if no score exists, i.e. N/A)
-                    result[host] = end_score
+            numerator = sum([weights[host] * host_scores[host] for host in weights])
+            net_score = numerator / weight_sum
+            net_score = max(0, net_score)  # ensure score is >= 0
+            net_score = min(10, net_score) # ensure score is <= 10
+            return net_score
 
-            for host in self.hosts:  # catch all the hosts that did not get a score
-                if host not in result:
-                    result[host] = "N/A"
+        if len(self.results) == 0:
+            return "N/A"
+        
+        if len(self.results) == 1:
+            host_scores = self.results[list(self.results.keys())[0]]
+        else:
+            host_scores = aggregate_module_scores(self.results)
 
-            return result
+        result = aggregate_host_scores(host_scores)
+
+        # dump host scores to file
+        host_scores_file = os.path.join(self.analysis_out_dir, HOST_SCORES_FILE)
+        with open(host_scores_file, "w") as f:
+            f.write(json.dumps(host_scores, ensure_ascii=False, indent=3))
+
+        return result

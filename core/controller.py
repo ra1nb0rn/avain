@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import json
 import os
 import shutil
 import sys
@@ -15,6 +16,7 @@ SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u25
 UPDATER_JOIN_TIMEOUT = 0.38
 DEFAULT_CONFIG_PATH = "default_config.txt"
 UPDATE_OUTPUT_DIR = "update_output"
+NET_DIR_MAP_FILE = "net_dir_map.json"
 
 class Controller():
 
@@ -210,24 +212,45 @@ class Controller():
 
     def do_analysis(self):
         """
-        First conduct network reconnaissance and then analyze the hosts
-        of the specified network(s) for vulnerabilities.
+        Conduct the vulnerability assessment either in "normal" or "single network mode".
         """
 
+        def do_analysis_helper(networks: list, out_dir: str):
+            # First conduct network reconnaissance and then analyze the hosts
+            # of the specified network(s) for vulnerabilities.
+            scanner = Scanner(networks, self.omit_networks, self.config, self.ports, out_dir,
+                                self.online_only, self.verbose, self.logfile, self.scan_results, self.analysis_only)
+            hosts = scanner.conduct_scans()
+
+            if not self.scan_only:
+                analyzer = Analyzer(hosts, self.config, out_dir, self.online_only, self.verbose, self.logfile) 
+                net_score = analyzer.conduct_analyses()
+                return net_score
+
+            return None
+
         networks = self.networks + self.add_networks
-        scanner = Scanner(networks, self.omit_networks, self.config, self.ports, self.output_dir,
-                            self.online_only, self.verbose, self.logfile, self.scan_results, self.analysis_only)
-        hosts = scanner.conduct_scans()
+        network_scores = {}
+        net_dir_map = {}
+
+        if self.single_network or len(networks) == 1:
+            score = do_analysis_helper(networks, self.output_dir)
+            if score is not None:
+                network_scores["assessed_network"] = score
+        else:
+            for i, net in enumerate(networks):
+                net_dir_map[net] = "network_%d" % (i + 1)
+                score = do_analysis_helper([net], os.path.join(self.output_dir, net_dir_map[net]))
+                network_scores[net] = score
+            if net_dir_map:
+                net_dir_map_out = os.path.join(self.output_dir, NET_DIR_MAP_FILE)
+                with open(net_dir_map_out, "w") as f:
+                    f.write(json.dumps(net_dir_map, ensure_ascii=False, indent=3))
 
         if not self.scan_only:
-            analyzer = Analyzer(hosts, self.config, self.output_dir, self.online_only, self.verbose, self.logfile) 
-            scores = analyzer.conduct_analyses()
-            outfile = os.path.join(self.output_dir, "results.txt")
-            visualizer.visualize_dict_results(scores, outfile)
+            outfile = os.path.join(self.orig_out_dir, "results.json")
+            visualizer.visualize_dict_results(network_scores, outfile)
             self.logger.info("The main output file is called '%s'" % outfile)
 
-        self.logger.info("All created files have been written to '%s'" % self.output_dir)
-        print("All created files have been written to: %s" % self.orig_out_dir)
-        if not self.scan_only:
-            outfile = os.path.join(self.orig_out_dir, "results.txt")
-            print("The main output file is called: %s" % outfile)
+        self.logger.info("All created files have been written to '%s'" % self.output_dir)  # write absolute path
+        print("All created files have been written to: %s" % self.orig_out_dir)  # write relative path

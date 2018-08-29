@@ -68,8 +68,12 @@ class Scanner():
             return
 
         # util.hide_cursor()  # hide cursor
-        self.logger.info("Starting network scan(s)")
-        print(util.BRIGHT_BLUE + "Starting network scans:")
+        if len(self.networks) == 1:
+            self.logger.info("Starting network scans for '%s'" % self.networks[0])
+            print(util.BRIGHT_BLUE + "Starting network scans for '%s':" % self.networks[0])
+        else:
+            self.logger.info("Starting network scans")
+            print(util.BRIGHT_BLUE + "Starting network scans:")
         self.logger.info("%d scanner module(s) have been found" % len(self.scanner_modules))
         self.logger.debug("The following scanner modules have been found: %s"
             % ", ".join(self.scanner_modules))
@@ -185,7 +189,7 @@ class Scanner():
         if self.add_scan_results:
             self.logger.info("Including additional scan results: %s" % ", ".join(self.add_scan_results))
             add_results_dir = os.path.join(self.scan_result_out_dir, "add_scan_results")
-            os.makedirs(add_results_dir)
+            os.makedirs(add_results_dir, exist_ok=True)
             # Iterate over every given file containing a scan result
             for filepath in self.add_scan_results:
                 scan_result = None
@@ -218,6 +222,8 @@ class Scanner():
                 if scan_result:
                     if not "trust" in scan_result:
                         scan_result["trust"] = self.default_trust
+                    if len(self.networks) == 1:  # not in single network mode
+                        util.del_hosts_outside_net(scan_result, self.networks[0])
                     self.results[filepath] = scan_result
             self.logger.info("Done.")
 
