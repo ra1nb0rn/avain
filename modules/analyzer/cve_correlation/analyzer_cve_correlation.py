@@ -98,8 +98,6 @@ def conduct_analysis(results: list):
     created_files = []
     hosts = HOSTS
 
-    check_database()
-
     db_conn = None
     if ONLINE_ONLY:
         logger.info("Gathering information using the online CVE databases.")
