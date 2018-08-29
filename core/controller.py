@@ -249,7 +249,7 @@ class Controller():
                     f.write(json.dumps(net_dir_map, ensure_ascii=False, indent=3))
 
         if not self.scan_only:
-            outfile = os.path.join(self.orig_out_dir, "results.json")
+            outfile = os.path.join(self.output_dir, "results.json")
             visualizer.visualize_dict_results(network_scores, outfile)
             self.logger.info("The main output file is called '%s'" % outfile)
 
