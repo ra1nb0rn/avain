@@ -74,7 +74,10 @@ class Scanner():
         else:
             self.logger.info("Starting network scans")
             print(util.BRIGHT_BLUE + "Starting network scans:")
-        self.logger.info("%d scanner module(s) have been found" % len(self.scanner_modules))
+        if len(self.scanner_modules) == 1:
+            self.logger.info("1 scanner module has been found")
+        else:
+            self.logger.info("%d scanner modules have been found" % len(self.scanner_modules))
         self.logger.debug("The following scanner modules have been found: %s"
             % ", ".join(self.scanner_modules))
 

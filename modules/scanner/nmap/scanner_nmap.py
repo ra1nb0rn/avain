@@ -95,7 +95,7 @@ def conduct_scan(results: list):
     # close redirect file again
     redr_file.close()
 
-    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'." % TEXT_NMAP_OUTPUT_PATH +
+    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'. " % TEXT_NMAP_OUTPUT_PATH +
         "The XML output has been written to '%s'" % XML_NMAP_OUTPUT_PATH)
 
     created_files = [TEXT_NMAP_OUTPUT_PATH, XML_NMAP_OUTPUT_PATH, NETWORKS_PATH, POT_OSES_PATH]

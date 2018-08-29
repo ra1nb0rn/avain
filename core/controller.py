@@ -97,6 +97,7 @@ class Controller():
             os.remove(self.logfile)  # delete logging file if it already exists (from a previous run)
         self.logger = util.get_logger(__name__, self.logfile)
         self.logger.info("Starting the AVAIN program")
+        self.logger.info("Executed call: avain %s" % " ".join(sys.argv[1:]))
 
         # inform user about not being root
         if (networks or add_networks) and os.getuid() != 0:

@@ -72,7 +72,10 @@ class Analyzer():
         # util.hide_cursor()  # hide cursor
         self.logger.info("Starting host analyses")
         print(util.BRIGHT_BLUE + "Starting host analyses:")
-        self.logger.info("%d analysis modules have been found" % len(self.analysis_modules))
+        if len(self.analysis_modules) == 1:
+            self.logger.info("1 analysis module has been found")
+        else:
+            self.logger.info("%d analysis modules have been found" % len(self.analysis_modules))
         self.logger.debug("The following analysis modules have been found: %s"
             % ", ".join(self.analysis_modules))
 
