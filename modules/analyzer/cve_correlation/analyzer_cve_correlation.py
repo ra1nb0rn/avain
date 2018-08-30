@@ -85,7 +85,7 @@ def conduct_analysis(results: list):
                 add_extra_info(host["os"], "cve_extrainfo", ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
                     "Determined more specific CPEs and included some of their CVEs.")
         else:
-            # TODO: implement
+            # TODO: implement / how about using https://github.com/cloudtracer/text2cpe ?
             logger.warning("OS of host %s does not have a CPE. Therefore no CVE analysis can be done for this host's OS." % ip)
 
     def process_port_cves(protocol):
@@ -120,7 +120,7 @@ def conduct_analysis(results: list):
                     add_extra_info(portinfo, "cve_extrainfo", ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
                         "Determined more specific CPEs and included some of their CVEs.")
             else:
-                # TODO: implement
+                # TODO: implement / how about using https://github.com/cloudtracer/text2cpe ?
                 logger.warning("%s port %s of host %s does not have a CPE. Therefore no CVE analysis can be done for this port." % (protocol.upper(), str(portid), ip))
 
     global logger, vulners_api, db_cursor, created_files
@@ -507,8 +507,11 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
         cpe_version = None
     elif len(values) > 2:
         cpe_version = values[2]
+
     general_cve_cpe_data = db_cursor.execute("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end," +
                                         "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % general_cpe).fetchall()
+    general_cve_cpe_data += db_cursor.execute("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end," +
+                                        "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s\"" % (general_cpe + "::%%")).fetchall()
 
     broad_search = cpe_version is None or is_broad_version() or cpe_version == "-"  # '-' stands for all versions
     if broad_search:
@@ -534,8 +537,9 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
     if cpe_version:
         for cpe_iter in found_cves:
-            cpe_iter_version = cpe_iter[7:].split(":")[2]
+            cpe_iter_version = "".join(cpe_iter[7:].split(":")[2:])
             cpe_iter_version = version.parse(cpe_iter_version)
+            cpe_fields = cpe_iter
 
             for entry in general_cve_cpe_data:
                 version_start, version_start_type = entry[1], entry[2]
