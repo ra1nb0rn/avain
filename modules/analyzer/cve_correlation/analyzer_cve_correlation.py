@@ -53,6 +53,41 @@ def conduct_analysis(results: list):
     :return: a tuple contaiging the analyis results/scores and a list of created files by writing it into the result list.
     """
 
+    def process_os_cves():
+        nonlocal host, ip
+
+        if "cpes" in host["os"]:
+            os_cpes = host["os"]["cpes"]
+            host["os"]["original_cpes"] = os_cpes
+            host["os"]["cpes"] = {}
+            broad_cpes = set()
+            for cpe in os_cpes:
+                # get cpe cves
+                if ONLINE_ONLY:
+                    all_cves, broad_search = get_cves_to_cpe_via_vulners(cpe, NUM_CVES_PER_CPE_MAX)
+                else:
+                    all_cves, broad_search = get_cves_to_cpe(cpe, NUM_CVES_PER_CPE_MAX)
+
+                for cur_cpe, cves in all_cves.items():
+                    if broad_search:
+                        broad_cpes.add(cpe)
+
+                    if cur_cpe not in host["os"]["cpes"]:
+                        host["os"]["cpes"][cur_cpe] = cves
+                    else:
+                        logger.warning("CPE '%s' already stored in host '%s'\'s OS information; " % (cur_cpe, ip) +
+                            "check whether program correctly replaced vaguer CPEs with more specific CPEs")
+
+            if len(broad_cpes) == 1:
+                host["os"]["cve_extrainfo"] = ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
+                    "Determined more specific CPEs and included some of their CVEs."
+            elif len(broad_cpes) > 1:
+                host["os"]["cve_extrainfo"] = ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
+                    "Determined more specific CPEs and included some of their CVEs."
+        else:
+            # TODO: implement
+            logger.warning("OS of host %s does not have a CPE. Therefore no CVE analysis can be done for this host's OS." % ip)
+
     def process_port_cves(protocol):
         nonlocal host, ip
 
@@ -114,40 +149,10 @@ def conduct_analysis(results: list):
 
     logger.info("Starting with CVE discovery of all hosts")
     for ip, host in hosts.items():
-        # get OS CVEs
-        if "cpes" in host["os"]:
-            os_cpes = host["os"]["cpes"]
-            host["os"]["original_cpes"] = os_cpes
-            host["os"]["cpes"] = {}
-            broad_cpes = set()
-            for cpe in os_cpes:
-                # get cpe cves
-                if ONLINE_ONLY:
-                    all_cves, broad_search = get_cves_to_cpe_via_vulners(cpe, NUM_CVES_PER_CPE_MAX)
-                else:
-                    all_cves, broad_search = get_cves_to_cpe(cpe, NUM_CVES_PER_CPE_MAX)
-
-                for cur_cpe, cves in all_cves.items():
-                    if broad_search:
-                        broad_cpes.add(cpe)
-
-                    if cur_cpe not in host["os"]["cpes"]:
-                        host["os"]["cpes"][cur_cpe] = cves
-                    else:
-                        logger.warning("CPE '%s' already stored in host '%s'\'s OS information; " % (cur_cpe, ip) +
-                            "check whether program correctly replaced vaguer CPEs with more specific CPEs")
-
-
-
-            if len(broad_cpes) == 1:
-                host["os"]["cve_extrainfo"] = ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
-                    "Determined more specific CPEs and included some of their CVEs."
-            elif len(broad_cpes) > 1:
-                host["os"]["cve_extrainfo"] = ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
-                    "Determined more specific CPEs and included some of their CVEs."
+        if CONFIG["skip_os"].lower() == "true":
+            logger.info("Skipping OS CVE analysis as stated in config file")
         else:
-            # TODO: implement
-            logger.warning("OS of host %s does not have a CPE. Therefore no CVE analysis can be done for this host's OS." % ip)
+            process_os_cves()
 
         # get TCP and UDP cves
         process_port_cves("tcp")
@@ -211,7 +216,7 @@ def create_cve_summary(hosts, scores):
         host_summary = {}
         total_cve_count = 0
         host_summary["os"] = {}
-        if "os" in host:
+        if "os" in host and not CONFIG["skip_os"].lower() == "true":
             for k, v in host["os"].items():
                 if k != "cpes" and k != "original_cpes":
                     host_summary["os"][k] = v
@@ -363,7 +368,7 @@ def calculate_final_scores(hosts: dict):
     # calculate intermediate scores
     for ip, host in hosts.items():
         # get OS CVEs
-        if "cpes" in host["os"]:
+        if "cpes" in host["os"] and not CONFIG["skip_os"].lower() == "true":
             os_cpes = host["os"]["cpes"]
             os_weight_sum, os_score_sum, os_cve_count = 0, 0, 0
 
