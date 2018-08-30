@@ -13,4 +13,4 @@ DB_expire = 20160  // in minutes, i.e. every other week
 // here defined are module specific configuration settings
 [modules.analyzer.cve_correlation.analyzer_cve_correlation]
 DB_expire = 10080  // in minutes, i.e. every week
-skip_os = False
+skip_os = False  // whether to skip OS CVE analysis --> {True, False}
