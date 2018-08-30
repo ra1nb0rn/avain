@@ -26,7 +26,7 @@ class Controller():
         """
         Create a Controller object.
 
-        :param network: A string representing the network to analyze
+        :param networks: A list of strings specifying the networks to analyze
         :param add_networks: A list of networks as strings to additionally analyze
         :param omit_networks: A list of networks as strings to omit from the analysis
         :param update_modules: Whether modules should be updated or initialized
@@ -43,7 +43,7 @@ class Controller():
         :param analysis_only: Whether to only do an analysis with the specified scan results
         """
 
-        self.networks = networks
+        self.networks = networks if networks is not None else []
         self.add_networks = add_networks
         self.omit_networks = omit_networks
 

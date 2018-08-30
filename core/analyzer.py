@@ -233,6 +233,7 @@ class Analyzer():
             """
             Aggregate all host scores into one final network score.
             """
+            
             weights, weight_sum = {}, 0
             for host, score in host_scores.items():
                 try:
@@ -243,10 +244,13 @@ class Analyzer():
                 weights[host] = weight
                 weight_sum += weight
 
-            numerator = sum([weights[host] * host_scores[host] for host in weights])
-            net_score = numerator / weight_sum
-            net_score = max(0, net_score)  # ensure score is >= 0
-            net_score = min(10, net_score) # ensure score is <= 10
+            if weight_sum > 0:
+                numerator = sum([weights[host] * host_scores[host] for host in weights])
+                net_score = numerator / weight_sum
+                net_score = max(0, net_score)  # ensure score is >= 0
+                net_score = min(10, net_score) # ensure score is <= 10
+            else:
+                net_score = "N/A"
             return net_score
 
         if len(self.results) == 0:
