@@ -79,11 +79,11 @@ def conduct_analysis(results: list):
                             "check whether program correctly replaced vaguer CPEs with more specific CPEs")
 
             if len(broad_cpes) == 1:
-                host["os"]["cve_extrainfo"] = ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
-                    "Determined more specific CPEs and included some of their CVEs."
+                add_extra_info(host["os"], "cve_extrainfo", ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
+                    "Determined more specific CPEs and included some of their CVEs.")
             elif len(broad_cpes) > 1:
-                host["os"]["cve_extrainfo"] = ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
-                    "Determined more specific CPEs and included some of their CVEs."
+                add_extra_info(host["os"], "cve_extrainfo", ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
+                    "Determined more specific CPEs and included some of their CVEs.")
         else:
             # TODO: implement
             logger.warning("OS of host %s does not have a CPE. Therefore no CVE analysis can be done for this host's OS." % ip)
@@ -114,11 +114,11 @@ def conduct_analysis(results: list):
                                 "check whether program correctly replaced vaguer CPEs with more specific CPEs")
 
                 if len(broad_cpes) == 1:
-                    portinfo["cve_extrainfo"] = ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
-                        "Determined more specific CPEs and included some of their CVEs."
+                    add_extra_info(portinfo, "cve_extrainfo", ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
+                        "Determined more specific CPEs and included some of their CVEs.")
                 elif len(broad_cpes) > 1:
-                    portinfo["cve_extrainfo"] = ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
-                        "Determined more specific CPEs and included some of their CVEs."
+                    add_extra_info(portinfo, "cve_extrainfo", ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
+                        "Determined more specific CPEs and included some of their CVEs.")
             else:
                 # TODO: implement
                 logger.warning("%s port %s of host %s does not have a CPE. Therefore no CVE analysis can be done for this port." % (protocol.upper(), str(portid), ip))
@@ -180,6 +180,7 @@ def create_cve_summary(hosts, scores):
             host_summary[protocol] = {}
             for portid, portinfo in host[protocol].items():
                 host_summary[protocol][portid] = {}
+                counted_cves = set()
                 for k, v in portinfo.items():
                     if k != "cpes" and k != "original_cpes":
                         host_summary[protocol][portid][k] = v
@@ -188,7 +189,10 @@ def create_cve_summary(hosts, scores):
                     else:
                         cve_count = 0
                         for _, cves in v.items():
-                            cve_count += len(cves.keys())
+                            for cve_id in cves:
+                                if cve_id not in counted_cves:
+                                    cve_count += 1
+                                    counted_cves.add(cve_id)
                         total_cve_count += cve_count
                         host_summary[protocol][portid]["cve_count"] = str(cve_count)
 
@@ -217,6 +221,7 @@ def create_cve_summary(hosts, scores):
         total_cve_count = 0
         host_summary["os"] = {}
         if "os" in host and not CONFIG["skip_os"].lower() == "true":
+            counted_cves = set()
             for k, v in host["os"].items():
                 if k != "cpes" and k != "original_cpes":
                     host_summary["os"][k] = v
@@ -225,7 +230,10 @@ def create_cve_summary(hosts, scores):
                 else:
                     cve_count = 0
                     for _, cves in host["os"]["cpes"].items():
-                        cve_count += len(cves.keys())
+                        for cve_id in cves:
+                            if cve_id not in counted_cves:
+                                cve_count += 1
+                                counted_cves.add(cve_id)
                     total_cve_count += cve_count
                     host_summary["os"]["cve_count"] = str(cve_count)
 
@@ -414,14 +422,21 @@ def calculate_final_scores(hosts: dict):
 
     return host_scores
 
-def get_all_related_cpes(cpe: str):
+
+def parse_cpe_dict():
     global CPE_DICT_ET_CPE_ITEMS
 
     if not CPE_DICT_ET_CPE_ITEMS:
         # open file descriptor for CPE dict in case further lookup has to be done
         logger.info("Parsing CPE dictionary for further lookups")
-        CPE_DICT_ET_CPE_ITEMS = ET.parse(CPE_DICT_FILEPATH).getroot().getchildren()[1:]  # first child needs to be skipped, because it's generator
+        CPE_DICT_ET_CPE_ITEMS = list(ET.parse(CPE_DICT_FILEPATH).getroot())[1:]  # first child needs to be skipped, because it's generator
         logger.info("Done")
+
+
+def get_all_related_cpes(cpe: str):
+    global CPE_DICT_ET_CPE_ITEMS
+
+    parse_cpe_dict()
 
     related_cpes = []
     for cpe_item in CPE_DICT_ET_CPE_ITEMS:
@@ -429,6 +444,7 @@ def get_all_related_cpes(cpe: str):
         if cur_cpe.startswith(cpe) and not cur_cpe == cpe:
             related_cpes.append(cur_cpe)
     return related_cpes
+
 
 def get_more_specific_cpe_cves(cpe: str, cve_gathering_function, max_vulnerabilities):
         logger.info("Trying to find more specific CPEs and look for CVEs again")
@@ -450,14 +466,29 @@ def get_more_specific_cpe_cves(cpe: str, cve_gathering_function, max_vulnerabili
 
         return cve_results
 
+
+def add_extra_info(dict_: dict, info_key: str, text: str):
+    if info_key not in dict_:
+        dict_[info_key] = text
+    else:
+        i = 1
+        while True:
+            extra_string = "%s_%d" % (info_key, i)
+            if extra_string not in dict_:
+                dict_[extra_string] = text
+                return
+            i += 1
+
+
 def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     def is_broad_version():
-        count_direct = db_cursor.execute("SELECT COUNT(cve_id) FROM cve_cpe WHERE cpe LIKE \"{0}:%%\" OR cpe = \"{0}\"".format(general_cpe + ":" + cpe_version)).fetchone()[0]
-        count_indirect = db_cursor.execute("SELECT COUNT(cve_id) FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % (general_cpe + ":" + cpe_version)).fetchone()[0]
+        nonlocal general_cpe, cpe_version
 
-        if count_direct == 0 and count_indirect > 0:
-            return True
-        return False
+        parse_cpe_dict()
+
+        return not any((general_cpe + ":" + cpe_version) == cpe_item.attrib["name"] or
+            (general_cpe + ":" + cpe_version + ":") in cpe_item.attrib["name"]
+            for cpe_item in CPE_DICT_ET_CPE_ITEMS)
 
     cve_results = {}
     values = cpe[7:].split(":")
@@ -465,24 +496,46 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
     # if len(values) > 3:
     #     cpe = cpe[:7] + ":".join(values[:3])  # nvd.nist seems to do this with e.g. cpe:/o:microsoft:windows_10:1607::~~~~x64~
-    found_cves = db_cursor.execute("SELECT DISTINCT cve_id, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % (cpe)).fetchall()
+    found_cves = {}
+    found_cves_specific = db_cursor.execute("SELECT DISTINCT cve_id, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % cpe).fetchall()
+    if found_cves_specific:
+        found_cves[cpe] = {}
+        for cve_id, with_cpes in found_cves_specific:
+            found_cves[cpe][cve_id] = with_cpes 
 
     if len(values) == 2:
         cpe_version = None
     elif len(values) > 2:
         cpe_version = values[2]
     general_cve_cpe_data = db_cursor.execute("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end," +
-                                        "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % (general_cpe)).fetchall()
+                                        "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % general_cpe).fetchall()
 
-    if cpe_version and len(found_cves) > 0:
-        broad_search = False
-        if cpe_version == "-":  # '-' stands for all versions
-            all_version_cves = db_cursor.execute("SELECT cve_id, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s:%%\"" % (general_cpe)).fetchall()
-            found_cves += all_version_cves
+    broad_search = cpe_version is None or is_broad_version() or cpe_version == "-"  # '-' stands for all versions
+    if broad_search:
+        if cpe_version:
+            cur_cpe = general_cpe + ":" + cpe_version
         else:
-            broad_search = is_broad_version()
+            cur_cpe = cpe
 
-            cpe_version = version.parse(cpe_version)
+        specific_cves = []
+        while len(cur_cpe) > 0:
+            specific_cves = db_cursor.execute("SELECT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe).fetchall()
+            if specific_cves:
+                break
+            cur_cpe = cur_cpe[:-1]
+
+        for cve_id, cpe_iter, with_cpes in specific_cves:
+            # values = cpe_iter[7:].split(":")
+            # if len(values) > 3:
+            #     cpe_iter = cpe_iter[:7] + ":".join(values[:3])  # nvd.nist seems to do this with e.g. cpe:/o:microsoft:windows_10:1607::~~~~x64~
+            if cpe_iter not in found_cves:
+                found_cves[cpe_iter] = {}
+            found_cves[cpe_iter][cve_id] = with_cpes
+
+    if cpe_version:
+        for cpe_iter in found_cves:
+            cpe_iter_version = cpe_iter[7:].split(":")[2]
+            cpe_iter_version = version.parse(cpe_iter_version)
 
             for entry in general_cve_cpe_data:
                 version_start, version_start_type = entry[1], entry[2]
@@ -492,74 +545,70 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                 cpe_in = False
                 if version_start and version_end:
                     if version_start_type == "Including" and version_end_type == "Including":
-                        cpe_in = version.parse(version_start) <= cpe_version <= version.parse(version_end)
+                        cpe_in = version.parse(version_start) <= cpe_iter_version <= version.parse(version_end)
                     elif version_start_type == "Including" and version_end_type == "Excluding":
-                        cpe_in = version.parse(version_start) <= cpe_version < version.parse(version_end)
+                        cpe_in = version.parse(version_start) <= cpe_iter_version < version.parse(version_end)
                     elif version_start_type == "Excluding" and version_end_type == "Including":
-                        cpe_in = version.parse(version_start) < cpe_version <= version.parse(version_end)
+                        cpe_in = version.parse(version_start) < cpe_iter_version <= version.parse(version_end)
                     else:
-                        cpe_in = version.parse(version_start) < cpe_version < version.parse(version_end)
+                        cpe_in = version.parse(version_start) < cpe_iter_version < version.parse(version_end)
                 elif version_start:
                     if version_start_type == "Including":
-                        cpe_in = version.parse(version_start) <= cpe_version
+                        cpe_in = version.parse(version_start) <= cpe_iter_version
                     elif version_start_type == "Excluding":
-                        cpe_in = version.parse(version_start) < cpe_version
+                        cpe_in = version.parse(version_start) < cpe_iter_version
                 elif version_end:
                     if version_end_type == "Including":
-                        cpe_in = cpe_version <= version.parse(version_end)
+                        cpe_in = cpe_iter_version <= version.parse(version_end)
                     elif version_end_type == "Excluding":
-                        cpe_in = cpe_version < version.parse(version_end)
+                        cpe_in = cpe_iter_version < version.parse(version_end)
 
                 if cpe_in:
-                    found_cves.append((entry[0], with_cpes))
+                    found_cves[cpe_iter][entry[0]] = with_cpes
 
-        found_cves = sorted(set(found_cves), key=lambda cve: cve[0], reverse=True)
-        found_cves_dict = {}
-        for cve_id, with_cpes in found_cves:
+    # retrieve detailed CVE information
+    cve_details = {}
+    for cpe_iter, cve_dict in found_cves.items():
+        cve_ids = set(cve_dict)
+        cve_detail_entry = {}
+        for cve_id in cve_ids:
+            if cve_id in cve_details:
+                continue
+
             descr, publ, last_mod, cvss_ver, score, vector = db_cursor.execute("SELECT description, published, last_modified, " +
                 "cvss_version, base_score, vector FROM cve WHERE cve_id = \"%s\"" % (cve_id)).fetchone()
-            found_cves_dict[cve_id] = {"id": cve_id, "description": descr, "published": publ, "modified": last_mod,
-                                        "href": "https://nvd.nist.gov/vuln/detail/%s" % cve_id}
+            cve_details[cve_id] = {"id": cve_id, "description": descr, "published": publ, "modified": last_mod,
+                                    "href": "https://nvd.nist.gov/vuln/detail/%s" % cve_id}
 
             if int(float(cvss_ver)) == 2:
-                found_cves_dict[cve_id]["cvssv2"] = score
-                found_cves_dict[cve_id]["vector_short"] = vector
-                transform_cvssv2_to_cvssv3(found_cves_dict[cve_id])
-                found_cves_dict[cve_id]["extrainfo"] = "Specified CVSSv3 score was converted from CVSSv2 score because there was no CVSSv3 score available."
+                cve_details[cve_id]["cvssv2"] = score
+                cve_details[cve_id]["vector_short"] = vector
+                transform_cvssv2_to_cvssv3(cve_details[cve_id])
+                add_extra_info(cve_details[cve_id], "extrainfo", "Specified CVSSv3 score was converted from CVSSv2 score because there was no CVSSv3 score available.")
+            elif int(float(cvss_ver)) == 3:
+                cve_details[cve_id]["cvssv3"] = score
+                cve_details[cve_id]["vector_short"] = vector
             else:
-                found_cves_dict[cve_id]["cvssv3"] = score
-                found_cves_dict[cve_id]["vector_short"] = vector
+                cve_details[cve_id]["cvssv3"] = -1  # replace with N/A later, but needed for sorting here
+                cve_details[cve_id]["vector_short"] = "N/A"
+                add_extra_info(cve_details[cve_id], "extrainfo", "No CVSS score available in the NVD.")
 
-            add_detailed_vector(found_cves_dict[cve_id])
+    for cpe_iter, cve_dict in found_cves.items():
+        cve_ids = sorted(set(cve_dict), key=lambda cve_id: cve_details[cve_id]["cvssv3"], reverse=True)
+        found_cves_dict = {}
+        for cve_id in cve_ids:
+            cve_entry = copy.deepcopy(cve_details[cve_id])
+            if cve_entry["vector_short"] ==  "N/A":
+                cve_entry["cvssv3"] = score
 
-            if with_cpes != "":
-                field = "extrainfo"
-                if field in found_cves_dict[cve_id]:
-                    for i in range(1, 10):
-                        field = "extrainfo%d" % i
-                        if not field in found_cves_dict[cve_id]:
-                             break
+            with_cpes_list = cve_dict[cve_id]
+            if len(with_cpes_list) == 1:
+                add_extra_info(cve_entry, "extrainfo", "Note - only vulnerable in conjunction with '%s'" % ", ".join(with_cpes_list))
+            elif len(with_cpes_list) > 1:
+                add_extra_info(cve_entry, "extrainfo", "Note - only vulnerable in conjunction with either one of {%s}" % ", ".join(with_cpes_list))
+            found_cves_dict[cve_id] = cve_entry
 
-                with_cpes_list = with_cpes.split(",")
-                if len(with_cpes_list) == 1:
-                    found_cves_dict[cve_id][field] = "Note - only vulnerable in conjunction with '%s'" % ", ".join(with_cpes_list)
-                else:
-                    found_cves_dict[cve_id][field] = "Note - only vulnerable in conjunction with either one of {%s}" % ", ".join(with_cpes_list)
-
-        cve_results[cpe] = found_cves_dict
-    else:
-        if cpe_version:
-            logger.info("Finding CVEs for CPE '%s' resulted in too broad CPE version" % cpe)
-            cpe_to_search = cpe
-        else:
-            logger.info("Finding CVEs for CPE '%s' resulted in missing CPE version" % cpe)
-            cpe_to_search = general_cpe
-
-        broad_search = True
-        more_specifc_cves = get_more_specific_cpe_cves(cpe_to_search, get_cves_to_cpe, max_vulnerabilities)
-        logger.info("Retrieved CVEs for all more specific CPEs to '%s'" % cpe_to_search)
-        for cpe, cves in more_specifc_cves.items():
-            cve_results[cpe] = cves
+        cve_results[cpe_iter] = found_cves_dict
 
     if not cve_results:
         cve_results = {cpe: {}}
@@ -569,6 +618,9 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
 def add_detailed_vector(cve: dict):
     vector_short = cve["vector_short"]
+    if vector_short == "N/A":  # no CVSS score available
+        return
+
     if vector_short.startswith("CVSS:3.0/"):
         vector_short = vector_short[len("CVSS:3.0/"):]
 
