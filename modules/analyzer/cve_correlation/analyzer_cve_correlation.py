@@ -79,11 +79,11 @@ def conduct_analysis(results: list):
                             "check whether program correctly replaced vaguer CPEs with more specific CPEs")
 
             if len(broad_cpes) == 1:
-                add_extra_info(host["os"], "cve_extrainfo", ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
-                    "Determined more specific CPEs and included some of their CVEs.")
+                add_extra_info(host["os"], "cve_extrainfo", ("Original CPE was invalid, unofficial or too broad '%s'. " % next(iter(broad_cpes))) + \
+                    "Determined more specific / correct CPEs and included their CVEs")
             elif len(broad_cpes) > 1:
-                add_extra_info(host["os"], "cve_extrainfo", ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
-                    "Determined more specific CPEs and included some of their CVEs.")
+                add_extra_info(host["os"], "cve_extrainfo", ("The following original CPEs were invalid, unofficial or too broad '%s'. " % ", ".join(broad_cpes)) + \
+                    "Determined more specific / correct CPEs and included their CVEs")
         else:
             # TODO: implement / how about using https://github.com/cloudtracer/text2cpe ?
             logger.warning("OS of host %s does not have a CPE. Therefore no CVE analysis can be done for this host's OS." % ip)
@@ -114,11 +114,11 @@ def conduct_analysis(results: list):
                                 "check whether program correctly replaced vaguer CPEs with more specific CPEs")
 
                 if len(broad_cpes) == 1:
-                    add_extra_info(portinfo, "cve_extrainfo", ("Could not find any CVEs for original CPE '%s'. " % next(iter(broad_cpes))) + \
-                        "Determined more specific CPEs and included some of their CVEs.")
+                    add_extra_info(portinfo, "cve_extrainfo", ("Original CPE was invalid, unofficial or too broad '%s'. " % next(iter(broad_cpes))) + \
+                        "Determined more specific / correct CPEs and included their CVEs.")
                 elif len(broad_cpes) > 1:
-                    add_extra_info(portinfo, "cve_extrainfo", ("Could not find any CVEs for original CPEs '%s'. " % ", ".join(broad_cpes)) + \
-                        "Determined more specific CPEs and included some of their CVEs.")
+                    add_extra_info(portinfo, "cve_extrainfo", ("The following original CPEs were invalid, unofficial or too broad '%s'. " % ", ".join(broad_cpes)) + \
+                        "Determined more specific CPEs and included their CVEs.")
             else:
                 # TODO: implement / how about using https://github.com/cloudtracer/text2cpe ?
                 logger.warning("%s port %s of host %s does not have a CPE. Therefore no CVE analysis can be done for this port." % (protocol.upper(), str(portid), ip))
@@ -317,111 +317,106 @@ def check_database():
 
 
 def calculate_final_scores(hosts: dict):
-    def calculate_weight(score: float, item_count: int):
-        return (1/item_count) * score**2 * (score/10)
+    def aggregate_scores_weighted_mean(scores: list):
+        weights, weight_sum = {}, 0
+        for i, score in enumerate(scores):
+            try:
+                score = float(score)
+            except ValueError:
+                continue
+            if score == 10.0:
+                score = 9.99  # prevent division by 0
+            weight = (1 / (10 - score))**0.8
+            weights[i] = weight
+            weight_sum += weight
 
-    def get_end_score(weight_sum: float, unnormalized_score_sum: float):
-        if weight_sum:  # check if weight_sum is not zero
-            end_score = unnormalized_score_sum/weight_sum
-            end_score = max(0, end_score)  # ensure score is greater than 0
-            end_score = min(10, end_score)  # ensure score is less than 10
-            end_score = str(end_score)  # turn into str (to have an alternative if no score exists, i.e. N/A)
+        if weight_sum > 0:
+            numerator = sum([weights[i] * scores[i] for i in range(len(scores))])
+            end_score = numerator / weight_sum
+            end_score = max(0, end_score)  # ensure score is >= 0
+            end_score = min(10, end_score) # ensure score is <= 10
         else:
             end_score = "N/A"
+
         return end_score
 
-    def process_port_cve_scores(protocol):
-        nonlocal aggregate_score_count
+    def aggregate_scores_max(scores: list):
+        end_score = -1
+        for score in scores:
+            try:
+                score = float(score)
+            except ValueError:
+                continue
+            if score > end_score:
+                end_score = score
 
-        for _, portinfo in host[protocol].items():
-            if "cpes" in portinfo:
-                service_cpes = portinfo["cpes"]
-                service_weight_sum, service_score_sum, service_cve_count = 0, 0, 0
+        if end_score < 0:
+            end_score = "N/A"
 
-                for cpe in service_cpes: 
-                    service_cve_count += len(portinfo["cpes"][cpe].keys())
+        return end_score
 
-                for cpe in service_cpes:
-                    for _, cve in portinfo["cpes"][cpe].items():
-                        cvssv3_score = float(cve["cvssv3"])
-                        service_weight = calculate_weight(cvssv3_score, service_cve_count)
-                        service_weight_sum += service_weight
-                        service_score_sum += service_weight * cvssv3_score
-
-                end_score = get_end_score(service_weight_sum, service_score_sum)
-                portinfo["aggregated_cvssv3"] = end_score
-
-                aggregate_score_count += 1
-
-            else:
-                # TODO: implement
-                pass
-
-    def process_port_aggregate_score(protocol):
-        nonlocal weight_sum, score_sum
-        for _, portinfo in host[protocol].items():
-            if "aggregated_cvssv3" in portinfo:
-                try:
-                    cvssv3 = float(portinfo["aggregated_cvssv3"])
-                    weight = calculate_weight(cvssv3, aggregate_score_count)
-                    weight_sum += weight
-                    score_sum += weight * cvssv3
-                except:
-                    pass
-            else:
-                # TODO: implement
-                pass
-
-    aggregate_score_count = 0
-    # calculate intermediate scores
-    for ip, host in hosts.items():
-        # get OS CVEs
-        if "cpes" in host["os"] and not CONFIG["skip_os"].lower() == "true":
-            os_cpes = host["os"]["cpes"]
-            os_weight_sum, os_score_sum, os_cve_count = 0, 0, 0
-
-            for cpe in os_cpes: 
-                os_cve_count += len(os_cpes[cpe].keys())
-
-            for cpe in os_cpes:
-                for _, cve in os_cpes[cpe].items():
-                    cvssv3_score = float(cve["cvssv3"])
-                    os_weight = calculate_weight(cvssv3_score, os_cve_count)
-                    os_weight_sum += os_weight
-                    os_score_sum += os_weight * cvssv3_score
-            aggregate_score_count += 1
-
-            end_score = get_end_score(os_weight_sum, os_score_sum)
-            host["os"]["aggregated_cvssv3"] = end_score
-
+    def add_to_score_lists(broad_aggr: bool, score):
+        nonlocal score_list_aggr, score_list_max
+        if type(score) != float:
+            return
+        if broad_aggr:
+            score_list_aggr.append(score)
         else:
-            # TODO: implement
-            pass
+            score_list_max.append(score)
 
-        # get TCP and UDP cvssv3 score
-        process_port_cve_scores("tcp")
-        process_port_cve_scores("udp")
+    def aggregate_entry(entry: dict):
+        is_broad_entry = set(entry["cpes"].keys()) != set(entry["original_cpes"])
+        if is_broad_entry:
+            counted_cves = set()
+            score_list = []
+            for _, cves_entry in entry["cpes"].items():
+                for cve_id, cve in cves_entry.items():
+                    if cve_id in counted_cves:
+                        continue
+                    counted_cves.add(cve_id)
+                    try:
+                        score = float(cve["cvssv3"])
+                    except ValueError:
+                        continue
+                    score_list.append(score)
+            return True, aggregate_scores_weighted_mean(score_list)
+        else:
+            score_list = []
+            for _, cves_entry in entry["cpes"].items():
+                cves_score_list = [cves_entry[cve_id]["cvssv3"] for cve_id in cves_entry]
+                score_list += cves_score_list
+            return False, aggregate_scores_max(score_list)
+
+    def aggregate_protocol_entry(protocol: str):
+        nonlocal host
+        if protocol in host:
+            for portid, portinfo in host[protocol].items():
+                is_broad_entry, score = aggregate_entry(portinfo)
+                portinfo["aggregated_cvssv3"] = score
+                add_to_score_lists(is_broad_entry, portinfo["aggregated_cvssv3"])
 
     host_scores = {}
     for ip, host in hosts.items():
-        weight_sum, score_sum = 0, 0
-        if "aggregated_cvssv3" in host["os"]:
-            try:
-                cvssv3 = float(host["os"]["aggregated_cvssv3"])
-                weight = calculate_weight(cvssv3, aggregate_score_count)
-                weight_sum += weight
-                score_sum += weight * cvssv3
-            except:
-                pass
+        score_list_aggr = []
+        score_list_max = []
 
-        process_port_aggregate_score("tcp")
-        process_port_aggregate_score("udp")
-        end_score = get_end_score(weight_sum, score_sum)
-        host["final_cvssv3"] = end_score
-        host_scores[ip] = end_score
+        # aggregate entries from OS and ports
+        if "os" in host:
+            broad_aggr, score = aggregate_entry(host["os"])
+            host["os"]["aggregated_cvssv3"] = score
+            add_to_score_lists(broad_aggr, host["os"]["aggregated_cvssv3"])
+        aggregate_protocol_entry("tcp")
+        aggregate_protocol_entry("udp")
+
+        if max(score_list_aggr, default=-1) > max(score_list_max, default=-1):
+            final_score = aggregate_scores_weighted_mean(score_list_aggr + score_list_max)
+        else:
+            final_score = aggregate_scores_max(score_list_aggr + score_list_max)
+        # then aggregate OS and port entries
+        host["final_cvssv3"] = final_score
+        host_scores[ip] = host["final_cvssv3"]
 
     return host_scores
-
 
 def parse_cpe_dict():
     global CPE_DICT_ET_CPE_ITEMS
