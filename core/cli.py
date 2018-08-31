@@ -3,7 +3,6 @@
 import argparse
 import sys
 import os
-import sys
 
 from controller import Controller
 import utility as util
@@ -32,34 +31,34 @@ class Cli():
         parser._action_groups.append(optional_args)
 
         required_args.add_argument("-n", "--networks", nargs="+", help="specify networks to scan as plain IP or IP in " +
-            "CIDR, range or wildcard notation")
+                                   "CIDR, range or wildcard notation")
         required_args.add_argument("-nL", "--network-list", help="a list that specifies networks to include into or " +
-            "exclude from the scan")
-        required_args.add_argument("-uM", "--update-modules", action="store_true", help="make the modules that have an "
-            + "update mechanism update")
-        required_args.add_argument("-aO", "--analysis-only", action="store_true", help="skip scanning phase. Only do an "
-            "analysis with the user provided scan results")
-
+                                   "exclude from the scan")
+        required_args.add_argument("-uM", "--update-modules", action="store_true", help="make the modules that have an " +
+                                   "update mechanism update")
+        required_args.add_argument("-aO", "--analysis-only", action="store_true", help="skip scanning phase. Only do an " +
+                                   "analysis with the user provided scan results")
         optional_args.add_argument("-c", "--config", help="specify a config file to use")
         optional_args.add_argument("-o", "--output", help="specify the output folder name")
         optional_args.add_argument("-p", "--ports", help="specify which ports to scan on every host")
         optional_args.add_argument("-sN", "--single-network", action="store_true", help="operate in " + 
-            "single network mode meaning that all specified networks are considered to be a subnet of one common supernet")
+                                   "single network mode meaning that all specified networks are considered " +
+                                   "to be a subnet of one common supernet")
         optional_args.add_argument("-sR", "--scan-results", nargs="+", help="specify additional scan results to include " + 
-            "into the final scan result")
+                                   "into the final scan result")
         optional_args.add_argument("-aR", "--analysis-results", nargs="+", help="specify additional analysis results to " +
-            "include into the final analysis result")
+                                   "include into the final analysis result")
         optional_args.add_argument("-sO", "--scan-only", action="store_true", help="only do a network scan and omit the " +
-            "analysis phase")
+                                   "analysis phase")
         optional_args.add_argument("-oO", "--online-only", action="store_true", help="only look up information online " +
-            "(where applicable)")
+                                   "(where applicable)")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
 
         self.args = parser.parse_args()
         if (not self.args.networks) and (not self.args.network_list) and (not self.args.scan_results) \
                 and (not self.args.update_modules) and (not self.args.analysis_only):
             parser.error("at least one of the following arguments is required: -n/--network," +
-                            "-nL/--network-list, -uD/--update-modules or -aO/--analysis-only")
+                         "-nL/--network-list, -uD/--update-modules or -aO/--analysis-only")
 
         self.parse_network_list(parser)
         self.validate_input(parser)
