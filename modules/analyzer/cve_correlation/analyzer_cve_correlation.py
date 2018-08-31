@@ -20,7 +20,7 @@ if __name__ != "__main__":
     from ... import utility as util
 
 HOST_CVE_FILE = "found_cves.json"
-DATABASE_FILE = "cve_db.db3"
+DATABASE_FILE = "nvd_db.db3"
 SUMMARY_FILE = "cve_summary.json"
 
 HOSTS = {}  # a string representing the network to analyze
@@ -290,7 +290,7 @@ def check_database():
 
         update_files = []
         logger.info(log_msg)
-        module_updater.update_module(update_files)
+        module_updater.update_module(update_files, logfile=LOGFILE)
         logger.info("Done.")
         os.makedirs("db_update", exist_ok=True)
         update_files_renamed = []
@@ -313,7 +313,7 @@ def check_database():
         else:
             logger.info("Database is up-to-date; expires in %s" % str(db_age_limit - db_age))
     else:
-        do_db_update("Database has expired. Conducting update.")
+        do_db_update("Database does not exist. Installing.")
 
 
 def calculate_final_scores(hosts: dict):
@@ -365,11 +365,11 @@ def calculate_final_scores(hosts: dict):
             score_list_max.append(score)
 
     def aggregate_entry(entry: dict):
-        is_broad_entry = set(entry["cpes"].keys()) != set(entry["original_cpes"])
+        is_broad_entry = set(entry.get("cpes", {}).keys()) != set(entry.get("original_cpes", {}))
         if is_broad_entry:
             counted_cves = set()
             score_list = []
-            for _, cves_entry in entry["cpes"].items():
+            for _, cves_entry in entry.get("cpes", {}).items():
                 for cve_id, cve in cves_entry.items():
                     if cve_id in counted_cves:
                         continue
@@ -382,7 +382,7 @@ def calculate_final_scores(hosts: dict):
             return True, aggregate_scores_weighted_mean(score_list)
         else:
             score_list = []
-            for _, cves_entry in entry["cpes"].items():
+            for _, cves_entry in entry.get("cpes", {}).items():
                 cves_score_list = [cves_entry[cve_id]["cvssv3"] for cve_id in cves_entry]
                 score_list += cves_score_list
             return False, aggregate_scores_max(score_list)
