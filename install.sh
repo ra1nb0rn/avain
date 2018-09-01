@@ -123,9 +123,9 @@ echo "Done"
 # Install AVAIN script and link it
 echo "Creating avain executable ..."
 if [ "${KERNEL}" == "Darwin" ]; then
-    AVAIN_DIR=$(dirname "$(greadlink -f .)")
+    AVAIN_DIR=$(dirname "$(greadlink -f src)")
 else
-    AVAIN_DIR=$(dirname "$(readlink -f .)")
+    AVAIN_DIR=$(dirname "$(readlink -f src)")
 fi
 
 cat << EOF > avain
