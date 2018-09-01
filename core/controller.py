@@ -6,15 +6,17 @@ import shutil
 import sys
 import threading
 
-from analyzer import Analyzer
-import module_seeker
+from module_updater import ModuleUpdater
 from scanner import Scanner
+from analyzer import Analyzer
 import utility as util
 import visualizer
 
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
 UPDATER_JOIN_TIMEOUT = 0.38
 DEFAULT_CONFIG_PATH = "default_config.txt"
+SCANNER_OUTPUT_DIR = "scan_results"
+ANALYZER_OUTPUT_DIR = "analysis_results"
 UPDATE_OUTPUT_DIR = "update_output"
 NET_DIR_MAP_FILE = "net_dir_map.json"
 
@@ -109,107 +111,15 @@ class Controller():
         Execute the main program depending on the given program parameters.
         """
         if self.update_modules:
-            self.start_module_updates()
+            updater = ModuleUpdater(os.path.join(self.output_dir, UPDATE_OUTPUT_DIR),
+                                    self.config, self.logfile, self.verbose)
+            updater.run()
 
         if self.networks or self.add_networks or self.scan_only or self.analysis_only:
             self.do_analysis()
 
         # change back to original directory
         os.chdir(self.original_cwd)
-
-    def start_module_updates(self):
-        """
-        Update modules that have a separate update module by calling the update module's update method.
-        """
-
-        def set_module_parameters(module):
-            """
-            Set a modules update parameters
-            """
-            all_module_attributes = [attr_tuple[0] for attr_tuple in inspect.getmembers(module)]
-            if "VERBOSE" in all_module_attributes:
-                module.VERBOSE = self.verbose
-            if "LOGFILE" in all_module_attributes:
-                module.LOGFILE = self.logfile
-
-        update_modules = module_seeker.find_all_module_updater_modules()
-        # util.hide_cursor()  # hide cursor
-        self.logger.info("Starting module update(s)")
-        print(util.BRIGHT_BLUE + "Starting module updates:")
-        self.logger.info("%d module update module(s) have been found" % len(update_modules))
-        self.logger.debug("The following module update modules have been found: %s"
-            % ", ".join(update_modules))
-
-        # create output directory for file created by update modules
-        update_outdir = os.path.join(self.output_dir, UPDATE_OUTPUT_DIR)
-        os.makedirs(update_outdir, exist_ok=True)
-
-        # iterate over all available update modules
-        for i, update_module_path in enumerate(update_modules):
-            # get update module name
-            update_module = update_module_path.replace(os.sep, ".")
-            update_module = update_module.replace(".py", "")
-            update_module_noprefix = update_module.replace("modules.", "", 1)
-
-            # import the respective python module
-            module = importlib.import_module(update_module)
-
-            # change into the module's directory
-            main_cwd = os.getcwd()
-            module_dir = os.path.dirname(update_module_path)
-            os.chdir(module_dir)
-
-            # set the module's scan parameters (e.g. network, ports, etc.)
-            set_module_parameters(module)
-
-            # initiate the module's update procedure
-            self.logger.info("Starting module update %d of %d" % (i+1, len(update_modules)))
-            created_files = []
-            update_thread = threading.Thread(target=module.update_module, args=(created_files,))
-
-            update_thread.start()
-            # TODO: Check for TTY (https://www.tutorialspoint.com/python/os_isatty.htm or other)
-            show_progress_state = 0
-            while update_thread.is_alive():
-                update_thread.join(timeout=UPDATER_JOIN_TIMEOUT)
-                print(util.GREEN + "Conducting update %d of %d - " % (i+1, len(update_modules)), end="")
-                print(util.SANE + update_module_noprefix + "  ", end="")
-                print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
-
-                util.clear_previous_line()
-                if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
-                    show_progress_state = 0
-                else:
-                    show_progress_state += 1
-
-            # change back into the main directory
-            os.chdir(main_cwd)
-
-            # create output directory for this module's update results
-            module_output_dir = os.path.join(update_outdir, os.sep.join(update_module_noprefix.split(".")[:-1]))
-            os.makedirs(module_output_dir, exist_ok=True)
-
-            if created_files:
-                for file in created_files:
-                    rel_dir = os.path.dirname(file)
-                    if os.path.isabs(rel_dir):
-                        rel_dir = path.relpath(rel_dir, os.path.abspath(module_dir))
-                    file_out_dir = os.path.join(module_output_dir, rel_dir)
-                    os.makedirs(file_out_dir, exist_ok=True)
-                    file_out_path = os.path.join(file_out_dir, os.path.basename(file))
-                    if os.path.isabs(file):
-                        shutil.move(file, file_out_path)
-                    else:
-                        shutil.move(os.path.join(module_dir, file), file_out_path)
-
-            self.logger.info("Module update %d of %d done" % (i+1, len(update_modules)))
-
-        if len(update_modules) == 1:
-            print(util.GREEN + "Update completed.")
-        else:
-            print(util.GREEN + "All %d updates completed." % len(update_modules))
-        print(util.SANE)
-        self.logger.info("All module update(s) completed")
 
     def do_analysis(self):
         """
@@ -219,15 +129,18 @@ class Controller():
         def do_analysis_helper(networks: list, out_dir: str):
             # First conduct network reconnaissance and then analyze the hosts
             # of the specified network(s) for vulnerabilities.
-            scanner = Scanner(networks, self.omit_networks, self.config, self.ports, out_dir,
-                                self.online_only, self.verbose, self.logfile, self.scan_results, self.analysis_only)
-            hosts = scanner.conduct_scans()
+            scanner = Scanner(os.path.join(out_dir, SCANNER_OUTPUT_DIR), self.config,
+                              self.logfile, self.verbose, self.scan_results, networks,
+                              self.omit_networks, self.ports, self.analysis_only,
+                              self.online_only)
+            hosts = scanner.run()
 
             if not self.scan_only:
-                analyzer = Analyzer(hosts, self.config, out_dir, self.online_only, self.verbose, self.logfile) 
-                net_score = analyzer.conduct_analyses()
+                analyzer = Analyzer(os.path.join(out_dir, ANALYZER_OUTPUT_DIR), self.config,
+                                    self.logfile, self.verbose, self.analysis_results,
+                                    hosts, self.online_only)
+                net_score = analyzer.run()
                 return net_score
-
             return None
 
         networks = self.networks + self.add_networks
@@ -237,7 +150,10 @@ class Controller():
         if self.single_network or len(networks) == 1 or self.analysis_only:
             score = do_analysis_helper(networks, self.output_dir)
             if score is not None:
-                network_scores["assessed_network"] = score
+                if self.single_network or self.analysis_only:
+                    network_scores["assessed_network"] = score
+                else:
+                    network_scores[networks[0]] = score
         else:
             for i, net in enumerate(networks):
                 net_dir_map[net] = "network_%d" % (i + 1)

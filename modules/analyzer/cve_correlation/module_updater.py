@@ -17,10 +17,12 @@ DB_BACKUP_FILE = "nvd_db_bak.db3"
 if __name__ != "__main__":
     from ... import utility as util
 
-def update_module(created_files: list, logfile: str=None):
+LOGFILE = None
+
+def update_module(results: list):
     global logger
-    if __name__ != "__main__" and logfile:
-        logger = util.get_logger(__name__, logfile)
+    if __name__ != "__main__" and LOGFILE:
+        logger = util.get_logger(__name__, LOGFILE)
     else:
         logger = None
 
@@ -66,7 +68,8 @@ def update_module(created_files: list, logfile: str=None):
                 return
             zipfiles.append(outname)
 
-    created_files.append(WGET_OUTFILE)
+
+    created_files = [WGET_OUTFILE]
 
     if os.path.isfile("wget-log"):
         os.remove("wget-log")
@@ -104,6 +107,8 @@ def update_module(created_files: list, logfile: str=None):
     shutil.rmtree(NVD_DATAFEED_DIR)
     if os.path.isfile(DB_BACKUP_FILE):
         os.remove(DB_BACKUP_FILE)
+
+    results.append((None, created_files))
 
 def rollback():
     communicate_warning("An error occured, rolling back database update")
