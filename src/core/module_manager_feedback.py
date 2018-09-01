@@ -3,8 +3,8 @@ import json
 import os
 import shutil
 
-import utility as util
-from module_manager import ModuleManager
+import core.utility as util
+from core.module_manager import ModuleManager
 
 class ModuleManagerFeedback(ModuleManager):
     def __init__(self, output_dir: str, config: dict, logfile: str, verbose: bool,

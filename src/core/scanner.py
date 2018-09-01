@@ -4,9 +4,9 @@ import json
 import os
 from typing import Callable
 
-import utility as util
-from module_manager_feedback import ModuleManagerFeedback
-from module_manager import ModuleManager
+import core.utility as util
+from core.module_manager_feedback import ModuleManagerFeedback
+from core.module_manager import ModuleManager
 
 AGGR_GROUP_FILE = "aggregation_groups.json"
 AGGR_OPTION_FILE = "aggregation_options.json"

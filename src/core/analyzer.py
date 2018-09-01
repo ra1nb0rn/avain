@@ -3,8 +3,8 @@ import inspect
 import json
 import os
 
-from module_manager_feedback import ModuleManagerFeedback
-from module_manager import ModuleManager
+from core.module_manager_feedback import ModuleManagerFeedback
+from core.module_manager import ModuleManager
 
 ADDITIONAL_RESULTS_DIR = "add_analysis_results"
 HOST_SCORES_FILE = "host_scores.json"

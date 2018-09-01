@@ -108,7 +108,7 @@ echo ""
 echo "Building modules ..."
 echo ""
 CWD=$(pwd)
-find ./modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
+find src/modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
     cd "$(dirname ${file})"
     ./avain_build.sh
     if [ $? != 0 ]; then
@@ -123,15 +123,16 @@ echo "Done"
 # Install AVAIN script and link it
 echo "Creating avain executable ..."
 if [ "${KERNEL}" == "Darwin" ]; then
-    CORE_DIR=$(dirname "$(greadlink -f core/cli.py)")
+    AVAIN_DIR=$(dirname "$(greadlink -f .)")
 else
-    CORE_DIR=$(dirname "$(readlink -f core/cli.py)")
+    AVAIN_DIR=$(dirname "$(readlink -f .)")
 fi
 
 cat << EOF > avain
 #!/bin/sh
-CORE_DIR="${CORE_DIR}"
-exec "\${CORE_DIR}/cli.py" "\$@"
+AVAIN_DIR="${AVAIN_DIR}"
+export AVAIN_DIR
+exec "\${AVAIN_DIR}/src/cli.py" "\$@"
 EOF
 
 chmod +x avain

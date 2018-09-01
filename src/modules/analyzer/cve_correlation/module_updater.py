@@ -15,7 +15,7 @@ DB_FILE = "nvd_db.db3"
 DB_BACKUP_FILE = "nvd_db_bak.db3"
 
 if __name__ != "__main__":
-    from ... import utility as util
+    from core import utility as util
 
 LOGFILE = None
 

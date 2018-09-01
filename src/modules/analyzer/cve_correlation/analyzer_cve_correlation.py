@@ -16,8 +16,8 @@ import warnings
 import xml.etree.ElementTree as ET
 
 if __name__ != "__main__":
-    from . import module_updater
-    from ... import utility as util
+    from .module_updater import update_module
+    from core import utility as util
 
 HOST_CVE_FILE = "found_cves.json"
 DATABASE_FILE = "nvd_db.db3"
@@ -29,7 +29,7 @@ VERBOSE = False  # specifying whether to provide verbose output or not
 LOGFILE = ""
 CONFIG = {}
 
-CPE_DICT_FILEPATH = "..{0}..{0}..{0}resources{0}official-cpe-dictionary_v2.2.xml".format(os.sep)
+CPE_DICT_FILEPATH = "{0}{1}resources{1}official-cpe-dictionary_v2.2.xml".format(os.environ["AVAIN_DIR"], os.sep)
 CPE_DICT_ET_CPE_ITEMS = None
 NUM_CVES_PER_CPE_MAX = 25
 VULNERS_MAX_VULNS = 1000
@@ -290,7 +290,7 @@ def check_database():
 
         update_files = []
         logger.info(log_msg)
-        module_updater.update_module(update_files, logfile=LOGFILE)
+        update_module(update_files, logfile=LOGFILE)
         logger.info("Done.")
         os.makedirs("db_update", exist_ok=True)
         update_files_renamed = []

@@ -2,13 +2,12 @@ import json
 import os
 import subprocess
 
-from .... import utility as util
+from core import utility as util
 
 # Output files
 HYDRA_TEXT_OUTPUT = "hydra_output.txt"
 HYDRA_JSON_OUTPUT = "hydra_output.json"
 HYDRA_TARGETS_FILE = "targets.txt"
-TIMEOUT_FILE = "timeout.txt"
 
 # Module parameters
 HOSTS = {}  # a string representing the network to analyze
@@ -17,7 +16,6 @@ LOGFILE = ""
 
 # Module variables
 WORDLIST_PATH = "..{0}wordlists{0}mirai_user_pass.txt".format(os.sep)
-HYDRA_TIMEOUT = 300  # in seconds
 logger = None
 
 ### Calculation in CVSS v3 for default credential vulnerability resulted in:
@@ -25,7 +23,7 @@ logger = None
 
 def conduct_analysis(results: list):
     """
-    Analyze the specified hosts in HOSTS for susceptibility to Telnet password cracking with the MIRAI credentials.
+    Analyze the specified hosts in HOSTS for susceptibility to SSH password cracking with the MIRAI credentials.
 
     :return: a tuple containing the analyis results/scores and a list of created files by writing it into the result list.
     """
@@ -33,7 +31,7 @@ def conduct_analysis(results: list):
     # setup logger
     global logger, created_files
     logger = util.get_logger(__name__, LOGFILE)
-    logger.info("Starting with Mirai Telnet susceptibility analysis")
+    logger.info("Starting with Mirai SSH susceptibility analysis")
     wrote_target = False
 
     cleanup()  # cleanup potentially old files
@@ -41,38 +39,29 @@ def conduct_analysis(results: list):
     with open(HYDRA_TARGETS_FILE, "w") as f:
         for ip, host in HOSTS.items():
             for portid, portinfo in host["tcp"].items():
-                if portid == "23":
+                if portid == "22":
                     f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
-                elif "service" in portinfo and "telnet" in portinfo["service"].lower():
+                elif "service" in portinfo and "ssh" in portinfo["service"].lower():
                     f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
-                elif "name" in portinfo and "telnet" in portinfo["name"].lower():
+                elif "name" in portinfo and "ssh" in portinfo["name"].lower():
                     f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
 
-    hydra_call = ["hydra", "-C", WORDLIST_PATH, "-I", "-M", HYDRA_TARGETS_FILE, "-b", "json", "-o", HYDRA_JSON_OUTPUT, "telnet"]
+    hydra_call = ["hydra", "-C", WORDLIST_PATH, "-I", "-M", HYDRA_TARGETS_FILE, "-b", "json", "-o", HYDRA_JSON_OUTPUT, "ssh"]
 
     if wrote_target:
         # execute hydra command if at least one target exists
         logger.info("Beginning Hydra Brute Force with command: %s" % " ".join(hydra_call))
         redr_file = open(HYDRA_TEXT_OUTPUT, "w")
-        created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
-        try:
-            subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT, timeout=HYDRA_TIMEOUT)
-        except subprocess.TimeoutExpired:
-            with open(TIMEOUT_FILE, "w") as f:
-                f.write("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful." % HYDRA_TIMEOUT)
-            logger.warning("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful." % HYDRA_TIMEOUT)
-            created_files.append(TIMEOUT_FILE)
-            results.append(({}, created_files))
-            return
-
+        subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
         redr_file.close()
         logger.info("Done")
 
         # parse and process Hydra output
         logger.info("Processing Hydra Output")
+        created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
         if os.path.isfile(HYDRA_JSON_OUTPUT):
             result = process_hydra_output()
         else:
@@ -101,7 +90,6 @@ def cleanup():
     remove_file(HYDRA_TEXT_OUTPUT)
     remove_file(HYDRA_JSON_OUTPUT)
     remove_file(HYDRA_TARGETS_FILE)
-    remove_file(TIMEOUT_FILE)
 
 
 def process_hydra_output():

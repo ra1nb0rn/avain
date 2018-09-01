@@ -1,7 +1,7 @@
 import json
 import pprint
 
-import utility as util
+import core.utility as util
 
 def visualize_dict_results(results: dict, outfile: str):
     print(util.BRIGHT_BLUE + "Results:" + util.SANE)

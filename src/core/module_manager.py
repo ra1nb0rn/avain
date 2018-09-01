@@ -7,7 +7,7 @@ import os
 import shutil
 import threading
 
-import utility as util
+import core.utility as util
 
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572",
                          "\u2502", "\u2571", "\u2500", "\u2572"]

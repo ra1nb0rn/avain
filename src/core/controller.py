@@ -6,15 +6,15 @@ import shutil
 import sys
 import threading
 
-from module_updater import ModuleUpdater
-from scanner import Scanner
-from analyzer import Analyzer
-import utility as util
-import visualizer
+from core.module_updater import ModuleUpdater
+from core.scanner import Scanner
+from core.analyzer import Analyzer
+import core.utility as util
+import core.visualizer as visualizer
 
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
 UPDATER_JOIN_TIMEOUT = 0.38
-DEFAULT_CONFIG_PATH = "default_config.txt"
+DEFAULT_CONFIG_PATH = "%s%sconfig/default_config.txt" % (os.environ["AVAIN_DIR"], os.sep)
 SCANNER_OUTPUT_DIR = "scan_results"
 ANALYZER_OUTPUT_DIR = "analysis_results"
 UPDATE_OUTPUT_DIR = "update_output"

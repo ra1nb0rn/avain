@@ -4,8 +4,8 @@ import argparse
 import sys
 import os
 
-from controller import Controller
-import utility as util
+from core.controller import Controller
+import core.utility as util
 
 # TODO: time modifiers like in nmap as parameters?
 # TODO: is_valid_net_addr improvements!

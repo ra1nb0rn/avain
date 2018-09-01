@@ -5,7 +5,7 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
-from ... import utility as util
+from core import utility as util
 
 XML_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.xml"
 TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"

@@ -1,4 +1,4 @@
-from module_manager import ModuleManager
+from core.module_manager import ModuleManager
 
 UPDATER_JOIN_TIMEOUT = 0.38
 
