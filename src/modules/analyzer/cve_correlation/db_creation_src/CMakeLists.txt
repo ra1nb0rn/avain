@@ -14,9 +14,12 @@ include_directories(SQLiteCpp/include)
 add_subdirectory(SQLiteCpp)
 
 # Include Json C++ file
-include_directories(Json/single_include)
+include_directories(json/single_include)
 
 SET_target_properties(sqlite3 PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 ADD_EXECUTABLE(create_db create_db.cpp)
-TARGET_LINK_LIBRARIES(create_db SQLiteCpp sqlite3)
+TARGET_LINK_LIBRARIES(create_db SQLiteCpp sqlite3 pthread)
+if (NOT APPLE)
+    TARGET_LINK_LIBRARIES(create_db dl)
+endif()
