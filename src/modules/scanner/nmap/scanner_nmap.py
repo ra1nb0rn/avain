@@ -59,7 +59,6 @@ def conduct_scan(results: list):
 
     # check if process owner is root and change nmap call accordingly
     if os.getuid() == 0:
-        nmap_call.insert(0, "sudo")
         nmap_call.append("-sSU")  #  scan for TCP and UDP (UDP requires root privilege)
 
     if not fast_scan:
