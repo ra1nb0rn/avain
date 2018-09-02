@@ -12,6 +12,8 @@ import core.utility as util
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572",
                          "\u2502", "\u2571", "\u2500", "\u2572"]
 
+PRINT_LOCK_ACQUIRE_TIMEOUT = 1  # in s
+
 class ModuleManager(metaclass=ABCMeta):
 
     def __init__(self, output_dir: str, config: dict, logfile: str, verbose: bool):
@@ -107,12 +109,19 @@ class ModuleManager(metaclass=ABCMeta):
             show_progress_state = 0
             while module_thread.is_alive():
                 module_thread.join(timeout=self.join_timeout)
+
+                if not util.PRINT_MUTEX.acquire(timeout=PRINT_LOCK_ACQUIRE_TIMEOUT):
+                    continue
+
                 print(util.GREEN + "Conducting %s %d of %d - " %
                       (self.mgmt_type, i+1, len(self.modules)), end="")
                 print(util.SANE + module_str_no_prefix + "  ", end="")
                 print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
-
+                print(util.SANE, end="")  # cleanup colors, if module would like to print
                 util.clear_previous_line()
+
+                util.PRINT_MUTEX.release()
+
                 if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
                     show_progress_state = 0
                 else:

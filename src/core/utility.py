@@ -10,6 +10,7 @@ import sys
 import tempfile
 import datetime
 import xml.etree.ElementTree as ET
+from threading import Lock
 
 # TODO: How to handle broadcast and network identifier addresses. Decide to include or not and fix.
 
@@ -29,6 +30,10 @@ MAGENTA = "\u001b[35m"
 CURSOR_PREV_LINE = "\033[F"
 CLEAR_UNTIL_EOL = "\033[K"
 
+# mutex to prevent concurrent printing
+PRINT_MUTEX = Lock()
+
+# storing all parsed network expressions
 parsed_network_exprs = {}
 
 
@@ -211,6 +216,17 @@ def parse_config(filepath: str, base_config:dict = {}):
                 config[cur_module][k] = v
 
     return config
+
+
+def printit(text: str, end: str="\n", color=SANE):
+    """
+    A function allowing for thread safe printing in AVAIN.
+    """
+
+    PRINT_MUTEX.acquire()
+    print(color, end="")
+    print(text, end=end)
+    PRINT_MUTEX.release()
 
 
 def compute_cosine_similarity(text_1: str, text_2: str):
