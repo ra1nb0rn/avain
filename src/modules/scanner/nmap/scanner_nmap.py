@@ -540,6 +540,7 @@ def discard_unuseful_info(parsed_host):
                     if osclass.get("cpes", []):
                         for cpe in osclass["cpes"]:
                             store_os = True
+                            replace_accuracy = 0
                             if potential_oses:
                                 for i, pot_os in enumerate(potential_oses):
                                     # if this cpe is substring of another OS's cpe
@@ -549,11 +550,14 @@ def discard_unuseful_info(parsed_host):
                                     # if this cpe is a true superstring of another OS's cpe
                                     if any(pot_cpe in cpe and not cpe == pot_cpe for pot_cpe in pot_os["cpes"]):
                                         store_os = True
+                                        if int(pot_os["accuracy"]) > int(replace_accuracy):
+                                            replace_accuracy = pot_os["accuracy"]
                                         del potential_oses[i]
 
                             if store_os:
+                                accuracy = str(max([int(osclass["accuracy"]), int(replace_accuracy)]))
                                 potential_oses.append({"name": name, "cpes": osclass["cpes"],
-                                    "accuracy": osclass["accuracy"], "type": osclass.get("type", "")})
+                                    "accuracy": accuracy, "type": osclass.get("type", "")})
                                 break
                     else:
                         if not any(name in pot_os["name"] for pot_os in potential_oses):
