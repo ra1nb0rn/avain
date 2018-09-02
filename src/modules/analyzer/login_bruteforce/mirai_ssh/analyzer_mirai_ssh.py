@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import subprocess
 
@@ -12,7 +13,6 @@ HYDRA_TARGETS_FILE = "targets.txt"
 # Module parameters
 HOSTS = {}  # a string representing the network to analyze
 VERBOSE = False  # specifying whether to provide verbose output or not
-LOGFILE = ""
 
 # Module variables
 WORDLIST_PATH = "..{0}wordlists{0}mirai_user_pass.txt".format(os.sep)
@@ -30,7 +30,7 @@ def conduct_analysis(results: list):
 
     # setup logger
     global logger, created_files
-    logger = util.get_logger(__name__, LOGFILE)
+    logger = logging.getLogger(__name__)
     logger.info("Starting with Mirai SSH susceptibility analysis")
     wrote_target = False
 

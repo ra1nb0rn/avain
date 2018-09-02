@@ -12,7 +12,7 @@ ANALYZER_JOIN_TIMEOUT = 0.38
 
 class Analyzer(ModuleManagerFeedback):
 
-    def __init__(self, output_dir: str, config: dict, logfile: str, verbose: bool,
+    def __init__(self, output_dir: str, config: dict, verbose: bool,
                  add_results: list, hosts: dict, online_only: bool):
         """
         Create an Analyzer object to analyze the given hosts.
@@ -20,13 +20,12 @@ class Analyzer(ModuleManagerFeedback):
         :param output_dir: A string specifying the output directory of the analysis
         :param config: The used config
         :param verbose: Specifies whether to provide verbose output or not
-        :param logfile: a logfile for logging information
         :param add_results: additional result files to include into the result
         :param hosts: The hosts to analyze for vulnerabilities
         :param online_only: Specifies whether to look up information only online (where applicable)
         """
 
-        super().__init__(output_dir, config, logfile, verbose, add_results)
+        super().__init__(output_dir, config, verbose, add_results)
         self.hosts = hosts
         self.online_only = online_only
 

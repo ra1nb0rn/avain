@@ -5,6 +5,7 @@ import copy
 from cvsslib import cvss3, calculate_vector
 import datetime
 import json
+import logging
 import os
 from packaging import version
 import requests
@@ -26,7 +27,6 @@ SUMMARY_FILE = "cve_summary.json"
 HOSTS = {}  # a string representing the network to analyze
 ONLINE_ONLY = False
 VERBOSE = False  # specifying whether to provide verbose output or not
-LOGFILE = ""
 CONFIG = {}
 
 CPE_DICT_FILEPATH = "{0}{1}resources{1}official-cpe-dictionary_v2.2.xml".format(os.environ["AVAIN_DIR"], os.sep)
@@ -126,7 +126,7 @@ def conduct_analysis(results: list):
     global logger, vulners_api, db_cursor, created_files
 
     # setup logger
-    logger = util.get_logger(__name__, LOGFILE)
+    logger = logging.getLogger(__name__)
     logger.info("Starting with CVE analysis")
 
     cve_results = {}

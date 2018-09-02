@@ -7,9 +7,9 @@ import core.utility as util
 from core.module_manager import ModuleManager
 
 class ModuleManagerFeedback(ModuleManager):
-    def __init__(self, output_dir: str, config: dict, logfile: str, verbose: bool,
+    def __init__(self, output_dir: str, config: dict, verbose: bool,
                  add_results: list):
-        super().__init__(output_dir, config, logfile, verbose)
+        super().__init__(output_dir, config, verbose)
         self.add_results = add_results
         self.classname = self.__class__.__name__.lower()
         self.add_results_dir = self._assign_add_results_dir()

@@ -1,5 +1,6 @@
 import copy
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -19,7 +20,6 @@ NETWORKS = []  # a list representing the networks (as strings) to analyze
 OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
 VERBOSE = False  # specifying whether to provide verbose output or not
 PORTS = None  # the ports to scan
-LOGFILE = ""
 CONFIG = {}
 
 DETECTED_OSES = {}
@@ -36,7 +36,7 @@ def conduct_scan(results: list):
     """
 
     # setup logger
-    logger = util.get_logger(__name__, LOGFILE)
+    logger = logging.getLogger(__name__)
     logger.info("Setting up Nmap scan")
 
     fast_scan = False

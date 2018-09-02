@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import json
+import logging
 import os
 import shutil
 import sys
@@ -12,6 +13,8 @@ from core.analyzer import Analyzer
 import core.utility as util
 import core.visualizer as visualizer
 
+LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+LOGFILE = "avain.log"
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
 UPDATER_JOIN_TIMEOUT = 0.38
 DEFAULT_CONFIG_PATH = "%s%sconfig/default_config.txt" % (os.environ["AVAIN_DIR"], os.sep)
@@ -94,10 +97,7 @@ class Controller():
         self.analysis_only = analysis_only
 
         # setup logging
-        self.logfile = os.path.abspath(os.path.join(self.output_dir, "avain.log"))
-        if os.path.isfile(self.logfile):
-            os.remove(self.logfile)  # delete logging file if it already exists (from a previous run)
-        self.logger = util.get_logger(__name__, self.logfile)
+        self.setup_logging()
         self.logger.info("Starting the AVAIN program")
         self.logger.info("Executed call: avain %s" % " ".join(sys.argv[1:]))
 
@@ -106,13 +106,20 @@ class Controller():
             print(util.MAGENTA + "Warning: not running this program as root user leads"
                 " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
 
+    def setup_logging(self):
+        self.logfile = os.path.abspath(os.path.join(self.output_dir, "avain.log"))
+        if os.path.isfile(self.logfile):
+            os.remove(self.logfile)  # delete logging file if it already exists (from a previous run)
+        logging.basicConfig(format=LOGGING_FORMAT, filename=self.logfile, level=logging.INFO)
+        self.logger = logging.getLogger(__name__)
+
     def run(self):
         """
         Execute the main program depending on the given program parameters.
         """
         if self.update_modules:
             updater = ModuleUpdater(os.path.join(self.output_dir, UPDATE_OUTPUT_DIR),
-                                    self.config, self.logfile, self.verbose)
+                                    self.config, self.verbose)
             updater.run()
 
         if self.networks or self.add_networks or self.scan_only or self.analysis_only:
@@ -130,15 +137,13 @@ class Controller():
             # First conduct network reconnaissance and then analyze the hosts
             # of the specified network(s) for vulnerabilities.
             scanner = Scanner(os.path.join(out_dir, SCANNER_OUTPUT_DIR), self.config,
-                              self.logfile, self.verbose, self.scan_results, networks,
-                              self.omit_networks, self.ports, self.analysis_only,
-                              self.online_only)
+                              self.verbose, self.scan_results, networks, self.omit_networks,
+                              self.ports, self.analysis_only, self.online_only)
             hosts = scanner.run()
 
             if not self.scan_only:
                 analyzer = Analyzer(os.path.join(out_dir, ANALYZER_OUTPUT_DIR), self.config,
-                                    self.logfile, self.verbose, self.analysis_results,
-                                    hosts, self.online_only)
+                                    self.verbose, self.analysis_results, hosts, self.online_only)
                 net_score = analyzer.run()
                 return net_score
             return None

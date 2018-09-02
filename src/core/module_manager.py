@@ -3,6 +3,7 @@ import copy
 import importlib
 import inspect
 import json
+import logging
 import os
 import shutil
 import threading
@@ -16,12 +17,11 @@ PRINT_LOCK_ACQUIRE_TIMEOUT = 1  # in s
 
 class ModuleManager(metaclass=ABCMeta):
 
-    def __init__(self, output_dir: str, config: dict, logfile: str, verbose: bool):
+    def __init__(self, output_dir: str, config: dict, verbose: bool):
         # assign subclass independent variables directly
         self.output_dir = output_dir
         self.config = config
-        self.logfile = logfile
-        self.logger = util.get_logger(self._get_module_type(), logfile)
+        self.logger = logging.getLogger(self.__module__)
         self.verbose = verbose
         self.results = {}
         self.result = {}
@@ -52,9 +52,6 @@ class ModuleManager(metaclass=ABCMeta):
 
     def _get_call_func(self, module):
         return getattr(module, self.module_call_func)
-
-    def _get_module_type(self):
-        return self.__class__.__name__.lower()
 
     def _store_results(self):
         result_file = os.path.join(self.output_dir, self.result_filename)
@@ -195,9 +192,6 @@ class ModuleManager(metaclass=ABCMeta):
 
         if "VERBOSE" in all_module_attributes:
             module.VERBOSE = self.verbose
-
-        if "LOGFILE" in all_module_attributes:
-            module.LOGFILE = self.logfile
 
         if "CONFIG" in all_module_attributes:
             module.CONFIG = self.config.get(module.__name__, {})

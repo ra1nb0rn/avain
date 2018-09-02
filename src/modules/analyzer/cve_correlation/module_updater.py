@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import os
 import re
 import requests
@@ -17,12 +18,10 @@ DB_BACKUP_FILE = "nvd_db_bak.db3"
 if __name__ != "__main__":
     from core import utility as util
 
-LOGFILE = None
-
 def update_module(results: list):
     global logger
-    if __name__ != "__main__" and LOGFILE:
-        logger = util.get_logger(__name__, LOGFILE)
+    if __name__ != "__main__":
+        logger = logging.getLogger(__name__)
     else:
         logger = None
 

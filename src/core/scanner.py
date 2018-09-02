@@ -17,7 +17,7 @@ GROUP_SIM_THRES = 0.95  # barely tested value
 
 class Scanner(ModuleManagerFeedback):
 
-    def __init__(self, output_dir: str, config: dict, logfile: str, verbose: bool,
+    def __init__(self, output_dir: str, config: dict, verbose: bool,
                  add_results: list, networks: list, omit_networks: list, ports: list,
                  analysis_only: bool, online_only: bool):
         """
@@ -26,7 +26,6 @@ class Scanner(ModuleManagerFeedback):
         :param output_dir: A string specifying the output directory of the scan
         :param config: The used config
         :param verbose: Specifies whether to provide verbose output or not
-        :param logfile: A logfile for logging information
         :param add_results: Additional result files to include into the result
         :param networks: A list of strings representing the networks to scan
         :param omit_networks: A list of networks as strings to omit from the scan
@@ -41,7 +40,7 @@ class Scanner(ModuleManagerFeedback):
         self.ports = ports
         self.analysis_only = analysis_only
         self.online_only = online_only
-        super().__init__(output_dir, config, logfile, verbose, add_results)
+        super().__init__(output_dir, config, verbose, add_results)
 
         if "default_trust" in self.config["core"]:
             try:

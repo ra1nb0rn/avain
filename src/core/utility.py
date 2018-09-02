@@ -1,7 +1,6 @@
 from collections import Counter
 import copy
 import ipaddress
-import logging
 import math
 import os
 import re
@@ -11,10 +10,6 @@ import tempfile
 import datetime
 import xml.etree.ElementTree as ET
 from threading import Lock
-
-# TODO: How to handle broadcast and network identifier addresses. Decide to include or not and fix.
-
-LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 # define ANSI color escape sequences 
 # Taken from: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html
@@ -130,32 +125,6 @@ def print_exception_and_continue(e):
 
 def get_current_timestamp():
     return datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
-
-def get_logger(module_name: str, logfile: str):
-    """
-    Create a logger with the given module name logging to the given logfile.
-
-    :param module_name: the name of the module the logger is for
-    :param logile: filepath to the logfile
-    :return: a logger with the specified attributes
-    """
-
-    logger = logging.getLogger(module_name)
-    logger.setLevel(logging.INFO)
-
-    # create log file handler
-    handler = logging.FileHandler(logfile, encoding="utf-8")
-    handler.setLevel(logging.INFO)
-
-    # create logging format
-    formatter = logging.Formatter(LOGGING_FORMAT)
-    handler.setFormatter(formatter)
-
-    # add the handler to the logger
-    logger.addHandler(handler)
-
-    return logger
 
 
 def clear_previous_line():
