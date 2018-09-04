@@ -50,7 +50,7 @@ The following list provides an overview of the software used by AVAIN for both m
     * [nlohmann/json](https://github.com/nlohmann/json "json GitHub Page")
 * [The official CPE v2.2 dictionary](https://nvd.nist.gov/products/cpe), stored as ``resources/official-cpe-dictionary_v2.2.xml`` in AVAIN's base directory.
 
-### Specfic macOS Requirements
+### Specific macOS Requirements
 On macOS a running version of Homebrew is required for the automated installation. Look [here](https://brew.sh/index_de) for instructions on how to install Homebrew. Additionally, Homebrew's ``coreutils`` package has to be installed.
 
 ### Installation on Linux
