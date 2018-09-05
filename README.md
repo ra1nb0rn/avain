@@ -188,22 +188,61 @@ The main files created by the core are the aggregated scan / analysis results fo
 With the ``-sR`` and ``-aR`` argument, the user can provide AVAIN with additional and even manually crafted intermediate result files. These files have to be JSON files with the scan / analysis result structure as described above. For example, supplying AVAIN with custom results can come in handy when AVAIN, or more specifically its utilized scanners, have difficulty determining the OS of a host.
 
 ## Adding New Modules
-{...}
+Modules have to follow certain rules in order to successfully work with AVAIN. The data format for a module's results is shown above. Scanner modules have to be put into ``src/modules/scanner`` and analyzer modules into ``src/modules/analyzer``. Furthermore, scanner modules have to be prefixed with ``scanner_``, while analyzer modules have to be prefixed with ``analyzer_``. Have a look at the current module structure to see some examples. As modules have to be written in Python, their file extension has to be ``.py``. Scanner modules are required to have a ``conduct_scan(results: list)`` function; analyzer modules a ``conduct_analysis(results: list)``. A module's result can either be the filepath to a JSON file or the result itself as a Python dictionary. Returning the result is as easy as appending it to the ``results`` list seen in the ``conduct_scan`` / ``conduct_analysis`` function's signature. All non-essential / intermediate results of a module can be returned as well. Every intermediate result needs to be stored in a separate file. Finally, to return all of these files, the module has to append their filepaths to a / its **global** ``CREATED_FILES`` variable / list. Also, it is important to mention that AVAIN switches into the directory of a module when calling it, so that every module can run within its own environment.
 
 ### Module Parameters
-{...}
+There are two ways a module can receive parameters from the core: configuration files ([see further below](#config_expl)) and global variables within the module. E.g. if a module has defined the global variable ``NETWORKS``, the core assigns that variable its corresponding value. Currently available module parameters are:
+* Both
+    * ``VERBOSE`` &ndash; Specifies whether AVAIN should be verbose
+    * ``CONFIG`` &ndash; The part of the config file relevant to this module
+    * ``CORE_CONFIG`` &ndash; The part of the config file relevant for all modules
+* Scanner
+    * ``NETWORKS`` &ndash; A list of network (expressions) to scan, possibly containing wildcards and prefixes
+    * ``OMIT_NETWORKS`` &ndash; &nbsp A list of network (expressions) **not** to scan, possibly containing wildcards and prefixes
+    * ``PORTS`` &ndash; A list of ports to scan, possibly containing the prefix "T" for TCP or "U" for UDP as well a range of ports to scan
+    * ``HOSTS`` &ndash; A list of all (pure) host addresses to scan, **not** containing any wildcards or prefixes.
+* Analyzer
+    * ``HOSTS`` &ndash; A dictionary containing the results of the analysis phase. The keys are the hosts' addresses and the values their scan result (as specified above).
+
+### Logging
+Every module has the ability to log events. First a logger needs to be setup. This can be done simply with:
+```
+import logging
+logger = logging.getLogger(__name__)
+```
+Once set up, the logger can be used like this:
+```
+logger.info("Starting with Nmap scan")
+```
 
 ### Automated Building
-{...}
+Since modules, except for their Python interface, are not restricted to any kind of programming language or in what kind of data they use, modules can have a separate shell script that can build them automatically. For example, the CVE correlation module has an automatic build script that downloads the NVD data feeds, compiles the database building program written in C++ and finally builds the database. The requirements for an automatic module build script are fairly simple: it has to be named ``avain_build.sh`` and be executable directly, i.e. by calling it like ``./avain_build.sh``. As above, the core switches into the directory of the build script before it is executed.
 
-### Keeping Data Up-to-date
-{...}
+### Keeping Modules Up-to-date
+As some modules may rely on data that needs to stay up-to-date like "the 1000 most common passwords", AVAIN provides a way for modules to be updated. Similar to the scanner and analyzer modules, there are separate "modules" that can update their respective scanner or analyzer module. Similar to above, these modules have to interface with the core in Python (file extension ``.py``) and their name has to be prefixed with ``module_updater``. Furthermore, they have to provide a function with the signature ``update_module()``. Any files that should be stored by the AVAIN core have to be put into the global list ``CREATED_FILES``, just as above. For an example of the update module concept have a look at the ``module_updater.py`` file in ``src/modules/analyzer/cve_correlation``. To update all of AVAIN's modules that provide this update mechanism, the user has to call AVAIN with the **-uM / --update modules** argument.
 
 ## Configuration Files <a id="config_expl"></a>
-{...}
+AVAIN can also accept a separate configuration file as program argument. Therefore a configuration file can act as a profile for AVAIN that specifies many different arguments at once. The default configuration file is called ``default_config.txt`` and can be found in AVAIN's ``config`` directory. Note that this file has to be present for AVAIN to work correctly. Its contents look like the following:
+```
+// here defined are default configuration settings
+[core]
+default_trust = 3
+scan_aggregation_scheme = TRUST_AGGR  // possible values --> {TRUST_MAX, TRUST_AGGR}
+DB_expire = 20160  // in minutes, i.e. every other week
+
+// here defined are module specific configuration settings
+[modules.analyzer.cve_correlation.analyzer_cve_correlation]
+DB_expire = 10080  // in minutes, i.e. every week
+skip_os = False  // whether to skip OS CVE analysis --> {True, False}
+```
+Like in many programming languages, comments can be made with ``//`` and ``/* */``. The strings surrounded by ``[`` and ``]`` specify the module the following configuration settings apply to. Every setting has to be placed on a separate line. Settings are specified using a ``key = value`` structure. The keys and values can be custom for every every module, AVAIN does not restrict the keys in any way. The only thing AVAIN does for every module is parse its section of the config file into a dictionary whose keys and values are the same as the config's. *Every module itself is responsible for parsing its config values.*
+In case the user specifies a separate config file to use, AVAIN overwrites its default configuration with the ones specified in the user's config file. Therefore, the user's config file is not required to contain all settings available but only the ones the user wants changed. Of course it is advised that the user supplies its own configuration file instead of manually overwriting the default configuration file.
 
 ## Examples
 {...}
+* ``avain -n 192.168.0.* -uM -p TCP:80,UDP:53 -o http_dns_sec``
+* ``avain -n 192.168.0.1 192.168.0.100-150 -sN -c config/example_configs/fast_nmap_scan.txt -v``
+* ``avain -aO -sR path_to_sr_1 path_to_sr_2 -o network_analysis``
 
 ## Authors
 * **Rolf Egert** - *AVAIN idea, guidance and suggestions during development*
