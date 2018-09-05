@@ -1,24 +1,24 @@
 
-# AVAIN - Automated Vulnerability Analyis (in) IoT Networks </B>
-A toolkit for automatically assessing the securtiy level of an IoT network
+# AVAIN - Automated Vulnerability Analysis (in) IoT Networks </B>
+A toolkit for automatically assessing the security level of an IoT network
 
 ## About
-{...}
+AVAIN can automatically *assess* and *quantify* the security level of an (IoT) network. AVAIN's final output is a *score* between 0 and 10, where the higher the score, the more vulnerable / insecure the network. Additionally, AVAIN keeps all of the intermediate result files to empower the user in *investigating* the network's security state *in more detail*. As IT and IoT security is a continuously evolving field, AVAIN was designed to be *modular* and thereby *easily extensible*. AVAIN separates the network's security assessment into two phases: the *scanning*, i.e. reconnaissance phase and the actual vulnerability *analysis* phase. The module structure is based upon this concept, i.e. there are *scanner* and *analysis* modules. As of now, AVAIN only supports the assessment of IPv4 enables (IoT) devices. As IoT devices often have special networking capabilities, AVAIN may need to be extended in the future to support IoT specific protocols like 6LoWPAN (or just IPv6) or ZigBee.
 
 ## Features
 * **Automated installation** on macOS and Linux (Ubuntu / Kali)
 * **Fully automated program execution**
-* **Various levels of detail** for ouput:
+* **Various levels of detail** for output:
     * Highly detailed output: All intermediate files are kept, even the ones from modules.
-    * Less detailed ouput: Aggregated intermediate results and host / network scores.
+    * Less detailed output: Aggregated intermediate results and host / network scores.
 * **Easily extensible** using Python
 * **Logging** for core and modules
-* Separation in phases enables the user to **skip an undesired phase** or **provide custom intermediate results.**
+* Partitioning the assessment into different phases enables the user to **skip an undesired phase** or **provide custom intermediate results.**
 * Provided modules:
-    * (Post-processed) **Nmap receconaissance**
+    * (Post-processed) **Nmap reconnaissance**
     * **Correlation** of discovered [**CPEs**](https://csrc.nist.gov/projects/security-content-automation-protocol/specifications/cpe/ "About CPE") with **[CVE](https://cve.mitre.org "About CVE") / [NVD](https://nvd.nist.gov "About NVD")** entries
     * [**Mirai**](https://www.grahamcluley.com/mirai-botnet-password/ "About Mirai") Credential Check for **SSH** services
-    * [**Mirai**](https://www.grahamcluley.com/mirai-botnet-password/ "About Mirai") Credential Check for **Telne**t services
+    * [**Mirai**](https://www.grahamcluley.com/mirai-botnet-password/ "About Mirai") Credential Check for **Telnet** services
 
 
 ## Installation
@@ -84,26 +84,122 @@ Out of the above arguments, required is at least one of **-n/--network**, **-nL/
 
 Once called, AVAIN runs automatically without the need for further user interaction. If the user specified a certain output directory, the results are put into that directory. Otherwise they are put into a directory named similarly to ``avain_output-20180824_235333``, where the numbers are a (unique) timestamp of the current day and time.
 
-### Output
-{...}
+### Output Structure
+AVAIN puts its output into a directory that generally looks like the following:
+```
+avain_output-20180905_005831/
+├── analysis_results
+│   ├── cve_correlation
+│   │   ├── cve_summary.json
+│   │   ├── found_cves.json
+│   │   └── result.json
+│   ├── host_scores.json
+│   ├── login_bruteforce
+│   │   ├── mirai_ssh
+│   │   └── mirai_telnet
+│   └── results.json
+├── avain.log
+├── results.json
+└── scan_results
+    ├── add_scan_results
+    │   └── results.json
+    ├── nmap
+    │   ├── networks.list
+    │   ├── potential_oses.json
+    │   ├── raw_nmap_scan_results.txt
+    │   ├── raw_nmap_scan_results.xml
+    │   └── result.json
+    └── results.json
+```
+
+AVAIN's log ``avain.log`` and the final results as ``results.json`` are clearly visible on the first directory level. The remaining files are dissected into scan / analysis results and further subdirectories that reflect the module structure. As discussed above, AVAIN keeps all output, as can be seen with the raw Nmap results or all of the found CVEs by the ``cve_correlation`` module.
+
+If the user specifies more than one network to assess, the results are put into different subdirectories, each containing its own results. This could look like the following:
+```
+avain_output-20180905_011115/
+├── avain.log
+├── net_dir_map.json
+├── network_1
+│   ├── analysis_results
+│   └── scan_results
+├── network_2
+│   ├── analysis_results
+│   └── scan_results
+└── results.json
+```
+Here, the different networks are listed as ``network_1`` and ``network_2``. This is because a directory on Unix cannot be named like e.g. the network expression ``192.168.0.0/24``. The directories are order in the way the user provided them. Still, a translation between the output directories and given network expressions is available in the file ``net_dir_map.json``.
 
 ## AVAIN File Formats
-AVAIN uses JSON as a common exchange format for (intermediate) results. This allows for human-readable, but also computationally processable information.
+AVAIN uses JSON as a common exchange format for (intermediate) results. This allows for human-readable, but also computationally processable information. Modules can on the one hand have their own output files, but they also have to deliver a result to the AVAIN core. The result shared with AVAIN's core has to abide by the common exchange formats detailed below. Furthermore, modules always work in the scope of one network, i.e. if the user would like four networks to be assessed, every module is called four times, not just once. Therefore, an intermediate result generally lists hosts with their results and not networks.
 
 ### Scan Module Results
-{...}
+An example intermediate result for a scanner module could look like to following (as JSON):
+```
+{
+   "192.168.178.36": {
+      "os": {
+         "name": "Apple OS X 10.10.X",
+         "cpes": [
+            "cpe:/o:apple:mac_os_x:10.10"
+         ],
+         "accuracy": "97"
+      },
+      "ip": {
+         "addr": "192.168.178.36",
+         "type": "ipv4"
+      },
+      "tcp": {
+         "80": {
+            "portid": "80",
+            "protocol": "tcp",
+            "cpes": [
+               "cpe:/a:apache:http_server:2.4.33"
+            ],
+            "name": "Apache httpd 2.4.33",
+            "service": "http"
+         }
+      }
+   }
+}
+```
+For brevity, only one host is shown above. All hosts are indexed by their (IPv4) network address. Their content is another object that can contain several more fields. AVAIN requires the ``os``, ``tcp`` and ``udp`` fields to abide by a certain format:
+* If the ``os`` has an entry called ``cpes``, it has to be a list of CPEs for the detected / assumed OS. ``name`` has to be the corresponding name as string.
+* The ``tcp`` and ``udp`` entries are each dissected into objects for every detected port.
+* Every port entry has to be indexed by its port number. The same rules apply for the ``os`` and ``cpes`` entry. Furthermore, if the ``service`` field exists, it has to be a string describing the service, e.g, ``"ssh"`` or ``"http"``.
+As the interfacing language between the core and modules is Python, intermediate results can also be exchanged using a dictionary with a structure equivalent to the JSON one as described above.
 
 ### Analysis Module Results
-{...}
+The results for analysis modules have to be in a specific format as well. In comparison to the scanning results, the format is fairly simple. An example result could be:
+```
+{
+    "192.168.0.24": 6.8,
+    "192.168.0.42": 7.9,
+    "192.168.0.64": 9.8,
+    "192.168.0.78": 8.2,
+    "192.168.0.101": 7.4,
+}
+```
+It is as simple as listing every host with the score it was rated with.
 
 ### Core Results
+The main files created by the core are the aggregated scan / analysis results for every network as well as the final output file that lists for every network expression its respective security score. The aggregated scan results consist of a final aggregation result that is located in ``scan_results/results.json`` and the intermediate result files for the aggregation containing for example a collection of all Operating Systems suggested by the different scanner modules. The file structure for the scan aggregation result is the same as the one for intermediate scanning results as detailed above. The main result file for the analysis is stored in ``analysis_results/results.json`` and just lists the assessed network with its final security score. The file ``analysis_results/host-scores.json`` on the other hand shows a more detailed version, where every (detected) host within network is listed with its final score (similar to the analysis module result format). At last, AVAIN also produces the file ``results.json`` located on the same directory level as the log file. This file contains for every network expression specified by the user the security score the respective network was rated with.
+
+### Supplying User Data
+With the ``-sR`` and ``-aR`` argument, the user can provide AVAIN with additional and even manually crafted intermediate result files. These files have to be JSON files with the scan / analysis result structure as described above. For example, supplying AVAIN with custom results can come in handy when AVAIN, or more specifically its utilized scanners, have difficulty determining the OS of a host.
+
+## Adding New Modules
+{...}
+
+### Module Parameters
+{...}
+
+### Automated Building
+{...}
+
+### Keeping Data Up-to-data
 {...}
 
 ## Configuration Files <a id="config_expl"></a>
-{...}
-
-
-## Adding New Modules
 {...}
 
 ## Examples
