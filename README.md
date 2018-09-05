@@ -176,7 +176,7 @@ The results for analysis modules have to be in a specific format as well. In com
     "192.168.0.42": 7.9,
     "192.168.0.64": 9.8,
     "192.168.0.78": 8.2,
-    "192.168.0.101": 7.4,
+    "192.168.0.101": 7.4
 }
 ```
 It is as simple as listing every host with the score it was rated with.
@@ -196,7 +196,7 @@ With the ``-sR`` and ``-aR`` argument, the user can provide AVAIN with additiona
 ### Automated Building
 {...}
 
-### Keeping Data Up-to-data
+### Keeping Data Up-to-date
 {...}
 
 ## Configuration Files <a id="config_expl"></a>
