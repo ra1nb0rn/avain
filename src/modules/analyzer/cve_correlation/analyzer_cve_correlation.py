@@ -29,6 +29,8 @@ ONLINE_ONLY = False
 VERBOSE = False  # specifying whether to provide verbose output or not
 CONFIG = {}
 
+CREATED_FILES = []
+
 CPE_DICT_FILEPATH = "{0}{1}resources{1}official-cpe-dictionary_v2.2.xml".format(os.environ["AVAIN_DIR"], os.sep)
 CPE_DICT_ET_CPE_ITEMS = None
 NUM_CVES_PER_CPE_MAX = 25
@@ -123,14 +125,13 @@ def conduct_analysis(results: list):
                 # TODO: implement / how about using https://github.com/cloudtracer/text2cpe ?
                 logger.warning("%s port %s of host %s does not have a CPE. Therefore no CVE analysis can be done for this port." % (protocol.upper(), str(portid), ip))
 
-    global logger, vulners_api, db_cursor, created_files
+    global logger, vulners_api, db_cursor, CREATED_FILES
 
     # setup logger
     logger = logging.getLogger(__name__)
     logger.info("Starting with CVE analysis")
 
     cve_results = {}
-    created_files = []
     hosts = HOSTS
 
     db_conn = None
@@ -148,6 +149,7 @@ def conduct_analysis(results: list):
             print(str(e))
 
     logger.info("Starting with CVE discovery of all hosts")
+    CREATED_FILES += [HOST_CVE_FILE, SUMMARY_FILE]
     for ip, host in hosts.items():
         if CONFIG["skip_os"].lower() == "true":
             logger.info("Skipping OS CVE analysis as stated in config file")
@@ -170,8 +172,7 @@ def conduct_analysis(results: list):
     create_cve_summary(hosts, scores)
     logger.info("Done")
 
-    created_files += [HOST_CVE_FILE, SUMMARY_FILE]
-    results.append((scores, created_files))
+    results.append(scores)
 
 def create_cve_summary(hosts, scores):
     def process_port(protocol):
@@ -286,7 +287,7 @@ def check_database():
         """
         Conduct a database update after logging the given message.
         """
-        global created_files
+        global CREATED_FILES
 
         update_files = []
         logger.info(log_msg)
@@ -298,7 +299,7 @@ def check_database():
             new_file = os.path.join("db_update", file)
             os.rename(os.path.abspath(file), new_file)
             update_files_renamed.append(new_file)
-        created_files += update_files_renamed
+        CREATED_FILES += update_files_renamed
 
     if os.path.isfile(DATABASE_FILE):
         db_date = get_creation_date(DATABASE_FILE)

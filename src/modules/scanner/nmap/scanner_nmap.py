@@ -23,8 +23,8 @@ PORTS = None  # the ports to scan
 CONFIG = {}
 
 DETECTED_OSES = {}
-
 logger = None
+CREATED_FILES = []
 
 
 def conduct_scan(results: list):
@@ -34,6 +34,8 @@ def conduct_scan(results: list):
 
     :return: a tuple containing the scan results and a list of created files by writing it into the result list.
     """
+
+    global CREATED_FILES
 
     # setup logger
     logger = logging.getLogger(__name__)
@@ -88,6 +90,11 @@ def conduct_scan(results: list):
     # open file handle to redirect nmap's stderr
     redr_file = open(TEXT_NMAP_OUTPUT_PATH, "w") 
 
+    # add to files before calling Nmap, in case Nmap errors during runtime
+    CREATED_FILES += [TEXT_NMAP_OUTPUT_PATH, XML_NMAP_OUTPUT_PATH, NETWORKS_PATH]
+    if OMIT_NETWORKS:
+        CREATED_FILES.append(NETWORKS_OMIT_PATH)
+
     # call nmap with the created command
     subprocess.call(nmap_call, stdout=redr_file, stderr=subprocess.STDOUT)
 
@@ -97,17 +104,14 @@ def conduct_scan(results: list):
     logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'. " % TEXT_NMAP_OUTPUT_PATH +
         "The XML output has been written to '%s'" % XML_NMAP_OUTPUT_PATH)
 
-    created_files = [TEXT_NMAP_OUTPUT_PATH, XML_NMAP_OUTPUT_PATH, NETWORKS_PATH, POT_OSES_PATH]
-    if OMIT_NETWORKS:
-        created_files.append(NETWORKS_OMIT_PATH)
-
     logger.info("Parsing Nmap XML output")
-    result = parse_output_file(XML_NMAP_OUTPUT_PATH), created_files
+    result = parse_output_file(XML_NMAP_OUTPUT_PATH)
     with open(POT_OSES_PATH, "w") as f:
         f.write(json.dumps(DETECTED_OSES, ensure_ascii=False, indent=3))
+    CREATED_FILES.append(POT_OSES_PATH)
     logger.info("Done")
 
-    adjust_port_info_keys(result[0])
+    adjust_port_info_keys(result)
     results.append(result)
 
 def adjust_port_info_keys(result: dict):

@@ -14,6 +14,8 @@ HYDRA_TARGETS_FILE = "targets.txt"
 HOSTS = {}  # a string representing the network to analyze
 VERBOSE = False  # specifying whether to provide verbose output or not
 
+CREATED_FILES = []
+
 # Module variables
 WORDLIST_PATH = "..{0}wordlists{0}mirai_user_pass.txt".format(os.sep)
 logger = None
@@ -29,7 +31,7 @@ def conduct_analysis(results: list):
     """
 
     # setup logger
-    global logger, created_files
+    global logger, CREATED_FILES
     logger = logging.getLogger(__name__)
     logger.info("Starting with Mirai SSH susceptibility analysis")
     wrote_target = False
@@ -55,13 +57,13 @@ def conduct_analysis(results: list):
         # execute hydra command if at least one target exists
         logger.info("Beginning Hydra Brute Force with command: %s" % " ".join(hydra_call))
         redr_file = open(HYDRA_TEXT_OUTPUT, "w")
+        CREATED_FILES += [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
         subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
         redr_file.close()
         logger.info("Done")
 
         # parse and process Hydra output
         logger.info("Processing Hydra Output")
-        created_files = [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
         if os.path.isfile(HYDRA_JSON_OUTPUT):
             result = process_hydra_output()
         else:
@@ -72,10 +74,10 @@ def conduct_analysis(results: list):
         os.remove(HYDRA_TARGETS_FILE)
         logger.info("Did not receive any targets. Skipping analysis.")
         result = {}
-        created_files = []
+        CREATED_FILES = []
 
     # return result
-    results.append((result, created_files))
+    results.append(result)
 
 
 def cleanup():
@@ -99,7 +101,7 @@ def process_hydra_output():
     :return: all vulnerable hosts as dict with their score as value
     """
 
-    global created_files
+    global CREATED_FILES
 
     def process_hydra_result(hydra_result):
         nonlocal vuln_hosts
@@ -122,7 +124,7 @@ def process_hydra_output():
                 text = f.read()
                 text = text.replace(", ,", ", ")
                 fr.write(text)
-                created_files.append(replaced_file_name)
+                CREATED_FILES.append(replaced_file_name)
 
             with open(replaced_file_name, "r") as fr:
                 try:

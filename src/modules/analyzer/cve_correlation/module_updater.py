@@ -14,6 +14,7 @@ WGET_OUTFILE = "wget_download_output.txt"
 CREATE_DB_OUTFILE = "db_creation.txt"
 DB_FILE = "nvd_db.db3"
 DB_BACKUP_FILE = "nvd_db_bak.db3"
+CREATED_FILES = []
 
 if __name__ != "__main__":
     from core import utility as util
@@ -68,7 +69,7 @@ def update_module(results: list):
             zipfiles.append(outname)
 
 
-    created_files = [WGET_OUTFILE]
+    CREATED_FILES.append(WGET_OUTFILE)
 
     if os.path.isfile("wget-log"):
         os.remove("wget-log")
@@ -102,12 +103,12 @@ def update_module(results: list):
         rollback()
         return
 
-    created_files.append(CREATE_DB_OUTFILE)
+    CREATED_FILES.append(CREATE_DB_OUTFILE)
     shutil.rmtree(NVD_DATAFEED_DIR)
     if os.path.isfile(DB_BACKUP_FILE):
         os.remove(DB_BACKUP_FILE)
 
-    results.append((None, created_files))
+    results.append(None)
 
 def rollback():
     communicate_warning("An error occured, rolling back database update")

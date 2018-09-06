@@ -63,6 +63,17 @@ class ModuleManager(metaclass=ABCMeta):
         Run the modules applicable to the management type
         """
 
+        def get_created_files(module):
+            """ Retrieve all files created by the module """
+
+            created_files = []
+            for attr, val in inspect.getmembers(module):
+                if attr == "CREATED_FILES":
+                    created_files = val
+                    break
+            return created_files
+
+
         # create the output directory for all module results
         os.makedirs(self.output_dir, exist_ok=True)
 
@@ -124,13 +135,15 @@ class ModuleManager(metaclass=ABCMeta):
                 else:
                     show_progress_state += 1
 
-            if module_result and len(module_result[0]) == 2:
-                result, created_files = module_result[0]
+            if module_result and isinstance(module_result[0], dict) == 1:
+                result = module_result[0]
             else:
                 self.logger.info("%s module '%s' delivered an unprocessable result. " %
                                  (self.mgmt_type.capitalize(), module_str) +
                                  "Its results have been discarded.")
-                result, created_files = {}, []
+                result = {}
+
+            created_files = get_created_files(module)
 
             # change back into the main directory
             os.chdir(main_cwd)
