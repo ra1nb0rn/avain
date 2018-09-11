@@ -106,9 +106,8 @@ class Analyzer(ModuleManagerFeedback):
                     score = float(score)
                 except ValueError:
                     continue
-                if score == 10.0:
-                    score = 9.99  # prevent division by 0
-                weight = (1 / (10 - score))**0.8
+
+                weight = (1 / (10.01 - score))**0.8
                 weights[host] = weight
                 weight_sum += weight
 
