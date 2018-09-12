@@ -17,7 +17,7 @@ import warnings
 import xml.etree.ElementTree as ET
 
 if __name__ != "__main__":
-    from .module_updater import update_module
+    from . import module_updater
     from core import utility as util
 
 HOST_CVE_FILE = "found_cves.json"
@@ -289,11 +289,11 @@ def check_database():
         """
         global CREATED_FILES
 
-        update_files = []
         logger.info(log_msg)
-        update_module(update_files, logfile=LOGFILE)
+        module_updater.update_module([])
         logger.info("Done.")
         os.makedirs("db_update", exist_ok=True)
+        update_files = getattr(module_updater, "CREATED_FILES")
         update_files_renamed = []
         for file in update_files:
             new_file = os.path.join("db_update", file)
