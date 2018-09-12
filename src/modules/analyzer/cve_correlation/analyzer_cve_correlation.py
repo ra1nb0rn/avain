@@ -492,7 +492,11 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     # if len(values) > 3:
     #     cpe = cpe[:7] + ":".join(values[:3])  # nvd.nist seems to do this with e.g. cpe:/o:microsoft:windows_10:1607::~~~~x64~
     found_cves = {}
-    found_cves_specific = db_cursor.execute("SELECT DISTINCT cve_id, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % cpe).fetchall()
+    query = "SELECT DISTINCT cve_id, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % cpe
+    if CONFIG["max_cve_count"] != "-1":
+        query += " LIMIT %s" % CONFIG["max_cve_count"]
+    found_cves_specific = db_cursor.execute(query).fetchall()
+
     if found_cves_specific:
         found_cves[cpe] = {}
         for cve_id, with_cpes in found_cves_specific:
@@ -503,11 +507,16 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     elif len(values) > 2:
         cpe_version = values[2]
 
-    general_cve_cpe_data = db_cursor.execute("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end," +
-                                        "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % general_cpe).fetchall()
-    general_cve_cpe_data += db_cursor.execute("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end," +
-                                        "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s\"" % (general_cpe + "::%%")).fetchall()
+    query = ("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
+                   "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\" " % general_cpe +
+            "UNION " +
+            "SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
+                   "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s::%%}\"" % general_cpe)
 
+    if CONFIG["max_cve_count"] != "-1":
+        query += " LIMIT %s" % CONFIG["max_cve_count"]
+
+    general_cve_cpe_data = db_cursor.execute(query).fetchall()
     broad_search = cpe_version is None or is_broad_version() or cpe_version == "-"  # '-' stands for all versions
     if broad_search:
         if cpe_version:
@@ -517,7 +526,10 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
         specific_cves = []
         while len(cur_cpe) > 0:
-            specific_cves = db_cursor.execute("SELECT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe).fetchall()
+            query = "SELECT DISTINCT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
+            if CONFIG["max_cve_count"] != "-1":
+                query += " LIMIT %s" % CONFIG["max_cve_count"]
+            specific_cves = db_cursor.execute(query).fetchall()
             if specific_cves:
                 break
             cur_cpe = cur_cpe[:-1]
@@ -564,6 +576,17 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
                 if cpe_in:
                     found_cves[cpe_iter][entry[0]] = with_cpes
+
+    # limit number of entries per CPE string
+    if CONFIG["max_cve_count"] != "-1":
+        count = int(CONFIG["max_cve_count"])
+        found_cves_copy = copy.deepcopy(found_cves)
+        for cpe_iter, cve_dict in found_cves_copy.items():
+            cve_ids = list(set(cve_dict))[:count]
+            found_cves[cpe_iter] = {}
+
+            for cve_id in cve_ids:
+                found_cves[cpe_iter][cve_id] = cve_dict[cve_id]
 
     # retrieve detailed CVE information
     cve_details = {}

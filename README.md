@@ -234,6 +234,7 @@ DB_expire = 20160  // in minutes, i.e. every other week
 [modules.analyzer.cve_correlation.analyzer_cve_correlation]
 DB_expire = 10080  // in minutes, i.e. every week
 skip_os = False  // whether to skip OS CVE analysis --> {True, False}
+max_cve_count = -1  // the maximum number of CVEs to retrieve; -1 for unlimited
 ```
 Like in many programming languages, comments can be made with ``//`` and ``/* */``. The strings surrounded by ``[`` and ``]`` specify the module the following configuration settings apply to. Every setting has to be placed on a separate line. Settings are specified using a ``key = value`` structure. The keys and values can be custom for every every module, AVAIN does not restrict the keys in any way. The only thing AVAIN does for every module is parse its section of the config file into a dictionary whose keys and values are the same as the config's. *Every module itself is responsible for parsing its config values.*
 In case the user specifies a separate config file to use, AVAIN overwrites its default configuration with the ones specified in the user's config file. Therefore, the user's config file is not required to contain all settings available but only the ones the user wants changed. Of course it is advised that the user supplies its own configuration file instead of manually overwriting the default configuration file.
