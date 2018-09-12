@@ -13,7 +13,6 @@ AGGR_OPTION_FILE = "aggregation_options.json"
 ADDITIONAL_RESULTS_DIR = "add_scan_results"
 SCANNER_JOIN_TIMEOUT = 0.38
 DEFAULT_TRUSTWORTHINESS = 3
-GROUP_SIM_THRES = 0.95  # barely tested value
 
 class Scanner(ModuleManagerFeedback):
 
@@ -357,9 +356,7 @@ class Scanner(ModuleManagerFeedback):
                             # are otherwise similar enough to each other
                             if item_iter_str in item_str:
                                 item_group.append(item_iter)
-                            elif (util.compute_cosine_similarity(item_str, item_iter_str) >
-                                  GROUP_SIM_THRES):
-                                item_group.append(item_iter)
+                            # TODO: what does 'otherwise similar' mean precisely?
 
                 # if list of groups already exists, check whether to append to it
                 if dest_key in dest:
