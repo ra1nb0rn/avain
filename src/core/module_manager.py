@@ -51,7 +51,7 @@ class ModuleManager(metaclass=ABCMeta):
         raise NotImplementedError
 
     def _get_call_func(self, module):
-        return getattr(module, self.module_call_func)
+        return getattr(module, self.module_call_func, None)
 
     def _store_results(self):
         result_file = os.path.join(self.output_dir, self.result_filename)
@@ -109,6 +109,12 @@ class ModuleManager(metaclass=ABCMeta):
             self.logger.info("Starting %s %d of %d - %s",
                              self.mgmt_type, i+1, len(self.modules), module_str_no_prefix)
             module_result = []
+            module_func = self._get_call_func(module)
+            if not module_func:
+                self.logger.warning("Module '%s' does not have a '%s' function. Module is skipped.",
+                                     module_str, self.module_call_func)
+                continue
+                
             module_thread = threading.Thread(target=self._get_call_func(module),
                                              args=(module_result,))
 
