@@ -35,6 +35,22 @@ def conduct_scan(results: list):
     :return: a tuple containing the scan results and a list of created files by writing it into the result list.
     """
 
+    def call_nmap(nmap_call: list, redr_filepath: str):
+        logger.info("Executing Nmap call '%s'" % " ".join(nmap_call))
+
+        # open file handle to redirect nmap's stderr
+        redr_file = open(redr_filepath, "w") 
+
+        # call nmap with the created command
+        subprocess.call(nmap_call, stdout=redr_file, stderr=subprocess.STDOUT)
+
+        # close redirect file again
+        redr_file.close()
+
+        logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'. " % redr_filepath +
+            "The XML output has been written to '%s'" % nmap_call[nmap_call.index("-oX") + 1])
+
+
     global CREATED_FILES
 
     # setup logger
@@ -84,28 +100,39 @@ def conduct_scan(results: list):
         nmap_call.append("--excludefile")
         nmap_call.append(NETWORKS_OMIT_PATH)
 
-    
-    logger.info("Executing Nmap call '%s'" % " ".join(nmap_call))
-
-    # open file handle to redirect nmap's stderr
-    redr_file = open(TEXT_NMAP_OUTPUT_PATH, "w") 
-
     # add to files before calling Nmap, in case Nmap errors during runtime
     CREATED_FILES += [TEXT_NMAP_OUTPUT_PATH, XML_NMAP_OUTPUT_PATH, NETWORKS_PATH]
     if OMIT_NETWORKS:
         CREATED_FILES.append(NETWORKS_OMIT_PATH)
 
-    # call nmap with the created command
-    subprocess.call(nmap_call, stdout=redr_file, stderr=subprocess.STDOUT)
-
-    # close redirect file again
-    redr_file.close()
-
-    logger.info("Nmap scan done. Stdout and Stderr have been written to '%s'. " % TEXT_NMAP_OUTPUT_PATH +
-        "The XML output has been written to '%s'" % XML_NMAP_OUTPUT_PATH)
+    call_nmap(nmap_call, TEXT_NMAP_OUTPUT_PATH)
 
     logger.info("Parsing Nmap XML output")
     result = parse_output_file(XML_NMAP_OUTPUT_PATH)
+
+    # check if there was an IPv6 network in NETWORKS and run Nmap again in that case
+    with open(TEXT_NMAP_OUTPUT_PATH) as f:
+        logger.info("IPv6 addresses were specified, running Nmap again with '-6' option.")
+
+        text = " ".join(f.readlines())
+        if "looks like an IPv6 target specification -- you have to use the -6 option." in text:
+            text_name, text_ext = os.path.splitext(TEXT_NMAP_OUTPUT_PATH)
+            textout = text_name + "_ipv6" + text_ext
+            xml_name, xml_ext = os.path.splitext(XML_NMAP_OUTPUT_PATH)
+            xmlout = xml_name + "_ipv6" + xml_ext
+            CREATED_FILES += [textout, xmlout]
+            nmap_call[nmap_call.index("-oX")+1] = xmlout
+            nmap_call.append("-6")
+
+            # same as above
+            call_nmap(nmap_call, textout)
+            logger.info("Parsing Nmap XML output")
+            result_ipv6 = parse_output_file(xmlout)
+
+            # add to result
+            for ip, host in result_ipv6.items():
+                result[ip] = host
+
     with open(POT_OSES_PATH, "w") as f:
         f.write(json.dumps(DETECTED_OSES, ensure_ascii=False, indent=3))
     CREATED_FILES.append(POT_OSES_PATH)

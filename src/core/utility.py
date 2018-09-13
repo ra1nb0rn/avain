@@ -34,8 +34,17 @@ parsed_network_exprs = {}
 
 def add_wildcard_ipv4(network: str, store_hosts: bool=True):
     """
-    Parse an IPv4 wildcard expression (with range, prefix or '*') using Nmap's "-sL" option
+    Parse an IP (v4 or v6) wildcard expression (with range, prefix or '*') using Nmap's "-sL" option
     """
+
+    def get_nmap_xml_hosts():
+        nonlocal nmap_call, f
+        devnull_fd = open(os.devnull)
+        subprocess.call(nmap_call.split(" "), stdout=devnull_fd, stderr=subprocess.STDOUT)
+        nm_xml_tree = ET.parse(f.name)
+        nmaprun_elem = nm_xml_tree.getroot()
+        devnull_fd.close()
+        return nmaprun_elem.findall("host")
 
     if network in parsed_network_exprs:
         if store_hosts and len(parsed_network_exprs[network]) > 1:  # hosts are already stored
@@ -48,15 +57,16 @@ def add_wildcard_ipv4(network: str, store_hosts: bool=True):
     prev_ip = None
 
     with tempfile.NamedTemporaryFile() as f:
-        devnull_fd = open(os.devnull)
-        subprocess.call(["nmap", "-n", "-sL", "-oX", f.name, network], stdout=devnull_fd, stderr=subprocess.STDOUT)
-        devnull_fd.close()
-        nm_xml_tree = ET.parse(f.name)
-        nmaprun_elem = nm_xml_tree.getroot()
-        host_elems = nmaprun_elem.findall("host")
+        # first try to parse as IPv4 address
+        nmap_call = "nmap -n -sL -oX %s %s" % (f.name, network)
+        host_elems = get_nmap_xml_hosts()
 
-        if not host_elems:  # nmap could not parse network expression
-            return False
+        if not host_elems:  # nmap could not parse IPv4 network expression
+            # try to parse as IPv6 network expression
+            nmap_call += " -6"
+            host_elems = get_nmap_xml_hosts()
+            if not host_elems:
+                return False
 
         for host_elem in host_elems:
             ip = host_elem.find("address").attrib["addr"]
@@ -94,8 +104,27 @@ def extend_network_to_hosts(network: str):
     return parsed_network_exprs[network][0]
 
 
-def ip_str_to_int(ip):
-    return int.from_bytes([int(ip) for ip in ip.split(".")], "big")
+def is_ipv4(ip: str):
+    try:
+        ipaddress.IPv4Address(ip)
+    except ipaddress.AddressValueError:
+        return False
+    return True
+
+
+def is_ipv6(ip: str):
+    try:
+        ipaddress.IPv6Address(ip)
+    except ipaddress.AddressValueError:
+        return False
+    return True
+
+
+def ip_str_to_int(ip: str):
+    if is_ipv4(ip):
+        return int(ipaddress.IPv4Address(ip))
+    else:
+        return int(ipaddress.IPv6Address(ip))
 
 
 def del_hosts_outside_net(hosts: dict, network: str):
