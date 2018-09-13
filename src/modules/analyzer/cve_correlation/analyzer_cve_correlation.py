@@ -48,6 +48,8 @@ CVSSV3_VAL_NAMES = {"AV": {"N": "Network", "A": "Adjacent", "L": "Local", "P": "
                     "C": {"N": "None", "L": "Low", "H": "High"}, "I": {"N": "None", "L": "Low", "H": "High"},
                     "A": {"N": "None", "L": "Low", "H": "High"}}
 
+QUERIED_CPES = {}
+
 def conduct_analysis(results: list):
     """
     Analyze the specified hosts in HOSTS for CVEs belonging regarding its software.
@@ -486,6 +488,9 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
             for cpe_item in CPE_DICT_ET_CPE_ITEMS)
 
     cve_results = {}
+    if cpe in QUERIED_CPES:
+        return copy.deepcopy(QUERIED_CPES[cpe])
+
     values = cpe[7:].split(":")
     general_cpe = cpe[:7] + ":".join(values[:2])
 
@@ -635,6 +640,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     if not cve_results:
         cve_results = {cpe: {}}
 
+    QUERIED_CPES[cpe] = (copy.deepcopy(cve_results), broad_search)
     return cve_results, broad_search
 
 
