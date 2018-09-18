@@ -635,7 +635,21 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                 add_extra_info(cve_entry, "extrainfo", "Note - only vulnerable in conjunction with either one of {%s}" % ", ".join(with_cpes_list))
             found_cves_dict[cve_id] = cve_entry
 
-        cve_results[cpe_iter] = found_cves_dict
+        # check if scan result's CPE was "only" missing a separator between CPE version and update
+        # e.g. scan-result: cpe:/a:openbsd:openssh:6.7p1  correct CPE: cpe:/a:openbsd:openssh:6.7:p1
+        cpe_parts = cpe_iter[5:].split(":")
+        if len(cpe_parts) == 5:
+            cpe_check = cpe_iter[:5] + ":".join(cpe_parts[:-1]) + cpe_parts[-1]
+        elif len(cpe_parts) > 5:
+            cpe_check = cpe_iter[:5] + ":".join(cpe_parts[:4]) + cpe_parts[4] + "::" + ":".join(cpe_parts[5:])
+        else:
+            cpe_check = None
+
+        if cpe_check and cpe_check == cpe:
+            cve_results = {cpe_iter: found_cves_dict}
+            break
+        else:
+            cve_results[cpe_iter] = found_cves_dict
 
     if not cve_results:
         cve_results = {cpe: {}}
