@@ -512,11 +512,11 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     elif len(values) > 2:
         cpe_version = values[2]
 
-    query = ("SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
+    query = ("SELECT cve_id, cpe, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
                    "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\" " % general_cpe +
             "UNION " +
-            "SELECT cve_id, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
-                   "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s::%%}\"" % general_cpe)
+            "SELECT cve_id, cpe, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
+                   "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s::%%\"" % general_cpe)
 
     if CONFIG["max_cve_count"] != "-1":
         query += " LIMIT %s" % CONFIG["max_cve_count"]
@@ -549,14 +549,15 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
     if cpe_version:
         for cpe_iter in found_cves:
-            cpe_iter_version = "".join(cpe_iter[7:].split(":")[2:])
+            cpe_iter_split = cpe_iter[7:].split(":")
+            cpe_iter_version = cpe_iter_split[2]
             cpe_iter_version = version.parse(cpe_iter_version)
-            cpe_fields = cpe_iter
 
             for entry in general_cve_cpe_data:
-                version_start, version_start_type = entry[1], entry[2]
-                version_end, version_end_type = entry[3], entry[4]
-                with_cpes = entry[5]
+                entry_cpe = entry[1]
+                version_start, version_start_type = entry[2], entry[3]
+                version_end, version_end_type = entry[4], entry[5]
+                with_cpes = entry[6]
 
                 cpe_in = False
                 if version_start and version_end:
@@ -578,6 +579,12 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                         cpe_in = cpe_iter_version <= version.parse(version_end)
                     elif version_end_type == "Excluding":
                         cpe_in = cpe_iter_version < version.parse(version_end)
+
+                if cpe_in:
+                    if len(cpe_iter_split) > 2:
+                        entry_cpe_split = entry_cpe[7:].split(":")
+                        if len(entry_cpe_split) > 2 and entry_cpe_split[2] == "":
+                            cpe_in = ":".join(cpe_iter_split[3:]) == ":".join(entry_cpe_split[3:])
 
                 if cpe_in:
                     found_cves[cpe_iter][entry[0]] = with_cpes
