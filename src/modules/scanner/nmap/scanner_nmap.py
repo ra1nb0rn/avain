@@ -112,10 +112,9 @@ def conduct_scan(results: list):
 
     # check if there was an IPv6 network in NETWORKS and run Nmap again in that case
     with open(TEXT_NMAP_OUTPUT_PATH) as f:
-        logger.info("IPv6 addresses were specified, running Nmap again with '-6' option.")
-
         text = " ".join(f.readlines())
         if "looks like an IPv6 target specification -- you have to use the -6 option." in text:
+            logger.info("IPv6 addresses were specified, running Nmap again with '-6' option.")
             text_name, text_ext = os.path.splitext(TEXT_NMAP_OUTPUT_PATH)
             textout = text_name + "_ipv6" + text_ext
             xml_name, xml_ext = os.path.splitext(XML_NMAP_OUTPUT_PATH)
