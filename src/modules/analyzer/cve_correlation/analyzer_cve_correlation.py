@@ -153,7 +153,7 @@ def conduct_analysis(results: list):
     logger.info("Starting with CVE discovery of all hosts")
     CREATED_FILES += [HOST_CVE_FILE, SUMMARY_FILE]
     for ip, host in hosts.items():
-        if CONFIG["skip_os"].lower() == "true":
+        if CONFIG.get("skip_os", "false").lower() == "true":
             logger.info("Skipping OS CVE analysis as stated in config file")
         else:
             process_os_cves()
@@ -223,7 +223,7 @@ def create_cve_summary(hosts, scores):
         host_summary = {}
         total_cve_count = 0
         host_summary["os"] = {}
-        if "os" in host and not CONFIG["skip_os"].lower() == "true":
+        if "os" in host and not CONFIG.get("skip_os", "false").lower() == "true":
             counted_cves = set()
             for k, v in host["os"].items():
                 if k != "cpes" and k != "original_cpes":
@@ -498,7 +498,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     #     cpe = cpe[:7] + ":".join(values[:3])  # nvd.nist seems to do this with e.g. cpe:/o:microsoft:windows_10:1607::~~~~x64~
     found_cves = {}
     query = "SELECT DISTINCT cve_id, with_cpes FROM cve_cpe WHERE cpe=\"%s\"" % cpe
-    if CONFIG["max_cve_count"] != "-1":
+    if CONFIG.get("max_cve_count", "-1") != "-1":
         query += " LIMIT %s" % CONFIG["max_cve_count"]
     found_cves_specific = db_cursor.execute(query).fetchall()
 
@@ -518,7 +518,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
             "SELECT cve_id, cpe, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
                    "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s::%%\"" % general_cpe)
 
-    if CONFIG["max_cve_count"] != "-1":
+    if CONFIG.get("max_cve_count", "-1") != "-1":
         query += " LIMIT %s" % CONFIG["max_cve_count"]
 
     general_cve_cpe_data = db_cursor.execute(query).fetchall()
@@ -532,7 +532,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
         specific_cves = []
         while len(cur_cpe) > 0:
             query = "SELECT DISTINCT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
-            if CONFIG["max_cve_count"] != "-1":
+            if CONFIG.get("max_cve_count", "-1") != "-1":
                 query += " LIMIT %s" % CONFIG["max_cve_count"]
             specific_cves = db_cursor.execute(query).fetchall()
             if specific_cves:
@@ -590,7 +590,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                     found_cves[cpe_iter][entry[0]] = with_cpes
 
     # limit number of entries per CPE string
-    if CONFIG["max_cve_count"] != "-1":
+    if CONFIG.get("max_cve_count", "-1") != "-1":
         count = int(CONFIG["max_cve_count"])
         found_cves_copy = copy.deepcopy(found_cves)
         for cpe_iter, cve_dict in found_cves_copy.items():
