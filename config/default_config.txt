@@ -15,3 +15,8 @@ DB_expire = 20160  // in minutes, i.e. every other week
 DB_expire = 10080  // in minutes, i.e. every week
 skip_os = False  // whether to skip OS CVE analysis --> {True, False}
 max_cve_count = -1  // the maximum number of CVEs to retrieve; -1 for unlimited
+
+[modules.scanner.nmap.scanner_nmap]
+// add_nmap_params = "--max-rtt-timeout 100ms --max-retries 1"  // additional Nmap params
+fast_scan = False  // whether Nmap should use T5 and F option as speedup
+add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use

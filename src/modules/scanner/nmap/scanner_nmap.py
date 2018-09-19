@@ -13,9 +13,6 @@ TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"
 POT_OSES_PATH = "potential_oses.json"
 NETWORKS_PATH, NETWORKS_OMIT_PATH = "networks.list", "networks_omit.list"
 
-# additional nmap scripts to use
-NMAP_SCRIPTS = ["http-headers", "smb-os-discovery", "banner"]
-
 NETWORKS = []  # a list representing the networks (as strings) to analyze
 OMIT_NETWORKS = []  # a list of networks as strings to omit from the analysis
 VERBOSE = False  # specifying whether to provide verbose output or not
@@ -30,7 +27,7 @@ CREATED_FILES = []
 def conduct_scan(results: list):
     """
     Scan the specified networks above with the following nmap command:
-    sudo nmap -Pn -n -A --osscan-guess -T3 'networks' -sSU --script=${NMAP_SCRIPTS}
+    sudo nmap -Pn -n -A --osscan-guess -T3 'networks' -sSU
 
     :return: a tuple containing the scan results and a list of created files by writing it into the result list.
     """
@@ -58,7 +55,7 @@ def conduct_scan(results: list):
     logger.info("Setting up Nmap scan")
 
     fast_scan = False
-    if "FAST" in CONFIG and CONFIG["FAST"] == "True":
+    if "fast_scan" in CONFIG and CONFIG["fast_scan"] == "True":
         fast_scan = True
 
     # write the networks to scan into a file to give to nmap
@@ -79,9 +76,9 @@ def conduct_scan(results: list):
     if os.getuid() == 0:
         nmap_call.append("-sSU")  #  scan for TCP and UDP (UDP requires root privilege)
 
-    if not fast_scan:
-        # add nmap scripts to nmap call
-        nmap_call.append("--script=%s" % ",".join(NMAP_SCRIPTS))
+    # add nmap scripts to nmap call
+    if "add_scripts" in CONFIG:
+        nmap_call.append("--script=%s" % CONFIG["add_scripts"].replace(" ", ""))
 
     # if only specific ports should be scanned, append that to the nmap call
     if PORTS:
@@ -104,6 +101,10 @@ def conduct_scan(results: list):
     CREATED_FILES += [TEXT_NMAP_OUTPUT_PATH, XML_NMAP_OUTPUT_PATH, NETWORKS_PATH]
     if OMIT_NETWORKS:
         CREATED_FILES.append(NETWORKS_OMIT_PATH)
+
+    # append additional config parameters
+    if "add_nmap_params" in CONFIG:
+        nmap_call += CONFIG["add_nmap_params"].split(" ")
 
     call_nmap(nmap_call, TEXT_NMAP_OUTPUT_PATH)
 
