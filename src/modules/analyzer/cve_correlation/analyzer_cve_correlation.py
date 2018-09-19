@@ -487,6 +487,16 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
             (general_cpe + ":" + cpe_version + ":") in cpe_item.attrib["name"]
             for cpe_item in CPE_DICT_ET_CPE_ITEMS)
 
+    def is_unknown_cpe():
+        nonlocal general_cpe, cpe_version
+
+        parse_cpe_dict()
+
+        return ((not any(cpe == cpe_item.attrib["name"] for cpe_item in CPE_DICT_ET_CPE_ITEMS) and
+                 any((general_cpe + ":" + cpe_version + ":") in cpe_item.attrib["name"] for
+                     cpe_item in CPE_DICT_ET_CPE_ITEMS)))
+
+
     cve_results = {}
     if cpe in QUERIED_CPES:
         return copy.deepcopy(QUERIED_CPES[cpe])
@@ -522,7 +532,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
         query += " LIMIT %s" % CONFIG["max_cve_count"]
 
     general_cve_cpe_data = db_cursor.execute(query).fetchall()
-    broad_search = cpe_version is None or is_broad_version() or cpe_version == "-"  # '-' stands for all versions
+    broad_search = cpe_version is None or is_broad_version() or is_unknown_cpe() or cpe_version == "-"  # '-' stands for all versions
     if broad_search:
         if cpe_version:
             cur_cpe = general_cpe + ":" + cpe_version
@@ -644,18 +654,20 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
         # check if scan result's CPE was "only" missing a separator between CPE version and update
         # e.g. scan-result: cpe:/a:openbsd:openssh:6.7p1  correct CPE: cpe:/a:openbsd:openssh:6.7:p1
-        cpe_parts = cpe_iter[5:].split(":")
-        if len(cpe_parts) == 5:
-            cpe_check = cpe_iter[:5] + ":".join(cpe_parts[:-1]) + cpe_parts[-1]
-        elif len(cpe_parts) > 5:
-            cpe_check = cpe_iter[:5] + ":".join(cpe_parts[:4]) + cpe_parts[4] + "::" + ":".join(cpe_parts[5:])
+        cpe_iter_parts = cpe_iter[5:].split(":")
+        if len(cpe_iter_parts) == 5:
+            cpe_check = cpe_iter[:5] + ":".join(cpe_iter_parts[:-1]) + cpe_iter_parts[-1]
+        elif len(cpe_iter_parts) > 5:
+            cpe_check = cpe_iter[:5] + ":".join(cpe_iter_parts[:4]) + cpe_iter_parts[4] + "::" + ":".join(cpe_iter_parts[5:])
         else:
             cpe_check = None
 
         if cpe_check and cpe_check == cpe:
             cve_results = {cpe_iter: found_cves_dict}
             break
-        else:
+        # enforce that if original cpe has version,
+        # it's version is part of current iterating cpe's version
+        elif not cpe_version or cpe_version in cpe_iter_parts[3]:
             cve_results[cpe_iter] = found_cves_dict
 
     if not cve_results:
