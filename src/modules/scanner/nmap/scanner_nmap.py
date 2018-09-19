@@ -291,36 +291,37 @@ def parse_nmap_xml(filepath: str):
 
                 new_os_si_added = False  # save whether the current service revealed any OS information
                 service_elem = port_elem.find("service")
-                for k, v in service_elem.attrib.items():
-                    # if current attribute is useful and unrelated to OS, store it as port information
-                    if k != "conf" and k != "method" and k != "ostype" and k != "devicetype":
-                        port[k] = v
-                    # handle OS information and add as new item to host dict
-                    elif k == "ostype":
-                        if not "os_si" in host:
-                            host["os_si"] = []
-                        if not any(os_si["name"] == v for os_si in host["os_si"]):
-                            host["os_si"].append({"name": v})
-                            if "devicetype" in service_elem.attrib:
-                                host["os_si"][-1]["type"] = service_elem.attrib["devicetype"]
-                            new_os_si_added = True
+                if service_elem:
+                    for k, v in service_elem.attrib.items():
+                        # if current attribute is useful and unrelated to OS, store it as port information
+                        if k != "conf" and k != "method" and k != "ostype" and k != "devicetype":
+                            port[k] = v
+                        # handle OS information and add as new item to host dict
+                        elif k == "ostype":
+                            if not "os_si" in host:
+                                host["os_si"] = []
+                            if not any(os_si["name"] == v for os_si in host["os_si"]):
+                                host["os_si"].append({"name": v})
+                                if "devicetype" in service_elem.attrib:
+                                    host["os_si"][-1]["type"] = service_elem.attrib["devicetype"]
+                                new_os_si_added = True
 
-                # parse CPE information for service and OS (if it exists)
-                cpe_elems = service_elem.findall("cpe")
-                cpes = []
-                for cpe_elem in cpe_elems:
-                    cpe_text = cpe_elem.text
-                    # if the CPE is related to the offered service
-                    if cpe_text.startswith("cpe:/a:"):
-                        cpes.append(cpe_text)
-                    # if CPE is related to underlaying OS and new OS information was registered
-                    elif cpe_text.startswith("cpe:/o:") and new_os_si_added:
-                        if not "cpes" in host["os_si"][-1]:
-                            host["os_si"][-1]["cpes"] = []
-                        host["os_si"][-1]["cpes"].append(cpe_text)
+                    # parse CPE information for service and OS (if it exists)
+                    cpe_elems = service_elem.findall("cpe")
+                    cpes = []
+                    for cpe_elem in cpe_elems:
+                        cpe_text = cpe_elem.text
+                        # if the CPE is related to the offered service
+                        if cpe_text.startswith("cpe:/a:"):
+                            cpes.append(cpe_text)
+                        # if CPE is related to underlaying OS and new OS information was registered
+                        elif cpe_text.startswith("cpe:/o:") and new_os_si_added:
+                            if not "cpes" in host["os_si"][-1]:
+                                host["os_si"][-1]["cpes"] = []
+                            host["os_si"][-1]["cpes"].append(cpe_text)
 
-                if cpes:
-                    port["cpes"] = cpes
+                    if cpes:
+                        port["cpes"] = cpes
 
                 if port["protocol"] == "tcp":
                     tcp_ports[port["portid"]] = port
