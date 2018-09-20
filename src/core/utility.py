@@ -32,7 +32,7 @@ PRINT_MUTEX = Lock()
 parsed_network_exprs = {}
 
 
-def add_wildcard_ipv4(network: str, store_hosts: bool=True):
+def add_wildcard_ip(network: str, store_hosts: bool=True):
     """
     Parse an IP (v4 or v6) wildcard expression (with range, prefix or '*') using Nmap's "-sL" option
     """
@@ -47,10 +47,10 @@ def add_wildcard_ipv4(network: str, store_hosts: bool=True):
         return nmaprun_elem.findall("host")
 
     if network in parsed_network_exprs:
-        if store_hosts and len(parsed_network_exprs[network]) > 1:  # hosts are already stored
-            return
+        if len(parsed_network_exprs[network]) > 1:  # hosts are already stored
+            return True
         elif not store_hosts:
-            return
+            return True
 
     hosts = []
     host_ranges = []
@@ -91,16 +91,16 @@ def add_wildcard_ipv4(network: str, store_hosts: bool=True):
 
 
 def get_ip_ranges(network: str):
-    add_wildcard_ipv4(network)
+    add_wildcard_ip(network)
     return parsed_network_exprs[network][1]
 
 
 def is_valid_net_addr(network: str):
-    return add_wildcard_ipv4(network)
+    return add_wildcard_ip(network)
 
 
 def extend_network_to_hosts(network: str):
-    add_wildcard_ipv4(network)
+    add_wildcard_ip(network)
     return parsed_network_exprs[network][0]
 
 
