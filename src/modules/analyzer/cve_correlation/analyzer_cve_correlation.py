@@ -625,12 +625,12 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                                     "href": "https://nvd.nist.gov/vuln/detail/%s" % cve_id}
 
             if int(float(cvss_ver)) == 2:
-                cve_details[cve_id]["cvssv2"] = score
+                cve_details[cve_id]["cvssv2"] = float(score)
                 cve_details[cve_id]["vector_short"] = vector
                 transform_cvssv2_to_cvssv3(cve_details[cve_id])
                 add_extra_info(cve_details[cve_id], "extrainfo", "Specified CVSSv3 score was converted from CVSSv2 score because there was no CVSSv3 score available.")
             elif int(float(cvss_ver)) == 3:
-                cve_details[cve_id]["cvssv3"] = score
+                cve_details[cve_id]["cvssv3"] = float(score)
                 cve_details[cve_id]["vector_short"] = vector
             else:
                 cve_details[cve_id]["cvssv3"] = -1  # replace with N/A later, but needed for sorting here
@@ -640,6 +640,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     for cpe_iter, cve_dict in found_cves.items():
         cve_ids = sorted(set(cve_dict), key=lambda cve_id: cve_details[cve_id]["cvssv3"], reverse=True)
         found_cves_dict = {}
+
         for cve_id in cve_ids:
             cve_entry = copy.deepcopy(cve_details[cve_id])
             if cve_entry["vector_short"] ==  "N/A":
@@ -862,7 +863,7 @@ def transform_cvssv2_to_cvssv3(cve: dict):
     del cve["vector_short"]
     cve["vector_short"] = ("CVSS:3.0/%s" % converted_cvssv3_vector).replace("(", "")
     vector_v3 = "CVSS:3.0/" + converted_cvssv3_vector
-    cvssv3 = str(calculate_vector(vector_v3, cvss3)[0])  # get base score of cvssv3 score vector
+    cvssv3 = calculate_vector(vector_v3, cvss3)[0]  # get base score of cvssv3 score vector
     cve["cvssv3"] = cvssv3
 
 if __name__ == "__main__":
