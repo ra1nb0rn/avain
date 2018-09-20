@@ -643,7 +643,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
         for cve_id in cve_ids:
             cve_entry = copy.deepcopy(cve_details[cve_id])
             if cve_entry["vector_short"] ==  "N/A":
-                cve_entry["cvssv3"] = score
+                cve_entry["cvssv3"] = "N/A"
 
             with_cpes_list = cve_dict[cve_id]
             if len(with_cpes_list) == 1:
