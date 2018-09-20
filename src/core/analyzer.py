@@ -8,6 +8,7 @@ from core.module_manager import ModuleManager
 
 ADDITIONAL_RESULTS_DIR = "add_analysis_results"
 HOST_SCORES_FILE = "host_scores.json"
+MODULE_SCORES_FILE = "module_scores.json"
 ANALYZER_JOIN_TIMEOUT = 0.38
 
 class Analyzer(ModuleManagerFeedback):
@@ -63,6 +64,43 @@ class Analyzer(ModuleManagerFeedback):
 
         if "ONLINE_ONLY" in all_module_attributes:
             module.ONLINE_ONLY = self.online_only
+
+    def _save_module_scores(self, hosts: list):
+        """
+        Save the module scores in a JSON file. In the file, for every host it is stored which
+        module rated it with which score.
+        """
+
+        def add_module_result():
+            nonlocal module_scores, host, module, score
+
+            if host not in module_scores:
+                module_scores[host] = {module: score}
+            else:
+                module_scores[host][module] = score
+
+        module_scores = {}
+
+        for module, result in self.results.items():
+            # assume file prefix "modules/analyzer/" and extension ".py"
+            module = module[len("modules/analyzer/"):]
+            module = module[:-len(".py")]
+            module = module.replace("/", ".")
+
+            # save existent scores
+            for host, score in result.items():
+                add_module_result()
+
+            # put N/A for hosts that are not in the module's result
+            score = "N/A"
+            for host in hosts:
+                if host not in result.keys():
+                    add_module_result()
+
+        # dump module scores to file
+        module_scores_file = os.path.join(self.output_dir, MODULE_SCORES_FILE)
+        with open(module_scores_file, "w") as f:
+            f.write(json.dumps(module_scores, ensure_ascii=False, indent=3))
 
     def _construct_result(self):
         """
@@ -129,6 +167,8 @@ class Analyzer(ModuleManagerFeedback):
             host_scores = aggregate_module_scores(self.results)
 
         result = aggregate_host_scores(host_scores)
+
+        self._save_module_scores(host_scores.keys())
 
         # dump host scores to file
         host_scores_file = os.path.join(self.output_dir, HOST_SCORES_FILE)
