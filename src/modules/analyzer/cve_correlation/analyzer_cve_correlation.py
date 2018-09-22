@@ -479,13 +479,22 @@ def add_extra_info(dict_: dict, info_key: str, text: str):
 
 def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     def is_broad_version():
-        nonlocal general_cpe, cpe_version
+        nonlocal general_cpe, cpe_version, values
 
         parse_cpe_dict()
 
-        return not any((general_cpe + ":" + cpe_version) == cpe_item.attrib["name"] or
-            (general_cpe + ":" + cpe_version + ":") in cpe_item.attrib["name"]
-            for cpe_item in CPE_DICT_ET_CPE_ITEMS)
+        for cpe_item in CPE_DICT_ET_CPE_ITEMS:
+            dict_cpe = cpe_item.attrib["name"]
+            dict_cpe_fields = dict_cpe[7:].split(":")
+            dict_general_cpe = dict_cpe[:7] + ":".join(dict_cpe_fields[:2])
+
+            if len(dict_cpe_fields) > 2:
+                if general_cpe == dict_general_cpe and util.is_neq_prefix(cpe_version, dict_cpe_fields[2]):
+                    return True
+            if len(values) > 3 and dict_cpe.startswith((general_cpe + ":" + cpe_version + ":")):
+                return True
+
+        return False
 
     def is_unknown_cpe():
         nonlocal general_cpe, cpe_version
