@@ -570,10 +570,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
         specific_cves = []
         while len(cur_cpe) > 0:
-            if CONFIG.get("squash_cpes", "True") == "True":
-                query = "SELECT DISTINCT cve_id, '', with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
-            else:
-                query = "SELECT DISTINCT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
+            query = "SELECT DISTINCT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
             if CONFIG.get("max_cve_count", "-1") != "-1":
                 query += " LIMIT %s" % CONFIG["max_cve_count"]
             specific_cves = db_cursor.execute(query).fetchall()
@@ -595,8 +592,6 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
             # values = cpe_iter[7:].split(":")
             # if len(values) > 3:
             #     cpe_iter = cpe_iter[:7] + ":".join(values[:3])  # nvd.nist seems to do this with e.g. cpe:/o:microsoft:windows_10:1607::~~~~x64~
-            if cpe_iter == "":  # happens only if 'squash_cpes = True' in config
-                cpe_iter = cpe
             if cpe_iter not in found_cves:
                 found_cves[cpe_iter] = {}
             found_cves[cpe_iter][cve_id] = with_cpes
@@ -713,7 +708,14 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
         # enforce that if original cpe has version,
         # it's version is part of current iterating cpe's version
         elif not cpe_version or cpe_version in cpe_iter_parts[3]:
-            cve_results[cpe_iter] = found_cves_dict
+            if CONFIG.get("squash_cpes", "True") == "True":
+                if not cpe in cve_results:
+                    cve_results[cpe] = {}
+                for cve_id, cve_entry in found_cves_dict.items():
+                    if not cve_id in cve_results[cpe]:
+                        cve_results[cpe][cve_id] = cve_entry
+            else:
+                cve_results[cpe_iter] = found_cves_dict
 
     if not cve_results:
         cve_results = {cpe: {}}
