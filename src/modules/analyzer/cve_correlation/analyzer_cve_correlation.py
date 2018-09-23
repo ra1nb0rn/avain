@@ -367,8 +367,28 @@ def calculate_final_scores(hosts: dict):
             score_list_max.append(score)
 
     def aggregate_entry(entry: dict):
-        is_broad_entry = set(entry.get("cpes", {}).keys()) != set(entry.get("original_cpes", {}))
-        if is_broad_entry:
+        def is_broad_entry(entry: dict):
+            def string_in_info(info: str):
+                return ("Original CPE was invalid, unofficial or too broad" in info
+                        or "original CPEs were invalid, unofficial" + "or too broad" in info)
+
+            info_key = "cve_extrainfo"
+            if info_key not in entry:
+                return False
+            elif info_key in entry:
+                if string_in_info(entry[info_key]):
+                    return True
+
+                i = 1
+                while True:
+                    extra_string = "%s_%d" % (info_key, i)
+                    if extra_string not in dict_:
+                        return False
+                    elif string_in_info(entry[extra_string]):
+                        return True
+                    i += 1
+
+        if is_broad_entry(entry):
             counted_cves = set()
             score_list = []
             for _, cves_entry in entry.get("cpes", {}).items():
@@ -550,7 +570,10 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
         specific_cves = []
         while len(cur_cpe) > 0:
-            query = "SELECT DISTINCT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
+            if CONFIG.get("squash_cpes", "True") == "True":
+                query = "SELECT DISTINCT cve_id, '', with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
+            else:
+                query = "SELECT DISTINCT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
             if CONFIG.get("max_cve_count", "-1") != "-1":
                 query += " LIMIT %s" % CONFIG["max_cve_count"]
             specific_cves = db_cursor.execute(query).fetchall()
@@ -562,6 +585,8 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
             # values = cpe_iter[7:].split(":")
             # if len(values) > 3:
             #     cpe_iter = cpe_iter[:7] + ":".join(values[:3])  # nvd.nist seems to do this with e.g. cpe:/o:microsoft:windows_10:1607::~~~~x64~
+            if cpe_iter == "":  # happens only if 'squash_cpes = True' in config
+                cpe_iter = cpe
             if cpe_iter not in found_cves:
                 found_cves[cpe_iter] = {}
             found_cves[cpe_iter][cve_id] = with_cpes
