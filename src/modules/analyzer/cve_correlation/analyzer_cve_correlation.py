@@ -578,8 +578,18 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                 query += " LIMIT %s" % CONFIG["max_cve_count"]
             specific_cves = db_cursor.execute(query).fetchall()
             if specific_cves:
+                discv_cpes_query = "SELECT DISTINCT cpe FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
+                discv_cpes = db_cursor.execute(discv_cpes_query).fetchall()
+
+                # if original CPE was broad, but only one new CPE could be discovered
+                if len(discv_cpes) == 1:
+                    broad_search = False
                 break
-            cur_cpe = cur_cpe[:-1]
+
+            if is_broad_version():
+                cur_cpe = ""
+            else:
+                cur_cpe = cur_cpe[:-1]
 
         for cve_id, cpe_iter, with_cpes in specific_cves:
             # values = cpe_iter[7:].split(":")
