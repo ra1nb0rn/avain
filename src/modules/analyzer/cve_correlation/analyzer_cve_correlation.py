@@ -686,7 +686,7 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
             if cve_entry["vector_short"] ==  "N/A":
                 cve_entry["cvssv3"] = "N/A"
 
-            with_cpes_list = cve_dict[cve_id]
+            with_cpes_list = list(filter(None, cve_dict[cve_id].split(",")))
             if len(with_cpes_list) == 1:
                 add_extra_info(cve_entry, "extrainfo", "Note - only vulnerable in conjunction with '%s'" % ", ".join(with_cpes_list))
             elif len(with_cpes_list) > 1:
