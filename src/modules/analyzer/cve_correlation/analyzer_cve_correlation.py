@@ -569,7 +569,8 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
             cur_cpe = cpe
 
         specific_cves = []
-        while len(cur_cpe) > 0:
+        # while cur_cpe has at least a version
+        while len(cur_cpe) > 0 and not cur_cpe.count(":") < 4:
             query = "SELECT DISTINCT cve_id, cpe, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % cur_cpe
             if CONFIG.get("max_cve_count", "-1") != "-1":
                 query += " LIMIT %s" % CONFIG["max_cve_count"]
