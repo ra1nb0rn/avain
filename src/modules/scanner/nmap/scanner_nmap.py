@@ -10,7 +10,7 @@ from core import utility as util
 
 XML_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.xml"
 TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"
-POT_OSES_PATH = "potential_oses.json"
+POT_OSS_PATH = "potential_oss.json"
 NETWORKS_PATH, NETWORKS_OMIT_PATH = "networks.list", "networks_omit.list"
 
 NETWORKS = []  # a list representing the networks (as strings) to analyze
@@ -19,7 +19,7 @@ VERBOSE = False  # specifying whether to provide verbose output or not
 PORTS = None  # the ports to scan
 CONFIG = {}
 
-DETECTED_OSES = {}
+DETECTED_OSS = {}
 logger = None
 CREATED_FILES = []
 
@@ -133,9 +133,9 @@ def conduct_scan(results: list):
             for ip, host in result_ipv6.items():
                 result[ip] = host
 
-    with open(POT_OSES_PATH, "w") as f:
-        f.write(json.dumps(DETECTED_OSES, ensure_ascii=False, indent=3))
-    CREATED_FILES.append(POT_OSES_PATH)
+    with open(POT_OSS_PATH, "w") as f:
+        f.write(json.dumps(DETECTED_OSS, ensure_ascii=False, indent=3))
+    CREATED_FILES.append(POT_OSS_PATH)
     logger.info("Done")
 
     adjust_port_info_keys(result)
@@ -480,9 +480,9 @@ def discard_unuseful_info(parsed_host):
 
             return matching_string
 
-    def add_potential_oses_from_service(dict_key: str):
+    def add_potential_oss_from_service(dict_key: str):
         """
-        Evaluate nmap Service Info OS information and append result to potential oses
+        Evaluate nmap Service Info OS information and append result to potential OSs
 
         :param dict_key: the key that identifies the service field within a host dict
         """
@@ -494,9 +494,9 @@ def discard_unuseful_info(parsed_host):
                 if "cpe" in service_elem:
                     service_elem["cpes"] = [service_elem["cpe"]]
                 if "cpes" in service_elem:
-                    # check if a CPE of the current OS is a prefix of a CPE already saved in potential_oses
+                    # check if a CPE of the current OS is a prefix of a CPE already saved in potential_oss
                     for cpe in service_elem["cpes"]:
-                        for pot_os in potential_oses:
+                        for pot_os in potential_oss:
                             if "cpes" in pot_os:
                                 if any(cpe in pot_cpe for pot_cpe in pot_os["cpes"]):
                                     found_supstring = True
@@ -506,41 +506,41 @@ def discard_unuseful_info(parsed_host):
 
                 replaced_os = False
                 # now check for a substring of name or CPE
-                potential_os_cpy = copy.deepcopy(potential_oses)
+                potential_os_cpy = copy.deepcopy(potential_oss)
                 for i, pot_os in enumerate(potential_os_cpy):
                     pot_os_cmp, service_os_cmp = pot_os["name"].replace(" ", "").lower(), service_elem["name"].replace(" ", "").lower()
                     if pot_os_cmp in service_os_cmp:
                         if pot_os_cmp != service_os_cmp:
-                            del potential_oses[i]
+                            del potential_oss[i]
                             new_pot_os = {"name": service_elem["name"], "accuracy": "100", "type": service_elem.get("devicetype", "")}
                             if "cpes" in service_elem:
                                 new_pot_os["cpes"] = service_elem["cpes"]
 
                             if not replaced_os:
-                                potential_oses.insert(i, new_pot_os)
+                                potential_oss.insert(i, new_pot_os)
                                 replaced_os = True
                             break
-                    # if this OS of potential_oses has a CPE that is a prefix
+                    # if this OS of potential_oss has a CPE that is a prefix
                     # of a CPE of the current OS mentioned in the services
                     elif "cpes" in service_elem and "cpes" in pot_os:
                         for cpe in service_elem["cpes"]:
                             if any(pot_cpe in cpe for pot_cpe in pot_os["cpes"]):
-                                del potential_oses[i]
+                                del potential_oss[i]
                                 new_pot_os = {"name": service_elem["name"], "cpes": service_elem["cpes"],
                                     "accuracy": "100", "type": service_elem.get("devicetype", "")}
 
                                 if not replaced_os:
-                                    potential_oses.insert(i, new_pot_os)
+                                    potential_oss.insert(i, new_pot_os)
                                     replaced_os = True
                                 break
 
-                    # if the CPE is not stored yet in any way, append the current OS to the list of potential OSes
+                    # if the CPE is not stored yet in any way, append the current OS to the list of potential OSs
                     if not found_supstring and not replaced_os and not service_elem["name"] in added_in_service:
-                        potential_oses.append({"name": service_elem["name"],
+                        potential_oss.append({"name": service_elem["name"],
                             "accuracy": "100", "type": service_elem.get("devicetype", "")})
                         added_in_service.add(service_elem["name"])
                         if "cpes" in service_elem:
-                            potential_oses[-1]["cpes"] = service_elem["cpes"]
+                            potential_oss[-1]["cpes"] = service_elem["cpes"]
 
     host = {}
     matching_string = ""
@@ -548,11 +548,11 @@ def discard_unuseful_info(parsed_host):
 
 
     #################################
-    # write down all potential OSes #
+    # write down all potential OSs #
     #################################
 
-    potential_oses = []
-    # start looking for potential OSes in the nmap osmatch information
+    potential_oss = []
+    # start looking for potential OSs in the nmap osmatch information
 
     if "osmatches" in parsed_host:
         for osmatch in parsed_host["osmatches"]:
@@ -572,8 +572,8 @@ def discard_unuseful_info(parsed_host):
                         for cpe in osclass["cpes"]:
                             store_os = True
                             replace_accuracy = 0
-                            if potential_oses:
-                                for i, pot_os in enumerate(potential_oses):
+                            if potential_oss:
+                                for i, pot_os in enumerate(potential_oss):
                                     # if this cpe is substring of another OS's cpe
                                     if any(cpe in pot_cpe for pot_cpe in pot_os["cpes"]):
                                         store_os = False
@@ -583,23 +583,23 @@ def discard_unuseful_info(parsed_host):
                                         store_os = True
                                         if int(pot_os["accuracy"]) > int(replace_accuracy):
                                             replace_accuracy = pot_os["accuracy"]
-                                        del potential_oses[i]
+                                        del potential_oss[i]
 
                             if store_os:
                                 accuracy = str(max([int(osclass["accuracy"]), int(replace_accuracy)]))
-                                potential_oses.append({"name": name, "cpes": osclass["cpes"],
+                                potential_oss.append({"name": name, "cpes": osclass["cpes"],
                                     "accuracy": accuracy, "type": osclass.get("type", "")})
                                 break
                     else:
-                        if not any(name in pot_os["name"] for pot_os in potential_oses):
-                            potential_oses.append({"name": name, "cpes": [],"accuracy": osclass["accuracy"],
+                        if not any(name in pot_os["name"] for pot_os in potential_oss):
+                            potential_oss.append({"name": name, "cpes": [],"accuracy": osclass["accuracy"],
                                 "type": osclass.get("type", "")})
 
-    add_potential_oses_from_service("os_si")
-    add_potential_oses_from_service("os_smb_discv")
+    add_potential_oss_from_service("os_si")
+    add_potential_oss_from_service("os_smb_discv")
 
     # Put vendor name in front of name if not existent
-    for pot_os in potential_oses:
+    for pot_os in potential_oss:
         if "cpes" in pot_os:
             cpes = pot_os["cpes"]
             vendor = ""
@@ -612,11 +612,11 @@ def discard_unuseful_info(parsed_host):
             if vendor and not pot_os["name"].lower().startswith(vendor):
                 pot_os["name"] = vendor[0].upper() + vendor[1:] + " " + pot_os["name"]
 
-    DETECTED_OSES[parsed_host["ip"]["addr"]] = potential_oses
+    DETECTED_OSS[parsed_host["ip"]["addr"]] = potential_oss
 
-    # compute similarities of potential OSes to matching string
+    # compute similarities of potential OSs to matching string
     is_os, highest_sim, = None, -1
-    for pot_os in potential_oses:
+    for pot_os in potential_oss:
         split_os_names, cur_name, sim_sum = [], "", -1
         for word in pot_os["name"].split(" "):
             cur_name += word.lower()
