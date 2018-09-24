@@ -11,6 +11,7 @@ from core import utility as util
 XML_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.xml"
 TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"
 POT_OSS_PATH = "potential_oss.json"
+OS_SELECTION_SCORES_PATH = "os_selection_scores.json"
 NETWORKS_PATH, NETWORKS_OMIT_PATH = "networks.list", "networks_omit.list"
 
 NETWORKS = []  # a list representing the networks (as strings) to analyze
@@ -20,6 +21,7 @@ PORTS = None  # the ports to scan
 CONFIG = {}
 
 DETECTED_OSS = {}
+OS_SIM_SCORES = {}
 logger = None
 CREATED_FILES = []
 
@@ -136,6 +138,11 @@ def conduct_scan(results: list):
     with open(POT_OSS_PATH, "w") as f:
         f.write(json.dumps(DETECTED_OSS, ensure_ascii=False, indent=3))
     CREATED_FILES.append(POT_OSS_PATH)
+
+    with open(OS_SELECTION_SCORES_PATH, "w") as f:
+        f.write(json.dumps(OS_SIM_SCORES, ensure_ascii=False, indent=3))
+    CREATED_FILES.append(OS_SELECTION_SCORES_PATH)
+
     logger.info("Done")
 
     adjust_port_info_keys(result)
@@ -615,6 +622,7 @@ def discard_unuseful_info(parsed_host):
     DETECTED_OSS[parsed_host["ip"]["addr"]] = potential_oss
 
     # compute similarities of potential OSs to matching string
+    os_sim_scores = []
     is_os, highest_sim, = None, -1
     for pot_os in potential_oss:
         split_os_names, cur_name, sim_sum = [], "", -1
@@ -631,6 +639,7 @@ def discard_unuseful_info(parsed_host):
         sim *= float(pot_os["accuracy"])/100
 
         # print("%s --> %f with %s%%" % (pot_os["name"], sim, pot_os["accuracy"]))
+        os_sim_scores.append((pot_os, sim))
 
         # iteratively save the OS with the highest similarity to the matching string
         if sim > highest_sim:
@@ -648,5 +657,8 @@ def discard_unuseful_info(parsed_host):
     host["mac"] = parsed_host["mac"]
     host["tcp"] = parsed_host["tcp"]
     host["udp"] = parsed_host["udp"]
+
+    # store OS sim scores
+    OS_SIM_SCORES[host["ip"]["addr"]] = os_sim_scores
 
     return host
