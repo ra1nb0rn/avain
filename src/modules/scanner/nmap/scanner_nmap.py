@@ -10,7 +10,7 @@ from core import utility as util
 
 XML_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.xml"
 TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"
-POT_OSS_PATH = "potential_oss.json"
+POT_OSS_PATH, MATCH_STR_PATH = "potential_oss.json", "matching_string.txt"
 OS_SELECTION_SCORES_PATH = "os_selection_scores.json"
 NETWORKS_PATH, NETWORKS_OMIT_PATH = "networks.list", "networks_omit.list"
 
@@ -552,6 +552,9 @@ def discard_unuseful_info(parsed_host):
     host = {}
     matching_string = ""
     fill_matching_string()
+    with open(MATCH_STR_PATH, "w") as f:
+        f.write(matching_string)
+    CREATED_FILES.append(MATCH_STR_PATH)
 
 
     #################################
