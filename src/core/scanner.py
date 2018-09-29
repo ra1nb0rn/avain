@@ -199,14 +199,14 @@ class Scanner(ModuleManagerFeedback):
                         mse_cpes = most_specific_entry.get("cpes", [])
                         if mse_cpes:
                             # if the current most specific entry has a broader cpe
-                            if any(util.is_neq_prefix(mse_cpe, entry_cpe) for mse_cpe in mse_cpes):
+                            if any(util.neq_in(mse_cpe, entry_cpe) for mse_cpe in mse_cpes):
                                 most_specific_entry = entry
                             # if the current most specific entry has the same cpe as the current one
                             elif all(entry_cpe == mse_cpe for mse_cpe in mse_cpes):
                                 e_name = entry.get("name", "")
                                 mse_name = most_specific_entry.get("name", "")
                                 # ... but is broader
-                                if util.is_neq_prefix(mse_name, e_name):
+                                if util.neq_in(mse_name, e_name):
                                     most_specific_entry = entry
                         # if current most specific has no cpes ...
                         elif "name" in most_specific_entry:
@@ -221,7 +221,7 @@ class Scanner(ModuleManagerFeedback):
                     # if current entry has no cpes but a name
                     if not entry_cpes and "name" in entry:
                         e_name, mse_name = entry["name"], most_specific_entry.get("name", "")
-                        if util.is_neq_prefix(mse_name, e_name):
+                        if util.neq_in(mse_name, e_name):
                             # if current most specific entry does not have only cpes
                             if not (mse_name == "" and "cpes" in most_specific_entry):
                                 most_specific_entry = entry

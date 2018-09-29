@@ -262,3 +262,6 @@ def compute_cosine_similarity(text_1: str, text_2: str):
 
 def is_neq_prefix(a: str, b: str):
     return a != b and b.startswith(a)
+
+def neq_in(a: str, b: str):
+    return a != b and a in b
