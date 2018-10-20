@@ -423,7 +423,7 @@ def calculate_final_scores(hosts: dict):
         score_list_max = []
 
         # aggregate entries from OS and ports
-        if "os" in host:
+        if "os" in host and not CONFIG.get("skip_os", "false").lower() == "true":
             broad_aggr, score = aggregate_entry(host["os"])
             host["os"]["aggregated_cvssv3"] = score
             add_to_score_lists(broad_aggr, host["os"]["aggregated_cvssv3"])
