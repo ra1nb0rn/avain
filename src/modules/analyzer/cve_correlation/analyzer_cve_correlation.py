@@ -541,8 +541,8 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
         query += " LIMIT %s" % CONFIG["max_cve_count"]
     found_cves_specific = db_cursor.execute(query).fetchall()
 
+    found_cves[cpe] = {}
     if found_cves_specific:
-        found_cves[cpe] = {}
         for cve_id, with_cpes in found_cves_specific:
             found_cves[cpe][cve_id] = with_cpes 
 
