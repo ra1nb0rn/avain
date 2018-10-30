@@ -246,7 +246,7 @@ def parse_nmap_xml(filepath: str):
         osmatches = []
 
         os_elem = host_elem.find("os")
-        if os_elem:
+        if os_elem is not None:
             # iterate over all osmatch tags
             for osmatch_elem in os_elem.findall("osmatch"):
                 osmatch = {}
@@ -285,7 +285,7 @@ def parse_nmap_xml(filepath: str):
         tcp_ports, udp_ports = {}, {}
 
         port_elem = host_elem.find("ports")
-        if port_elem:
+        if port_elem is not None:
             # iterate over all port tags
             for port_elem in port_elem.findall("port"):
                 port = {}
@@ -298,7 +298,7 @@ def parse_nmap_xml(filepath: str):
 
                 new_os_si_added = False  # save whether the current service revealed any OS information
                 service_elem = port_elem.find("service")
-                if service_elem:
+                if service_elem is not None:
                     for k, v in service_elem.attrib.items():
                         # if current attribute is useful and unrelated to OS, store it as port information
                         if k != "conf" and k != "method" and k != "ostype" and k != "devicetype":
