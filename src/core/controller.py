@@ -107,7 +107,7 @@ class Controller():
                 " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
 
     def setup_logging(self):
-        self.logfile = os.path.abspath(os.path.join(self.output_dir, "avain.log"))
+        self.logfile = os.path.abspath(os.path.join(self.output_dir, LOGFILE))
         if os.path.isfile(self.logfile):
             os.remove(self.logfile)  # delete logging file if it already exists (from a previous run)
         logging.basicConfig(format=LOGGING_FORMAT, filename=self.logfile, level=logging.INFO)
@@ -171,8 +171,11 @@ class Controller():
 
         if not self.scan_only:
             outfile = os.path.join(self.output_dir, "results.json")
+            outfile_orig = os.path.join(self.orig_out_dir, "results.json")
+
             visualizer.visualize_dict_results(network_scores, outfile)
             self.logger.info("The main output file is called '%s'" % outfile)
+            print("The main output file is called: %s" % outfile_orig)
 
         self.logger.info("All created files have been written to '%s'" % self.output_dir)  # write absolute path
         print("All created files have been written to: %s" % self.orig_out_dir)  # write relative path
