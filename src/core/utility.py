@@ -175,6 +175,14 @@ def parse_config(filepath: str, base_config:dict = {}):
         text = text.replace("'", "")
         return text
 
+    def next_line():
+        nonlocal i, lines
+        if i < len(lines):
+            i += 1
+            return lines[i - 1]
+        else:
+            return None
+
     config = copy.deepcopy(base_config)
     with open(filepath) as f:
         cur_module = "core"  # default to core
@@ -182,36 +190,51 @@ def parse_config(filepath: str, base_config:dict = {}):
             config[cur_module] = {}
 
         comment_started = False
-        for line in f.readlines():
+        lines, i = f.readlines(), 0
+        line = next_line()
+        cur_text = line
+
+        while line is not None:
             line = line.strip()
             if comment_started:
                 if "*/" in line:
                     comment_started = False
-                    line = line[line.find("*/")+2:]
+                    line = line[line.rfind("*/")+2:]
+                    cur_text += line
                 else:
+                    line = next_line()
                     continue
-            if "/*" in line:
-                comment_started = True
-                line = line[:line.find("/*")]
 
-            comment_start = line.find("//")
+            if "/*" in line:
+                if "*/" in line:
+                    cur_text = line[:line.find("/*")] + line[line.rfind("*/")+2:]
+                else:
+                    cur_text = line[:line.find("/*")]
+                    line = next_line()
+                    comment_started = True
+                    continue
+            else:
+                cur_text = line
+
+            comment_start = cur_text.find("//")
             if comment_start != -1:
-                line = line[:comment_start]
-            if line == "":
-                continue
+                cur_text = line[:comment_start]
 
             # start of module specification
-            if line.startswith("["):
-                cur_module = line[1:line.find("]")]
+            if cur_text.startswith("["):
+                cur_module = cur_text[1:cur_text.find("]")]
                 if cur_module not in config:
                     config[cur_module] = {}
-            else:
-                k, v = line.split("=")
+            elif not cur_text == "":
+                k, v = cur_text.split("=")
                 k = k.strip()
                 v = v.strip()
                 k = remove_quotes(k)
                 v = remove_quotes(v)
                 config[cur_module][k] = v
+
+            line = next_line()
+            cur_text = line
 
     return config
 
