@@ -128,8 +128,12 @@ class Analyzer(ModuleManagerFeedback):
 
                     if host not in host_scores:
                         host_scores[host] = score
-                    elif score > host_scores[host]:
-                        host_scores[host] = score
+                    else:
+                        try:
+                            if score > host_scores[host]:
+                                host_scores[host] = score
+                        except:
+                            host_scores[host] = score
 
             return host_scores
 
