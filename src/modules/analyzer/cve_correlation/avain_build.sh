@@ -1,7 +1,6 @@
 #!/bin/bash
 
-cd "db_creation_src/"
-cd "SQLiteCpp"
+cd "db_creation_src/SQLiteCpp"
 git submodule init
 git submodule update
 cd ".."
