@@ -152,7 +152,7 @@ class Controller():
         network_scores = {}
         net_dir_map = {}
 
-        if self.single_network or len(networks) == 1 or self.analysis_only:
+        if self.single_network or len(networks) <= 1 or self.analysis_only:
             score = do_analysis_helper(networks, self.output_dir)
             if score is not None:
                 if self.single_network or self.analysis_only:
