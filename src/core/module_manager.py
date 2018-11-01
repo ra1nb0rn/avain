@@ -56,7 +56,10 @@ class ModuleManager(metaclass=ABCMeta):
     def _store_results(self):
         result_file = os.path.join(self.output_dir, self.result_filename)
         with open(result_file, "w") as f:
-            f.write(json.dumps(self.result, ensure_ascii=False, indent=3))
+            if not isinstance(self.result, dict):
+                f.write(json.dumps({"Result": self.result}, ensure_ascii=False, indent=3))
+            else:
+                f.write(json.dumps(self.result, ensure_ascii=False, indent=3))
 
     def _run_modules(self):
         """
