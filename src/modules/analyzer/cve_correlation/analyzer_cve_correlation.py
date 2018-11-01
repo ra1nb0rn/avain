@@ -856,7 +856,7 @@ def transform_cvssv2_to_cvssv3(cve: dict):
     # Conversion incentives are takten from: https://security.stackexchange.com/questions/127335/how-to-convert-risk-scores-cvssv1-cvssv2-cvssv3-owasp-risk-severity
     # If the conversion incentive is indecisive, the more likely conversion was taken
     converted_cvssv3_vector = ""
-    vector_fields = cve["vector_short"][1:-1].split("/")  # remove left and right parenthesis
+    vector_fields = cve["vector_short"].split("/")  # remove left and right parenthesis
     for vector_field in vector_fields:
         key, val = vector_field.split(":")
         # key == "AV": just copy values

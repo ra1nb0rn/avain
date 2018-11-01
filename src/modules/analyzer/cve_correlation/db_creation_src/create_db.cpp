@@ -54,6 +54,71 @@ void handle_exception(SQLite::Exception &e) {
     }
 }
 
+/**
+ * Splits a string at the given character and stores the split strings in the given vector
+ * @param str The str to split into individual strings
+ * @param strs The vector the split string are to be stored in
+ * @param ch The character that is to split the text into individual strings
+ * @return the number of individual strings extracted
+ */
+std::size_t split_str(const std::string &str, std::vector<std::string> &strs, char ch) {
+    size_t pos = str.find(ch);
+    size_t initialPos = 0;
+    strs.clear();
+
+    // Iterate over the passed string
+    while (pos != std::string::npos) {
+        std::string split_word = str.substr(initialPos, pos - initialPos);
+        if (split_word != "")
+            strs.push_back(split_word);
+        initialPos = pos + 1;
+
+        pos = str.find(ch, initialPos);
+    }
+
+    // Add last split string
+    strs.push_back(str.substr(initialPos, std::min(pos, str.length()) - initialPos + 1));
+
+    return strs.size();
+}
+
+void transform_cpe23_to_cpe22(std::string &cpe23, std::string &cpe22) {
+    cpe22 = "";
+    cpe23 = cpe23.substr(8);  // cut off the beginning "cpe:2.3:"
+    std::vector<std::string> cpe23_fields;
+    split_str(cpe23, cpe23_fields, ':');
+
+    // Cutoff the cpe23 string after 7 elements
+    for (std::size_t i = 0; i < cpe23_fields.size(); i++) {
+        if (i > 6)
+            break;
+        cpe22 += cpe23_fields[i] + ":";
+    }
+    cpe22 = cpe22.substr(0, cpe22.size() - 1);  // remove trailing ":"
+
+    // Remove trailing "*" fields and replace inner "*" fields with "-"
+    std::vector<std::string> cpe22_fields;
+    split_str(cpe22, cpe22_fields, ':');
+    bool remove_asterisks = true;
+    for (int i = cpe22_fields.size() - 1; i >= 0; i--) {
+        if (remove_asterisks && cpe22_fields[i] == "*") {
+            cpe22_fields.erase(cpe22_fields.begin() + i);
+        }
+        else {
+            if (cpe22_fields[i] == "*")
+                cpe22_fields[i] = "-";
+            remove_asterisks = false;
+        }
+    }
+
+    // Put together the final CPE 2.2 string
+    cpe22 = "cpe:/";
+    for (auto const &field : cpe22_fields) {
+        cpe22 += field + ":";
+    }
+    cpe22 = cpe22.substr(0, cpe22.size() - 1);  // remove trailing ":"
+}
+
 void get_specific_cpes(json &vendor_data, std::string &vague_cpe, std::unordered_set<VagueCpeInfo> &specific_cpes) {
     std::string cpe_part_str, cpe_str;
     for (auto &vendor_data_entry : vendor_data) {
@@ -96,7 +161,7 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
 
     json impact_entry;
     std::string cve_id, description, published, last_modified, vector_string, severity, cvss_version;
-    std::string cpe, descr_line, cpe_version, affected_versions, vendor_name, product_name, version_value;
+    std::string cpe, cpe23, descr_line, cpe_version, affected_versions, vendor_name, product_name, version_value;
     bool vulnerable, no_cvss;
     double base_score;
 
@@ -156,12 +221,13 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
         std::vector<VagueCpeInfo> vague_cpe_infos;
 
         for (auto &config_nodes_entry : cve_entry["configurations"]["nodes"]) {
-            if (config_nodes_entry.find("cpe") != config_nodes_entry.end()) {
-                for (auto &cpe_entry : config_nodes_entry["cpe"]) {
+            if (config_nodes_entry.find("cpe_match") != config_nodes_entry.end()) {
+                for (auto &cpe_entry : config_nodes_entry["cpe_match"]) {
                     vulnerable = cpe_entry["vulnerable"];
                     if (!vulnerable)
                         continue;
-                    cpe = cpe_entry["cpe22Uri"];
+                    cpe23 = cpe_entry["cpe23Uri"];
+                    transform_cpe23_to_cpe22(cpe23, cpe);
                     VagueCpeInfo vague_cpe_info = {cpe, "", "", "", ""};
 
                     if (cpe_entry.find("versionStartIncluding") != cpe_entry.end()) {
@@ -222,11 +288,12 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
 
                 for (auto &children_entry : config_nodes_entry["children"]) {
                     std::unordered_set<VagueCpeInfo> cpes;
-                    for (auto &cpe_entry : children_entry["cpe"]) {
+                    for (auto &cpe_entry : children_entry["cpe_match"]) {
                         vulnerable = cpe_entry["vulnerable"];
                         // if (!vulnerable)
                         //     continue;
-                        cpe = cpe_entry["cpe22Uri"];
+                        cpe23 = cpe_entry["cpe23Uri"];
+                        transform_cpe23_to_cpe22(cpe23, cpe);
 
                         VagueCpeInfo vague_cpe_info = {cpe, "", "", "", ""};
 
