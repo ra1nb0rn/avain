@@ -59,10 +59,10 @@ class ModuleManagerFeedback(ModuleManager):
             self._include_additional_results()
         if not self._only_result_files():
             self._run_modules()
-        self._sort_results()
+
         self.logger.info("Aggregating results")
         self.result = self._construct_result()
-
+        self._sort_results()
         self._cleanup()
         self._store_results()
         self.logger.info("%s phase completed", self.mgmt_type.capitalize())
