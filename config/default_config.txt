@@ -16,6 +16,7 @@ DB_expire = 10080  // in minutes, i.e. every week
 skip_os = False  // whether to skip OS CVE analysis --> {True, False}
 max_cve_count = -1  // the maximum number of CVEs to retrieve; -1 for unlimited
 squash_cpes = True  // whether to squash every discovered CPE in case of invalid CPE
+allow_versionless_search = True  // whether to fully search for CVEs when CPE has no version
 
 [modules.scanner.nmap.scanner_nmap]
 // add_nmap_params = "--max-rtt-timeout 100ms --max-retries 1"  // additional Nmap params

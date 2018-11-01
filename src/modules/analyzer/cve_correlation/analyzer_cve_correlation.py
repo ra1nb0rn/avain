@@ -551,11 +551,15 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
     elif len(values) > 2:
         cpe_version = values[2]
 
-    query = ("SELECT cve_id, cpe, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
-                   "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\" " % general_cpe +
-            "UNION " +
-            "SELECT cve_id, cpe, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
-                   "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s::%%\"" % general_cpe)
+    if CONFIG.get("allow_versionless_search", "true").lower() == "true":
+        query = ("SELECT cve_id, cpe, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
+                "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s%%\"" % general_cpe)
+    else:
+        query = ("SELECT cve_id, cpe, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
+                        "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe=\"%s\" " % general_cpe +
+                 "UNION " +
+                 "SELECT cve_id, cpe, cpe_version_start, cpe_version_start_type, cpe_version_end, " +
+                        "cpe_version_end_type, with_cpes FROM cve_cpe WHERE cpe LIKE \"%s::%%\"" % general_cpe)
 
     if CONFIG.get("max_cve_count", "-1") != "-1":
         query += " LIMIT %s" % CONFIG["max_cve_count"]
@@ -638,6 +642,13 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
 
                 if cpe_in:
                     found_cves[cpe_iter][entry[0]] = with_cpes
+
+    elif CONFIG.get("allow_versionless_search", "true").lower() == "true":
+        for entry in general_cve_cpe_data:
+            cve_id, entry_cpe, with_cpes = entry[0], entry[1], entry[6]
+            if not entry_cpe in found_cves:
+                found_cves[entry_cpe] = {}
+            found_cves[entry_cpe][cve_id] = with_cpes
 
     # limit number of entries per CPE string
     if CONFIG.get("max_cve_count", "-1") != "-1":
