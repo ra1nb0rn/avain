@@ -42,7 +42,7 @@ class Analyzer(ModuleManagerFeedback):
         return False
 
     def _sort_results(self):
-        super()._sort_results_by_ip()
+        pass
 
     def _cleanup(self):
         pass
