@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import json
+import math
 import os
 import shutil
 
@@ -41,8 +42,14 @@ class ModuleManagerFeedback(ModuleManager):
 
     def _sort_results_by_ip(self):
         """ "sort" results by IP """
+        def sort_func(ip: str):
+            try:
+                return util.ip_str_to_int(ip)
+            except:
+                return math.inf
+
         sorted_result = {}
-        for k_ip in sorted(self.result, key=lambda ip: util.ip_str_to_int(ip)):
+        for k_ip in sorted(self.result, key=sort_func):
             sorted_result[k_ip] = self.result[k_ip]
         self.result = sorted_result
 
