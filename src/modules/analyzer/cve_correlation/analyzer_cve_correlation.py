@@ -679,10 +679,12 @@ def get_cves_to_cpe(cpe: str, max_vulnerabilities = 500):
                 cve_details[cve_id]["cvssv2"] = float(score)
                 cve_details[cve_id]["vector_short"] = vector
                 transform_cvssv2_to_cvssv3(cve_details[cve_id])
+                add_detailed_vector(cve_details[cve_id])
                 add_extra_info(cve_details[cve_id], "extrainfo", "Specified CVSSv3 score was converted from CVSSv2 score because there was no CVSSv3 score available.")
             elif int(float(cvss_ver)) == 3:
                 cve_details[cve_id]["cvssv3"] = float(score)
                 cve_details[cve_id]["vector_short"] = vector
+                add_detailed_vector(cve_details[cve_id])
             else:
                 cve_details[cve_id]["cvssv3"] = -1  # replace with N/A later, but needed for sorting here
                 cve_details[cve_id]["vector_short"] = "N/A"
