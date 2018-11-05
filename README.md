@@ -200,9 +200,10 @@ There are two ways a module can receive parameters from the core: configuration 
     * ``NETWORKS`` &ndash; A list of network (expressions) to scan, possibly containing wildcards and prefixes
     * ``OMIT_NETWORKS`` &ndash; &nbsp A list of network (expressions) **not** to scan, possibly containing wildcards and prefixes
     * ``PORTS`` &ndash; A list of ports to scan, possibly containing the prefix "T" for TCP or "U" for UDP as well a range of ports to scan
-    * ``HOSTS`` &ndash; A list of all (pure) host addresses to scan, **not** containing any wildcards or prefixes.
+    * ``HOSTS`` &ndash; A list of all (pure) host addresses to scan, **not** containing any wildcards or prefixes
+    * ``SCAN_RESULTS`` &ndash; A dict containing an aggregation of the already retrieved scan results
 * Analyzer
-    * ``HOSTS`` &ndash; A dictionary containing the results of the analysis phase. The keys are the hosts' addresses and the values their scan result (as specified above).
+    * ``HOSTS`` &ndash; A dictionary containing the results of the analysis phase. The keys are the hosts' addresses and the values their scan result (as specified above)
 
 ### Logging
 Every module has the ability to log events. First a logger needs to be setup. This can be done simply with:

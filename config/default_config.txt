@@ -5,6 +5,7 @@
 
 // here defined are default configuration settings
 [core]
+scan_modules = ALL
 default_trust = 3
 scan_aggregation_scheme = TRUST_AGGR  // possible values --> {TRUST_MAX, TRUST_AGGR}
 DB_expire = 20160  // in minutes, i.e. every other week

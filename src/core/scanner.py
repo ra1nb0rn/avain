@@ -50,7 +50,12 @@ class Scanner(ModuleManagerFeedback):
                 self.default_trust = DEFAULT_TRUSTWORTHINESS
 
     def _assign_init_values(self):
-        modules = ModuleManager.find_all_prefixed_modules("modules/scanner", "scanner_")
+        config_modules = self.config["core"].get("scan_modules", "all")
+        if config_modules.lower() == "all":
+            modules = ModuleManager.find_all_prefixed_modules("modules/scanner", "scanner_")
+        else:
+            modules = [os.path.join("modules", m.strip()) for m in config_modules.split(",")]
+
         if len(self.networks) == 1:
             run_title_str = "Starting network scans for '%s'" % self.networks[0]
         else:
@@ -131,6 +136,10 @@ class Scanner(ModuleManagerFeedback):
 
         if "ONLINE_ONLY" in all_module_attributes:
             module.ONLINE_ONLY = self.online_only
+
+        if "SCAN_RESULT" in all_module_attributes:
+            module.SCAN_RESULT = copy.deepcopy(self._construct_result())
+
 
     def _construct_result(self):
         """
