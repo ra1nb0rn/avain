@@ -61,7 +61,7 @@ class Scanner(ModuleManagerFeedback):
         else:
             run_title_str = "Starting network scans"
 
-        return (modules, "results.json", "scanning", "conduct_scan", "modules.scanner.",
+        return (modules, "results.json", "scan", "conduct_scan", "modules.scanner.",
                 SCANNER_JOIN_TIMEOUT, run_title_str, True)
 
     def _assign_add_results_dir(self):
