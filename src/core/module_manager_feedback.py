@@ -17,28 +17,50 @@ class ModuleManagerFeedback(ModuleManager):
 
     @abstractmethod
     def _only_result_files(self):
-        """{}"""
+        """Whether to all modules and only use the provided result files"""
         raise NotImplementedError
 
     @abstractmethod
     def _construct_result(self):
-        """{}"""
+        """Construct the final result of the module manager"""
+        raise NotImplementedError
+
+    @abstractmethod
+    def _add_to_results(self, module_id, module_result):
+        """
+        Add the given result to all stored results.
+
+        :param module_id: the identifier of the module
+        :param module_result: the result of the module
+        """
+
         raise NotImplementedError
 
     @abstractmethod
     def _sort_results(self):
-        """{}"""
-        raise NotImplementedError 
-        
+        """Sort the results"""
+        raise NotImplementedError
+
     @abstractmethod
     def _cleanup(self):
-        """{}"""
+        """Do cleanup as needed"""
         raise NotImplementedError
 
     @abstractmethod
     def _assign_add_results_dir(self):
-        """{}"""
+        """Get the relative name of the directory to put additional results in"""
         raise NotImplementedError
+
+    def _handle_results(self, module_id, module_result):
+        self._add_to_results(module_id, module_result)
+
+    def _store_results(self):
+        result_file = os.path.join(self.output_dir, self.result_filename)
+        with open(result_file, "w") as file:
+            if not isinstance(self.result, dict):
+                file.write(json.dumps({"Result": self.result}, ensure_ascii=False, indent=3))
+            else:
+                file.write(json.dumps(self.result, ensure_ascii=False, indent=3))
 
     def _sort_results_by_ip(self):
         """ "sort" results by IP """
@@ -102,9 +124,9 @@ class ModuleManagerFeedback(ModuleManager):
                     i += 1
                 # Copy and load the file result
                 shutil.copyfile(filepath, copy_filepath)
-                with open(copy_filepath) as f:
+                with open(copy_filepath) as file:
                     try:
-                        result = json.load(f)
+                        result = json.load(file)
                     except json.decoder.JSONDecodeError:
                         self.logger.warning("JSON of %s result stored in '%s' cannot be parsed.",
                                             self.classname, filepath)

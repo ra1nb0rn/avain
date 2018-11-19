@@ -1,11 +1,7 @@
-import importlib
-import inspect
 import json
 import logging
 import os
-import shutil
 import sys
-import threading
 
 from core.module_updater import ModuleUpdater
 from core.scanner import Scanner
@@ -15,7 +11,8 @@ import core.visualizer as visualizer
 
 LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOGFILE = "avain.log"
-SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572", "\u2502", "\u2571", "\u2500", "\u2572"]
+SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572",
+                         "\u2502", "\u2571", "\u2500", "\u2572"]
 UPDATER_JOIN_TIMEOUT = 0.38
 DEFAULT_CONFIG_PATH = "%s%sconfig/default_config.txt" % (os.environ["AVAIN_DIR"], os.sep)
 SCANNER_OUTPUT_DIR = "scan_results"
@@ -25,9 +22,9 @@ NET_DIR_MAP_FILE = "net_dir_map.json"
 
 class Controller():
 
-    def __init__(self, networks: list, add_networks: list, omit_networks: list, update_modules: bool, config_path: str,
-                ports: list, output_dir: str, online_only: bool, scan_results: list, analysis_results: list,
-                single_network: bool, verbose: bool, scan_only: bool, analysis_only: bool):
+    def __init__(self, networks: list, add_networks: list, omit_networks: list, update_modules: bool,
+                 config_path: str, ports: list, output_dir: str, scan_results: list, analysis_results: list,
+                 single_network: bool, verbose: bool, scan_only: bool, analysis_only: bool):
         """
         Create a Controller object.
 
@@ -38,7 +35,6 @@ class Controller():
         :param config_path: The path to a config file
         :param ports: A list of port expressions
         :param output_dir: A string specifying the output directory of the analysis
-        :param online_only: Specifying whether to look up information only online (where applicable) 
         :param scan_results: A list of filenames whose files contain additional scan results
         :param analysis_results: A list of filenames whose files contain additional analysis results
         :param single_network: A boolean specifying whether all given networks are to be considered
@@ -60,8 +56,17 @@ class Controller():
         self.orig_out_dir = self.output_dir
         self.output_dir = os.path.abspath(self.output_dir)
         os.makedirs(self.output_dir, exist_ok=True)
-        self.scan_results = [os.path.abspath(scan_result) for scan_result in scan_results] if scan_results else None
-        self.analysis_results = [os.path.abspath(analysis_result) for analysis_result in analysis_results] if analysis_results else None
+
+        # check for user scan and analysis results
+        self.scan_results = None
+        self.analysis_results = None
+
+        if scan_results:
+            self.scan_results = [os.path.abspath(scan_result) for scan_result in scan_results]
+        if analysis_results:
+            self.analysis_results = [os.path.abspath(analysis_result) for analysis_result in analysis_results]
+
+        # store absolute config path
         if config_path:
             config_path = os.path.abspath(config_path)
 
@@ -71,23 +76,27 @@ class Controller():
         avain_dir = os.path.abspath(os.path.join(core_dir, os.pardir))
         os.chdir(avain_dir)
 
-        # parse configs
+        # parse default and user configs
+        self.config = {}
         if os.path.isfile(DEFAULT_CONFIG_PATH):
             try:
-                self.config = util.parse_config(DEFAULT_CONFIG_PATH)
-            except:
-                print(util.MAGENTA + "Warning: Could not parse default config file. Proceeding without default config.\n" + util.SANE, file=sys.stderr)
+                self.config = util.parse_config(DEFAULT_CONFIG_PATH, self.config)
+            except Exception as excpt:
+                print(util.MAGENTA + ("Warning: Could not parse default config file. " +
+                                      "Proceeding without default config.\n") + util.SANE, file=sys.stderr)
+                util.print_exception_and_continue(excpt)
         elif not config_path:
             print(util.MAGENTA + "Warning: Could not find default config.\n" + util.SANE, file=sys.stderr)
 
         if config_path:
             try:
                 self.config = util.parse_config(config_path, self.config)
-            except:
-                print(util.MAGENTA + "Warning: Could not parse custom config file. Proceeding without custom config.\n" + util.SANE, file=sys.stderr)
+            except Exception as excpt:
+                print(util.MAGENTA + ("Warning: Could not parse custom config file. " +
+                                      "Proceeding without custom config.\n") + util.SANE, file=sys.stderr)
+                util.print_exception_and_continue(excpt)
 
-        # set variables
-        self.online_only = online_only
+        # set remaining variables
         self.single_network = single_network
         self.verbose = verbose
         self.hosts = set()
@@ -99,17 +108,20 @@ class Controller():
         # setup logging
         self.setup_logging()
         self.logger.info("Starting the AVAIN program")
-        self.logger.info("Executed call: avain %s" % " ".join(sys.argv[1:]))
+        self.logger.info("Executed call: avain %s", " ".join(sys.argv[1:]))
 
         # inform user about not being root
         if (networks or add_networks) and os.getuid() != 0:
             print(util.MAGENTA + "Warning: not running this program as root user leads"
-                " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
+                  " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
 
     def setup_logging(self):
+        """
+        Setup logging by deleting potentially old log and specifying logging format
+        """
         self.logfile = os.path.abspath(os.path.join(self.output_dir, LOGFILE))
         if os.path.isfile(self.logfile):
-            os.remove(self.logfile)  # delete logging file if it already exists (from a previous run)
+            os.remove(self.logfile)  # delete log file if it already exists (from a previous run)
         logging.basicConfig(format=LOGGING_FORMAT, filename=self.logfile, level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
@@ -123,27 +135,27 @@ class Controller():
             updater.run()
 
         if self.networks or self.add_networks or self.scan_only or self.analysis_only:
-            self.do_analysis()
+            self.do_assessment()
 
         # change back to original directory
         os.chdir(self.original_cwd)
 
-    def do_analysis(self):
+    def do_assessment(self):
         """
         Conduct the vulnerability assessment either in "normal" or "single network mode".
         """
 
-        def do_analysis_helper(networks: list, out_dir: str):
+        def do_assessment_helper(networks: list, out_dir: str):
             # First conduct network reconnaissance and then analyze the hosts
             # of the specified network(s) for vulnerabilities.
             scanner = Scanner(os.path.join(out_dir, SCANNER_OUTPUT_DIR), self.config,
                               self.verbose, self.scan_results, networks, self.omit_networks,
-                              self.ports, self.analysis_only, self.online_only)
+                              self.ports, self.analysis_only)
             hosts = scanner.run()
 
             if not self.scan_only:
                 analyzer = Analyzer(os.path.join(out_dir, ANALYZER_OUTPUT_DIR), self.config,
-                                    self.verbose, self.analysis_results, hosts, self.online_only)
+                                    self.verbose, self.analysis_results, hosts)
                 net_score = analyzer.run()
                 return net_score
             return None
@@ -153,29 +165,32 @@ class Controller():
         net_dir_map = {}
 
         if self.single_network or len(networks) <= 1 or self.analysis_only:
-            score = do_analysis_helper(networks, self.output_dir)
+            # if there is only one or no scan
+            score = do_assessment_helper(networks, self.output_dir)
             if score is not None:
                 if self.single_network or self.analysis_only:
                     network_scores["assessed_network"] = score
                 else:
                     network_scores[networks[0]] = score
         else:
+            # if there are multiple scans, place results into separate directory
             for i, net in enumerate(networks):
                 net_dir_map[net] = "network_%d" % (i + 1)
-                score = do_analysis_helper([net], os.path.join(self.output_dir, net_dir_map[net]))
+                score = do_assessment_helper([net], os.path.join(self.output_dir, net_dir_map[net]))
                 network_scores[net] = score
             if net_dir_map:
                 net_dir_map_out = os.path.join(self.output_dir, NET_DIR_MAP_FILE)
-                with open(net_dir_map_out, "w") as f:
-                    f.write(json.dumps(net_dir_map, ensure_ascii=False, indent=3))
+                with open(net_dir_map_out, "w") as file:
+                    file.write(json.dumps(net_dir_map, ensure_ascii=False, indent=3))
 
+        # visualize results
         if not self.scan_only:
             outfile = os.path.join(self.output_dir, "results.json")
             outfile_orig = os.path.join(self.orig_out_dir, "results.json")
 
             visualizer.visualize_dict_results(network_scores, outfile)
-            self.logger.info("The main output file is called '%s'" % outfile)
+            self.logger.info("The main output file is called '%s'", outfile)
             print("The main output file is called: %s" % outfile_orig)
 
-        self.logger.info("All created files have been written to '%s'" % self.output_dir)  # write absolute path
-        print("All created files have been written to: %s" % self.orig_out_dir)  # write relative path
+        self.logger.info("All created files have been written to '%s'", self.output_dir)  # use absolute path
+        print("All created files have been written to: %s" % self.orig_out_dir)  # use relative path

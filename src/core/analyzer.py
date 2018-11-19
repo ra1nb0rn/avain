@@ -9,12 +9,11 @@ from core.module_manager import ModuleManager
 ADDITIONAL_RESULTS_DIR = "add_analysis_results"
 HOST_SCORES_FILE = "host_scores.json"
 MODULE_SCORES_FILE = "module_scores.json"
-ANALYZER_JOIN_TIMEOUT = 0.38
 
 class Analyzer(ModuleManagerFeedback):
 
     def __init__(self, output_dir: str, config: dict, verbose: bool,
-                 add_results: list, hosts: dict, online_only: bool):
+                 add_results: list, hosts: dict):
         """
         Create an Analyzer object to analyze the given hosts.
 
@@ -23,17 +22,15 @@ class Analyzer(ModuleManagerFeedback):
         :param verbose: Specifies whether to provide verbose output or not
         :param add_results: additional result files to include into the result
         :param hosts: The hosts to analyze for vulnerabilities
-        :param online_only: Specifies whether to look up information only online (where applicable)
         """
 
         super().__init__(output_dir, config, verbose, add_results)
         self.hosts = hosts
-        self.online_only = online_only
 
     def _assign_init_values(self):
         modules = ModuleManager.find_all_prefixed_modules("modules/analyzer", "analyzer_")
         return (modules, "results.json", "analysis", "conduct_analysis", "modules.analyzer.",
-                ANALYZER_JOIN_TIMEOUT, "Starting host analyses", True)
+                "Starting host analyses", True)
 
     def _assign_add_results_dir(self):
         return ADDITIONAL_RESULTS_DIR
@@ -61,9 +58,6 @@ class Analyzer(ModuleManagerFeedback):
 
         if "HOSTS" in all_module_attributes:
             module.HOSTS = copy.deepcopy(self.hosts)
-
-        if "ONLINE_ONLY" in all_module_attributes:
-            module.ONLINE_ONLY = self.online_only
 
     def _save_module_scores(self, hosts: list):
         """
@@ -99,8 +93,8 @@ class Analyzer(ModuleManagerFeedback):
 
         # dump module scores to file
         module_scores_file = os.path.join(self.output_dir, MODULE_SCORES_FILE)
-        with open(module_scores_file, "w") as f:
-            f.write(json.dumps(module_scores, ensure_ascii=False, indent=3))
+        with open(module_scores_file, "w") as file:
+            file.write(json.dumps(module_scores, ensure_ascii=False, indent=3))
 
     def _construct_result(self):
         """
@@ -176,7 +170,7 @@ class Analyzer(ModuleManagerFeedback):
 
         # dump host scores to file
         host_scores_file = os.path.join(self.output_dir, HOST_SCORES_FILE)
-        with open(host_scores_file, "w") as f:
-            f.write(json.dumps(host_scores, ensure_ascii=False, indent=3))
+        with open(host_scores_file, "w") as file:
+            file.write(json.dumps(host_scores, ensure_ascii=False, indent=3))
 
         return result
