@@ -3,11 +3,11 @@
 import logging
 import os
 import re
-import requests
 import shutil
 import subprocess
-import sys
 import zipfile
+
+import requests
 
 NVD_DATAFEED_DIR = "nvd_data_feeds"
 WGET_OUTFILE = "wget_download_output.txt"
@@ -16,10 +16,8 @@ DB_FILE = "nvd_db.db3"
 DB_BACKUP_FILE = "nvd_db_bak.db3"
 CREATED_FILES = []
 
-if __name__ != "__main__":
-    from core import utility as util
-
 def update_module(results: list):
+    """Update the CVE correlation analyzer module"""
     global logger
     if __name__ != "__main__":
         logger = logging.getLogger(__name__)
@@ -29,14 +27,15 @@ def update_module(results: list):
     if os.path.isfile(DB_FILE):
         shutil.move(DB_FILE, DB_BACKUP_FILE)
 
+    # download NVD datafeeds from https://nvd.nist.gov/vuln/data-feeds
     if os.path.exists(NVD_DATAFEED_DIR):
         shutil.rmtree(NVD_DATAFEED_DIR)
-    
     os.makedirs(NVD_DATAFEED_DIR)
 
     if __name__ == "__main__":
         print("Downloading NVD data feeds ...")
 
+    # first download the data feed overview to retrieve URLs to all data feeds
     try:
         nvd_response = requests.get("https://nvd.nist.gov/vuln/data-feeds", timeout=20)
     except:
@@ -48,8 +47,9 @@ def update_module(results: list):
         rollback()
         return
 
+    # match the data feed URLs
     nvd_nist_datafeed_html = nvd_response.text
-    jfeed_expr = re.compile("https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-\d\d\d\d.json.zip")
+    jfeed_expr = re.compile(r"https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-\d\d\d\d.json.zip")
     nvd_feed_urls = re.findall(jfeed_expr, nvd_nist_datafeed_html)
 
     if not nvd_feed_urls:
@@ -57,11 +57,12 @@ def update_module(results: list):
         rollback()
         return
 
-    with open(WGET_OUTFILE, "w") as f:
+    # download all data feeds
+    with open(WGET_OUTFILE, "w") as file:
         zipfiles = []
         for nvd_feed_url in nvd_feed_urls:
             outname = os.path.join(NVD_DATAFEED_DIR, nvd_feed_url.split("/")[-1])
-            return_code = subprocess.call("wget %s -O %s" % (nvd_feed_url, outname), stdout=f, stderr=subprocess.STDOUT, shell=True)
+            return_code = subprocess.call("wget %s -O %s" % (nvd_feed_url, outname), stdout=file, stderr=subprocess.STDOUT, shell=True)
             if return_code != 0:
                 communicate_warning("Getting NVD data feed %s failed" %  nvd_feed_url)
                 rollback()
@@ -74,6 +75,7 @@ def update_module(results: list):
     if os.path.isfile("wget-log"):
         os.remove("wget-log")
 
+    # unzip data feeds
     if __name__ == "__main__":
         print("Unzipping data feeds ...")
 
@@ -91,12 +93,13 @@ def update_module(results: list):
     if __name__ == "__main__":
         print("Done.")
 
+    # build local NVD copy with downloaded data feeds
     create_db_call = ["./create_db", NVD_DATAFEED_DIR, DB_FILE]
     if __name__ == "__main__":
         return_code = subprocess.call(create_db_call)
     else:
-        with open(CREATE_DB_OUTFILE, "w") as f:
-            return_code = subprocess.call(create_db_call, stdout=f, stderr=subprocess.STDOUT)
+        with open(CREATE_DB_OUTFILE, "w") as file:
+            return_code = subprocess.call(create_db_call, stdout=file, stderr=subprocess.STDOUT)
 
     if return_code != 0:
         communicate_warning("Building NVD database failed")
@@ -111,6 +114,7 @@ def update_module(results: list):
     results.append(None)
 
 def rollback():
+    """Rollback the DB / module update"""
     communicate_warning("An error occured, rolling back database update")
     if os.path.isfile(DB_FILE):
         os.remove(DB_FILE)
@@ -120,6 +124,7 @@ def rollback():
         shutil.rmtree(NVD_DATAFEED_DIR)
 
 def communicate_warning(msg: str):
+    """Communicate warning via logger or stdout"""
     if logger:
         logger.warning(msg)
     elif __name__ == "__main__":
