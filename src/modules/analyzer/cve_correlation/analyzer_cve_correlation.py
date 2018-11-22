@@ -359,8 +359,12 @@ def calculate_final_scores(hosts: dict):
     def add_to_score_lists(broad_aggr: bool, score):
         """Add score to one of the two aggregation lists depending on broad_aggr"""
         nonlocal score_list_aggr, score_list_max
-        if not isinstance(score, float):
-            return
+
+        if not isinstance(score, float) and not isinstance(score, int):
+            try:
+                score = float(score)
+            except ValueError:
+                return
         if broad_aggr:
             score_list_aggr.append(score)
         else:
@@ -384,7 +388,7 @@ def calculate_final_scores(hosts: dict):
         if "os" in host and not CONFIG.get("skip_os", "false").lower() == "true":
             broad_aggr, score = aggregate_node_scores(host["os"])
             host["os"]["aggregated_cvssv3"] = score
-            add_to_score_lists(broad_aggr, host["os"]["aggregated_cvssv3"])
+            add_to_score_lists(broad_aggr, score)
         aggregate_protocol_entry("tcp")
         aggregate_protocol_entry("udp")
 
@@ -441,10 +445,16 @@ def is_neq_prefix(text_1, text_2):
 
 def get_cpe_version(cpe: str):
     """Return the version entry of the given CPE"""
-    split_cpe = cpe.split(":")[4]
+    split_cpe = cpe.split(":")
     if len(split_cpe) > 3:
         return split_cpe[4]
     return ""
+
+
+def is_unknown_cpe(cpe: str):
+    """Return True if cpe is not in official CPE dicionary, False otherwise"""
+    parse_cpe_dict()
+    return not any(cpe == cpe_iter.attrib["name"] for cpe_iter in CPE_DICT_ET_CPE_ITEMS)
 
 
 def get_cves_to_cpe(cpe: str):
@@ -521,13 +531,12 @@ def gather_cve_cpe_information(cpe: str):
 
         return False
 
-    def is_unknown_cpe():
+    def is_unknown_version():
         """
         Return True if cpe is not a match or prefix of any CPE in the CPE dict,
         False otherwise.
         """
         nonlocal general_cpe, cpe_version
-
         parse_cpe_dict()
         for cpe_item in CPE_DICT_ET_CPE_ITEMS:
             if cpe == cpe_item.attrib["name"]:
@@ -575,7 +584,7 @@ def gather_cve_cpe_information(cpe: str):
 
     general_cve_cpe_data = DB_CURSOR.execute(query).fetchall()
     broad_search = (cpe_version is None or is_broad_version() or
-                    is_unknown_cpe() or cpe_version == "-")  # '-' stands for all versions
+                    is_unknown_version() or cpe_version == "-")  # '-' stands for all versions
     # find the most specific CPE possible
     if broad_search:
         if cpe_version:
