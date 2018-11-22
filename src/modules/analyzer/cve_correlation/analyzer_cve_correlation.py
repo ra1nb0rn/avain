@@ -12,7 +12,8 @@ import xml.etree.ElementTree as ET
 from cvsslib import cvss3, calculate_vector
 from packaging import version
 
-import module_updater
+if __name__ != "__main__":
+    from . import module_updater
 
 HOST_CVE_FILE = "found_cves.json"
 DATABASE_FILE = "nvd_db.db3"
@@ -174,7 +175,6 @@ def create_cve_summary(hosts: dict):
                         if cve_id not in counted_cves:
                             cve_count += 1
                             counted_cves.add(cve_id)
-                total_cve_count += cve_count
                 node_dst["cve_count"] = str(cve_count)
 
         try:
