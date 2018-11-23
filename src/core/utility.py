@@ -282,6 +282,9 @@ def printit(text: str, end: str = "\n", color=SANE):
     PRINT_MUTEX.acquire()
     print(color, end="")
     print(text, end=end)
+    if color != SANE:
+        print(SANE, end="")
+    sys.stdout.flush()
     PRINT_MUTEX.release()
 
 
