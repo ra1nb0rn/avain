@@ -128,13 +128,13 @@ class Scanner(ModuleManagerFeedback):
 
         if "HOSTS" in all_module_attributes:
             if not self.hosts:
-                self.extend_networks_to_hosts()
+                self._extend_networks_to_hosts()
             module.HOSTS = self.hosts
 
         if "SCAN_RESULT" in all_module_attributes:
             module.SCAN_RESULT = copy.deepcopy(self._construct_result())
 
-    def extend_networks_to_hosts(self):
+    def _extend_networks_to_hosts(self):
         """
         Parse the network strings of the main network, the additional networks and the networks
         to omit into an enumeration of all hosts to analyse.
