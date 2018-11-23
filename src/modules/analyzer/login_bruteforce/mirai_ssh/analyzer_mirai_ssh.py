@@ -6,18 +6,22 @@ import subprocess
 from core import utility as util
 
 # Output files
+HYDRA_OUTPUT_DIR = "hydra_output"
 HYDRA_TEXT_OUTPUT = "hydra_output.txt"
 HYDRA_JSON_OUTPUT = "hydra_output.json"
 HYDRA_TARGETS_FILE = "targets.txt"
+VALID_CREDS_FILE = "valid_credentials.txt"
 
 # Module parameters
 HOSTS = {}  # a string representing the network to analyze
 VERBOSE = False  # specifying whether to provide verbose output or not
+CONFIG = None  # the configuration to use
 
 CREATED_FILES = []
 
 # Module variables
-WORDLIST_PATH = "..{0}wordlists{0}mirai_user_pass.txt".format(os.sep)
+MIRAI_WORDLIST_PATH = "..{0}wordlists{0}mirai_user_pass.txt".format(os.sep)
+VALID_CREDS = {}
 logger = None
 
 ### Calculation in CVSS v3 for default credential vulnerability resulted in:
@@ -51,30 +55,61 @@ def conduct_analysis(results: list):
                     f.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
 
-    hydra_call = ["hydra", "-C", WORDLIST_PATH, "-I", "-M", HYDRA_TARGETS_FILE, "-b", "json", "-o", HYDRA_JSON_OUTPUT, "ssh"]
-
+    # run hydra if at least one target exists
     if wrote_target:
-        # execute hydra command if at least one target exists
-        logger.info("Beginning Hydra Brute Force with command: %s" % " ".join(hydra_call))
-        redr_file = open(HYDRA_TEXT_OUTPUT, "w")
-        CREATED_FILES += [HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, HYDRA_TARGETS_FILE]
-        subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
-        redr_file.close()
-        logger.info("Done")
+        CREATED_FILES.append(HYDRA_TARGETS_FILE)
+        # get wordlists
+        wordlists = [w.strip() for w in CONFIG.get("wordlists", MIRAI_WORDLIST_PATH).split(",")]
 
-        # parse and process Hydra output
-        logger.info("Processing Hydra Output")
-        if os.path.isfile(HYDRA_JSON_OUTPUT):
-            result = process_hydra_output()
-        else:
-            result = {}
-        logger.info("Done")
+        if len(wordlists) > 1:
+            os.makedirs(HYDRA_OUTPUT_DIR, exist_ok=True)
+
+        for i, wlist in enumerate(wordlists):
+            if not os.path.isfile(wlist):
+                logger.warning("%s does not exist" % wlist)
+                continue
+
+            text_out, json_out = HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT
+            if i > 0:
+                txt_base, txt_ext = os.path.splitext(text_out)
+                json_base, json_ext = os.path.splitext(json_out)
+                text_out = txt_base + "_%d" % i + txt_ext
+                json_out = json_base + "_%d" % i + json_ext
+
+            if len(wordlists) > 1:
+                text_out = os.path.join(HYDRA_OUTPUT_DIR, text_out)
+                json_out = os.path.join(HYDRA_OUTPUT_DIR, json_out)
+
+            hydra_call = ["hydra", "-C", wlist, "-I", "-M", HYDRA_TARGETS_FILE, "-b", "json", "-o", json_out, "ssh"]
+            logger.info("Beginning Hydra SSH Brute Force with command: %s" % " ".join(hydra_call))
+            redr_file = open(text_out, "w")
+            CREATED_FILES += [text_out, json_out]
+            subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
+            redr_file.close()
+            logger.info("Done")
+
+            # parse and process Hydra output
+            logger.info("Processing Hydra Output")
+            if os.path.isfile(json_out):
+                result = process_hydra_output(json_out)
+            else:
+                result = {}
+            logger.info("Done")
     else:
         # remove created but empty targets file
         os.remove(HYDRA_TARGETS_FILE)
         logger.info("Did not receive any targets. Skipping analysis.")
-        result = {}
         CREATED_FILES = []
+
+    result = {}
+    for host in VALID_CREDS:
+        result[host] = 9.8  # Give vulnerable host CVSSv3 score of 9.8
+
+    # store valid credentials
+    if VALID_CREDS:
+        with open(VALID_CREDS_FILE, "w") as f:
+            f.write(json.dumps(VALID_CREDS, ensure_ascii=False, indent=3))
+        CREATED_FILES.append(VALID_CREDS_FILE)
 
     # return result
     results.append(result)
@@ -94,31 +129,38 @@ def cleanup():
     remove_file(HYDRA_TARGETS_FILE)
 
 
-def process_hydra_output():
+def process_hydra_output(filepath: str):
     """
     Parse and process Hydra's Json output to retrieve all vulnerable hosts and their score.
 
+    :param filepath: the filepath to Hydra's Json output
     :return: all vulnerable hosts as dict with their score as value
     """
 
-    global CREATED_FILES
+    global CREATED_FILES, VALID_CREDS
 
     def process_hydra_result(hydra_result):
-        nonlocal vuln_hosts
         for entry in hydra_result["results"]:
-            vuln_hosts[entry["host"]] = "9.8"  # give CVSS v3 score of 9.8
+            addr, port = entry["host"], entry["port"]
+            account = {"user": entry["login"], "pass": entry["password"]}
 
-    vuln_hosts = {}
+            # Add to credential storage
+            if addr not in VALID_CREDS:
+                VALID_CREDS[addr] = {}
+            if port not in VALID_CREDS[addr]:
+                VALID_CREDS[addr][port] = []
+            if account not in VALID_CREDS[addr][port]:
+                VALID_CREDS[addr][port].append(account)
 
-    with open(HYDRA_JSON_OUTPUT) as f:
+    with open(filepath) as f:
         try:
             hydra_results = json.load(f)
         except json.decoder.JSONDecodeError:
             # Hydra seems to sometimes output a malformed JSON file.
-            logger.warning("Got JSONDecodeError when parsing %s" % HYDRA_JSON_OUTPUT)
+            logger.warning("Got JSONDecodeError when parsing %s" % filepath)
             logger.info("Trying to parse again by replacing ', ,' with ','")
 
-            replaced_file_name = os.path.splitext(HYDRA_JSON_OUTPUT)[0] + "_replaced.json"
+            replaced_file_name = os.path.splitext(filepath)[0] + "_replaced.json"
 
             with open(replaced_file_name, "w") as fr:
                 text = f.read()
@@ -130,7 +172,7 @@ def process_hydra_output():
                 try:
                     hydra_results = json.load(fr)
                 except json.decoder.JSONDecodeError:
-                    logger.warning("Got JSONDecodeError when parsing %s" % HYDRA_JSON_OUTPUT)
+                    logger.warning("Got JSONDecodeError when parsing %s" % filepath)
                 return {}
 
     if isinstance(hydra_results, list):
@@ -140,5 +182,3 @@ def process_hydra_output():
         process_hydra_result(hydra_results)
     else:
         logger.warning("Cannot parse JSON of Hydra output.")
-
-    return vuln_hosts
