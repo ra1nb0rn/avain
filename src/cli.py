@@ -161,10 +161,28 @@ class Cli():
                     self.args.add_networks.append(line)
 
 
+def banner():
+    print("|" + "-" * 78 + "|")
+    print(
+"""\
+|                                                                              |
+|                         ___  _    __ ___     ____ _   __                     |
+|                        /   || |  / //   |   /  _// | / /                     |
+|                       / /| || | / // /| |   / / /  |/ /                      |
+|                      / ___ || |/ // ___ | _/ / / /|  /                       |
+|                     /_/  |_||___//_/  |_|/___//_/ |_/                        |
+|                                                                              |\
+""")
+    print("|" + " " * 25 + "[ Created by - Dustin Born ]" + " " * 25 + "|")
+    print("|" + "-" * 78 + "|")
+    print()
+
+
 #########################################
 ### Entry point for the AVAIN program ###
 #########################################
 if __name__ == "__main__":
+    banner()
     # Extend search path for modules
     MODULE_DIR = os.path.dirname("modules")
     sys.path.append(MODULE_DIR)
