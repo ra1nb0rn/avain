@@ -28,9 +28,7 @@ LOGGER = None
 
 def conduct_scan(results: list):
     """
-    Scan the specified networks above with the following nmap command:
-    sudo nmap -Pn -n -A --osscan-guess -T3 'networks' -sSU and process
-    the results.
+    Scan the above specified networks with Nmap and process the results.
     """
 
     global CREATED_FILES, LOGGER
@@ -86,6 +84,14 @@ def create_nmap_call():
     Create the concrete Nmap call to use
     """
 
+    def check_sufficient_privs():
+        nonlocal scan_type
+        if os.geteuid() != 0 and ("S" in scan_type or "U" in scan_type):
+            util.printit("Configured scan type requires root privileges!", color=util.RED)
+            util.printit("Either run as root or change the config file.", color=util.RED)
+            return False
+        return True
+
     global CREATED_FILES
     # write the networks to scan into a file to give to nmap
     LOGGER.info("Writing networks to scan into '%s'", NETWORKS_PATH)
@@ -104,9 +110,11 @@ def create_nmap_call():
         nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T5",
                      "-F", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
 
-    # check if process owner is root and change nmap call accordingly
-    if os.getuid() == 0:
-        nmap_call.append("-sSU")  #  scan for TCP and UDP
+    # use configuration setting to specify scan type
+    scan_type = CONFIG.get("scan_type", "SU")
+    nmap_call.append("-s" + scan_type)
+    # check if privileges are sufficient for scan type
+    check_sufficient_privs()
 
     # add nmap scripts to nmap call
     if "add_scripts" in CONFIG:

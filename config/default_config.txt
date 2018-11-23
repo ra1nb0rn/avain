@@ -21,5 +21,6 @@ allow_versionless_search = True  // whether to fully search for CVEs when CPE ha
 
 [modules.scanner.nmap.scanner_nmap]
 // add_nmap_params = "--max-rtt-timeout 100ms --max-retries 1"  // additional Nmap params
+scan_type = "SU"  // SYN scan and UDP scan require root privileges
 fast_scan = False  // whether Nmap should use T5 and F option as speedup
 add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use
