@@ -24,3 +24,9 @@ allow_versionless_search = True  // whether to fully search for CVEs when CPE ha
 scan_type = "SU"  // SYN scan and UDP scan require root privileges
 fast_scan = False  // whether Nmap should use T5 and F option as speedup
 add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use
+
+[modules.analyzer.login_bruteforce.hydra_telnet.analyzer]
+wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
+
+[modules.analyzer.login_bruteforce.hydra_ssh.analyzer]
+wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
