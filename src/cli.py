@@ -30,7 +30,7 @@ class Cli():
         parser._action_groups.append(optional_args)
 
         required_args.add_argument("-n", "--networks", nargs="+", help="specify networks to scan " +
-                                   "as plain IP or IP in CIDR, range or wildcard notation")
+                                   "as plain IP address or IP address in CIDR, range or wildcard notation")
         required_args.add_argument("-nL", "--network-list", help="a list that specifies networks " +
                                    "to include into or exclude from the scan")
         required_args.add_argument("-uM", "--update-modules", action="store_true", help="make " +
@@ -49,8 +49,6 @@ class Cli():
                                    "analysis results to include into the final analysis result")
         optional_args.add_argument("-sO", "--scan-only", action="store_true", help="only do a " +
                                    "network scan and omit the analysis phase")
-        optional_args.add_argument("-oO", "--online-only", action="store_true", help="only look " +
-                                   "up information online (where applicable)")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
 
         self.args = parser.parse_args()
