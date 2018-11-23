@@ -516,11 +516,11 @@ class Scanner(ModuleManagerFeedback):
 
         :param group: the group to reduce
         """
-
+        grouping_strength = 0.675
         most_specific_entry = copy.deepcopy(Scanner._get_most_specific_group_entry(group))
         trust_sum = sum([entry["trust"] for entry in group])
         # The following equation is rather preliminary and was created in a way
         # that "it makes sense" for simple cases.
-        aggr_trust = (trust_sum * 0.46 / len(group)) * (1 + (len(group)**0.59))
+        aggr_trust = trust_sum / (len(group)**grouping_strength)
         most_specific_entry["trust"] = aggr_trust
         return most_specific_entry
