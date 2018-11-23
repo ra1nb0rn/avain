@@ -49,7 +49,7 @@ class Scanner(ModuleManagerFeedback):
     def _assign_init_values(self):
         config_modules = self.config["core"].get("scan_modules", "all")
         if config_modules.lower() == "all":
-            modules = ModuleManager.find_all_prefixed_modules("modules/scanner", "scanner_")
+            modules = ModuleManager.find_all_prefixed_modules("modules/scanner", "scanner")
         else:
             modules = [os.path.join("modules", m.strip()) for m in config_modules.split(",")]
 

@@ -28,7 +28,7 @@ class Analyzer(ModuleManagerFeedback):
         self.hosts = hosts
 
     def _assign_init_values(self):
-        modules = ModuleManager.find_all_prefixed_modules("modules/analyzer", "analyzer_")
+        modules = ModuleManager.find_all_prefixed_modules("modules/analyzer", "analyzer")
         return (modules, "results.json", "analysis", "conduct_analysis", "modules.analyzer.",
                 "Starting host analyses", True)
 
