@@ -173,7 +173,7 @@ class Controller():
                 if score is not None:
                     network_scores["assessed_network"] = score
             else:
-                if util.is_ipv4(networks[0]) or util.is_ipv6(networks[0]):
+                if (not networks) or util.is_ipv4(networks[0]) or util.is_ipv6(networks[0]):
                     scan_results = hosts
                 else:
                     scan_results[networks[0]] = hosts
