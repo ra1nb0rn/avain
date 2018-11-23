@@ -4,8 +4,6 @@ import os
 import shutil
 import subprocess
 
-from core import utility as util
-
 # Output files
 HYDRA_OUTPUT_DIR = "hydra_output"
 HYDRA_TEXT_OUTPUT = "hydra_output.txt"
@@ -23,38 +21,28 @@ CREATED_FILES = []
 # Module variables
 MIRAI_WORDLIST_PATH = "..{0}wordlists{0}mirai_user_pass.txt".format(os.sep)
 VALID_CREDS = {}
-logger = None
+LOGGER = None
 
-### Calculation in CVSS v3 for default credential vulnerability resulted in:
-###    CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H with base score of 9.8
+## Score calculation aligned to CVSS v3 for default credential vulnerability resulted in: ##
+##           CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H with base score of 9.8          ##
 
 def conduct_analysis(results: list):
     """
-    Analyze the specified hosts in HOSTS for susceptibility to SSH password cracking with the MIRAI credentials.
+    Analyze the specified hosts in HOSTS for susceptibility to SSH password
+    cracking with the configured list of credentials (by default the Mirai creds).
 
-    :return: a tuple containing the analyis results/scores and a list of created files by writing it into the result list.
+    :return: a tuple containing the analyis results/scores
     """
 
     # setup logger
-    global logger, CREATED_FILES
-    logger = logging.getLogger(__name__)
-    logger.info("Starting with Mirai SSH susceptibility analysis")
-    wrote_target = False
+    global LOGGER, CREATED_FILES
+    LOGGER = logging.getLogger(__name__)
+    LOGGER.info("Starting with Mirai SSH susceptibility analysis")
 
-    cleanup()  # cleanup potentially old files
+    # cleanup potentially old files
+    cleanup()
     # write all potential targets to a file
-    with open(HYDRA_TARGETS_FILE, "w") as f:
-        for ip, host in HOSTS.items():
-            for portid, portinfo in host["tcp"].items():
-                if portid == "22":
-                    f.write("%s:%s\n" % (ip, portid))
-                    wrote_target = True
-                elif "service" in portinfo and "ssh" in portinfo["service"].lower():
-                    f.write("%s:%s\n" % (ip, portid))
-                    wrote_target = True
-                elif "name" in portinfo and "ssh" in portinfo["name"].lower():
-                    f.write("%s:%s\n" % (ip, portid))
-                    wrote_target = True
+    wrote_target = write_targets_file()
 
     # run hydra if at least one target exists
     if wrote_target:
@@ -65,11 +53,13 @@ def conduct_analysis(results: list):
         if len(wordlists) > 1:
             os.makedirs(HYDRA_OUTPUT_DIR, exist_ok=True)
 
+        # call Hydra once for every configured wordlist
         for i, wlist in enumerate(wordlists):
             if not os.path.isfile(wlist):
-                logger.warning("%s does not exist" % wlist)
+                LOGGER.warning("%s does not exist", wlist)
                 continue
 
+            # determine correct output file names
             text_out, json_out = HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT
             if i > 0:
                 txt_base, txt_ext = os.path.splitext(text_out)
@@ -81,39 +71,62 @@ def conduct_analysis(results: list):
                 text_out = os.path.join(HYDRA_OUTPUT_DIR, text_out)
                 json_out = os.path.join(HYDRA_OUTPUT_DIR, json_out)
 
-            hydra_call = ["hydra", "-C", wlist, "-I", "-M", HYDRA_TARGETS_FILE, "-b", "json", "-o", json_out, "ssh"]
-            logger.info("Beginning Hydra SSH Brute Force with command: %s" % " ".join(hydra_call))
+            # Preparse Hydra call and run it
+            hydra_call = ["hydra", "-C", wlist, "-I", "-M", HYDRA_TARGETS_FILE,
+                          "-b", "json", "-o", json_out, "ssh"]
+            LOGGER.info("Beginning Hydra SSH Brute Force with command: %s", " ".join(hydra_call))
             redr_file = open(text_out, "w")
             CREATED_FILES += [text_out, json_out]
             subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
             redr_file.close()
-            logger.info("Done")
+            LOGGER.info("Done")
 
             # parse and process Hydra output
-            logger.info("Processing Hydra Output")
+            LOGGER.info("Processing Hydra Output")
             if os.path.isfile(json_out):
-                result = process_hydra_output(json_out)
-            else:
-                result = {}
-            logger.info("Done")
+                process_hydra_output(json_out)
+            LOGGER.info("Done")
     else:
         # remove created but empty targets file
         os.remove(HYDRA_TARGETS_FILE)
-        logger.info("Did not receive any targets. Skipping analysis.")
+        LOGGER.info("Did not receive any targets. Skipping analysis.")
         CREATED_FILES = []
 
+    # assign a score to every vulnerable host
     result = {}
     for host in VALID_CREDS:
         result[host] = 9.8  # Give vulnerable host CVSSv3 score of 9.8
 
     # store valid credentials
     if VALID_CREDS:
-        with open(VALID_CREDS_FILE, "w") as f:
-            f.write(json.dumps(VALID_CREDS, ensure_ascii=False, indent=3))
+        with open(VALID_CREDS_FILE, "w") as file:
+            file.write(json.dumps(VALID_CREDS, ensure_ascii=False, indent=3))
         CREATED_FILES.append(VALID_CREDS_FILE)
 
     # return result
     results.append(result)
+
+
+def write_targets_file():
+    """
+    Write all brute force targets to file
+
+    :return: True if at least one target exists, False otherwise
+    """
+    wrote_target = False
+    with open(HYDRA_TARGETS_FILE, "w") as file:
+        for ip, host in HOSTS.items():
+            for portid, portinfo in host["tcp"].items():
+                if portid == "22":
+                    file.write("%s:%s\n" % (ip, portid))
+                    wrote_target = True
+                elif "service" in portinfo and "ssh" in portinfo["service"].lower():
+                    file.write("%s:%s\n" % (ip, portid))
+                    wrote_target = True
+                elif "name" in portinfo and "ssh" in portinfo["name"].lower():
+                    file.write("%s:%s\n" % (ip, portid))
+                    wrote_target = True
+    return wrote_target
 
 
 def cleanup():
@@ -137,51 +150,56 @@ def process_hydra_output(filepath: str):
     Parse and process Hydra's Json output to retrieve all vulnerable hosts and their score.
 
     :param filepath: the filepath to Hydra's Json output
-    :return: all vulnerable hosts as dict with their score as value
     """
 
-    global CREATED_FILES, VALID_CREDS
+    global CREATED_FILES
 
-    def process_hydra_result(hydra_result):
-        for entry in hydra_result["results"]:
-            addr, port = entry["host"], entry["port"]
-            account = {"user": entry["login"], "pass": entry["password"]}
-
-            # Add to credential storage
-            if addr not in VALID_CREDS:
-                VALID_CREDS[addr] = {}
-            if port not in VALID_CREDS[addr]:
-                VALID_CREDS[addr][port] = []
-            if account not in VALID_CREDS[addr][port]:
-                VALID_CREDS[addr][port].append(account)
-
-    with open(filepath) as f:
+    with open(filepath) as file:
         try:
-            hydra_results = json.load(f)
+            hydra_results = json.load(file)
         except json.decoder.JSONDecodeError:
-            # Hydra seems to sometimes output a malformed JSON file.
-            logger.warning("Got JSONDecodeError when parsing %s" % filepath)
-            logger.info("Trying to parse again by replacing ', ,' with ','")
+            # Hydra seems to sometimes output a malformed JSON file. Try to correct it.
+            LOGGER.warning("Got JSONDecodeError when parsing %s", filepath)
+            LOGGER.info("Trying to parse again by replacing ', ,' with ','")
 
             replaced_file_name = os.path.splitext(filepath)[0] + "_replaced.json"
 
-            with open(replaced_file_name, "w") as fr:
-                text = f.read()
+            with open(replaced_file_name, "w") as file_repl:
+                text = file.read()
                 text = text.replace(", ,", ", ")
-                fr.write(text)
+                file_repl.write(text)
                 CREATED_FILES.append(replaced_file_name)
 
-            with open(replaced_file_name, "r") as fr:
+            with open(replaced_file_name, "r") as file_repl:
                 try:
-                    hydra_results = json.load(fr)
+                    hydra_results = json.load(file_repl)
                 except json.decoder.JSONDecodeError:
-                    logger.warning("Got JSONDecodeError when parsing %s" % filepath)
-                return {}
+                    LOGGER.warning("Got JSONDecodeError when parsing %s", filepath)
 
+    # extract valid credentials stored in Hydra output
     if isinstance(hydra_results, list):
         for hydra_result in hydra_results:
             process_hydra_result(hydra_result)
     elif isinstance(hydra_results, dict):
         process_hydra_result(hydra_results)
     else:
-        logger.warning("Cannot parse JSON of Hydra output.")
+        LOGGER.warning("Cannot parse JSON of Hydra output.")
+
+
+def process_hydra_result(hydra_result: dict):
+    """
+    Process the given hydra result to retrieve
+    vulnerable hosts and valid credentials
+    """
+    global VALID_CREDS
+    for entry in hydra_result["results"]:
+        addr, port = entry["host"], entry["port"]
+        account = {"user": entry["login"], "pass": entry["password"]}
+
+        # Add to credential storage
+        if addr not in VALID_CREDS:
+            VALID_CREDS[addr] = {}
+        if port not in VALID_CREDS[addr]:
+            VALID_CREDS[addr][port] = []
+        if account not in VALID_CREDS[addr][port]:
+            VALID_CREDS[addr][port].append(account)
