@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import shutil
 import subprocess
 
 from core import utility as util
@@ -146,7 +147,7 @@ def cleanup():
     remove_file(HYDRA_JSON_OUTPUT)
     remove_file(HYDRA_TARGETS_FILE)
     remove_file(TIMEOUT_FILE)
-    if os.path.isdir(file):
+    if os.path.isdir(HYDRA_OUTPUT_DIR):
         shutil.rmtree(HYDRA_OUTPUT_DIR)
 
 
