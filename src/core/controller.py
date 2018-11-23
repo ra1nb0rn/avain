@@ -157,26 +157,34 @@ class Controller():
                 analyzer = Analyzer(os.path.join(out_dir, ANALYZER_OUTPUT_DIR), self.config,
                                     self.verbose, self.analysis_results, hosts)
                 net_score = analyzer.run()
-                return net_score
-            return None
+                return hosts, net_score
+            return hosts, None
 
         networks = self.networks + self.add_networks
         network_scores = {}
+        scan_results = {}
         net_dir_map = {}
 
         if self.single_network or len(networks) <= 1 or self.analysis_only:
             # if there is only one or no scan
-            score = do_assessment_helper(networks, self.output_dir)
-            if score is not None:
-                if self.single_network or self.analysis_only:
+            hosts, score = do_assessment_helper(networks, self.output_dir)
+            if self.single_network or self.analysis_only:
+                scan_results = hosts
+                if score is not None:
                     network_scores["assessed_network"] = score
+            else:
+                if util.is_ipv4(networks[0]) or util.is_ipv6(networks[0]):
+                    scan_results = hosts
                 else:
+                    scan_results[networks[0]] = hosts
+                if score is not None:
                     network_scores[networks[0]] = score
         else:
             # if there are multiple scans, place results into separate directory
             for i, net in enumerate(networks):
                 net_dir_map[net] = "network_%d" % (i + 1)
-                score = do_assessment_helper([net], os.path.join(self.output_dir, net_dir_map[net]))
+                hosts, score = do_assessment_helper([net], os.path.join(self.output_dir, net_dir_map[net]))
+                scan_results[net] = hosts
                 network_scores[net] = score
             if net_dir_map:
                 net_dir_map_out = os.path.join(self.output_dir, NET_DIR_MAP_FILE)
@@ -184,11 +192,12 @@ class Controller():
                     file.write(json.dumps(net_dir_map, ensure_ascii=False, indent=3))
 
         # visualize results
-        if not self.scan_only:
+        results = network_scores if not self.scan_only else scan_results
+        if results is not None:
             outfile = os.path.join(self.output_dir, "results.json")
             outfile_orig = os.path.join(self.orig_out_dir, "results.json")
 
-            visualizer.visualize_dict_results(network_scores, outfile)
+            visualizer.visualize_dict_results(results, outfile)
             self.logger.info("The main output file is called '%s'", outfile)
             print("The main output file is called: %s" % outfile_orig)
 
