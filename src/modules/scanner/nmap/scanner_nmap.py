@@ -152,7 +152,14 @@ def call_nmap(nmap_call: list, redr_filepath: str):
     redr_file = open(redr_filepath, "w")
 
     # call nmap with the created command
-    subprocess.call(nmap_call, stdout=redr_file, stderr=subprocess.STDOUT)
+    if VERBOSE:
+        with subprocess.Popen(nmap_call, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                              bufsize=1, universal_newlines=True) as proc:
+            for line in proc.stdout:
+                util.printit(line, end="")
+                redr_file.write(line)
+    else:
+        subprocess.call(nmap_call, stdout=redr_file, stderr=subprocess.STDOUT)
 
     # close redirect file again
     redr_file.close()
