@@ -21,7 +21,6 @@ CREATED_FILES = []
 
 # Module variables
 MIRAI_WORDLIST_PATH = "..{0}wordlists{0}mirai_user_pass.txt".format(os.sep)
-HYDRA_TIMEOUT = 300  # in seconds
 VALID_CREDS = {}
 LOGGER = None
 
@@ -84,17 +83,18 @@ def conduct_analysis(results: list):
 
             # Sometimes, Hydra and other cracking tools do not seem to work properly
             # with Telnet services. Therefore, Hydra is run with a timeout.
+            hydra_timeout = int(CONFIG.get("timeout", 300))  # in seconds
             try:
                 subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT,
-                                timeout=HYDRA_TIMEOUT)
+                                timeout=hydra_timeout)
             except subprocess.TimeoutExpired:
                 with open(to_file, "w") as file:
                     if len(wordlists) > 1:
-                        file.write("Hydra took longer than %ds and thereby timed out with wordlist %s" % (HYDRA_TIMEOUT, wlist))
-                        LOGGER.warning("Hydra took longer than %ds and thereby timed out with wordlist %s", HYDRA_TIMEOUT, wlist)
+                        file.write("Hydra took longer than %ds and thereby timed out with wordlist %s" % (hydra_timeout, wlist))
+                        LOGGER.warning("Hydra took longer than %ds and thereby timed out with wordlist %s", hydra_timeout, wlist)
                     else:
-                        file.write("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful." % HYDRA_TIMEOUT)
-                        LOGGER.warning("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful.", HYDRA_TIMEOUT)
+                        file.write("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful." % hydra_timeout)
+                        LOGGER.warning("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful.", hydra_timeout)
                 CREATED_FILES.append(to_file)
                 redr_file.close()
                 continue
