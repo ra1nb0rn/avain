@@ -140,13 +140,17 @@ An example intermediate result for a scanner module could look like to following
             "service": "http"
          }
       }
-   }
+   },
+   "trust": 4
 }
 ```
 For brevity, only one host is shown above. All hosts are indexed by their (IPv4) network address. Their content is another object that can contain several more fields. AVAIN requires the ``os``, ``tcp`` and ``udp`` fields to abide by a certain format:
 * If the ``os`` has an entry called ``cpes``, it has to be a list of CPEs for the detected / assumed OS. ``name`` has to be the corresponding name as string.
 * The ``tcp`` and ``udp`` entries are each dissected into objects for every detected port.
 * Every port entry has to be indexed by its port number. The same rules apply for the ``os`` and ``cpes`` entry. Furthermore, if the ``service`` field exists, it has to be a string describing the service, e.g, ``"ssh"`` or ``"http"``.
+
+Furthermore, a scanner module's result can contain one or more ``"trust"`` fields that can reside on any one of the different hierarchy levels. This fields symbolizes how much a module trusts its results, i.e. how accurate and valuable it perceives its results to be. It is basically a quality of data indicator. The value of the ``"trust"`` field can be any integer or floating point number.
+
 As the interfacing language between the core and modules is Python, intermediate results can also be exchanged using a dictionary with a structure equivalent to the JSON one as described above.
 
 ### Analysis Module Results
@@ -166,7 +170,7 @@ It is as simple as listing every host with the score it was rated with.
 The main files created by the core are the aggregated scan / analysis results for every network as well as the final output file that lists for every network expression its respective security score. The aggregated scan results consist of a final aggregation result that is located in ``scan_results/results.json`` and the intermediate result files for the aggregation containing for example a collection of all Operating Systems suggested by the different scanner modules. The file structure for the scan aggregation result is the same as the one for intermediate scanning results as detailed above. The main result file for the analysis is stored in ``analysis_results/results.json`` and just lists the assessed network with its final security score. The files ``analysis_results/host_scores.json`` and ``analysis_results/module_scores.json`` on the other hand show more detailed versions of the result, where every (detected) host within the network is listed with its final score (similar to the analysis module result format) and the scores returned by the different modules. At last, AVAIN also produces the file ``results.json`` located on the same directory level as the log file. This file contains for every network expression specified by the user the security score the respective network was rated with.
 
 ### Supplying User Data
-With the ``-sR`` and ``-aR`` argument, the user can provide AVAIN with additional and even manually crafted intermediate result files. These files have to be JSON files with the scan / analysis result structure as described above. For example, supplying AVAIN with custom results can come in handy when AVAIN, or more specifically its utilized scanners, have difficulty determining the OS of a host.
+With the ``-sR`` and ``-aR`` argument, the user can provide AVAIN with additional and even manually crafted intermediate result files. These files have to be JSON files with the scan / analysis result structure as described above. For example, supplying AVAIN with custom results can come in handy when AVAIN, or more specifically its utilized scanners, have difficulty determining the OS of a host. Identical to scanner modules, the user can include a ``"trust"`` field that symbolizes the quality of their results. Setting this field to a high value will overwrite any module's result.
 
 ## Adding New Modules
 Modules have to follow certain rules in order to successfully work with AVAIN. The data format for a module's results is shown above. Scanner modules have to be put into ``src/modules/scanner`` and analyzer modules into ``src/modules/analyzer``. Furthermore, scanner modules have to be prefixed with ``scanner``, while analyzer modules have to be prefixed with ``analyzer``. Have a look at the current module structure to see some examples. As modules have to be written in Python, their file extension has to be ``.py``. Scanner modules are required to have a ``conduct_scan(results: list)`` function; analyzer modules a ``conduct_analysis(results: list)``. A module's result can either be the filepath to a JSON file or the result itself as a Python dictionary. Returning the result is as easy as appending it to the ``results`` list seen in the ``conduct_scan`` / ``conduct_analysis`` function's signature. All non-essential / intermediate results of a module can be returned as well. Every intermediate result needs to be stored in a separate file. Finally, to return all of these files, the module has to append their filepaths to a / its **global** ``CREATED_FILES`` variable / list. Also, it is important to mention that AVAIN switches into the directory of a module when calling it, so that every module can run within its own environment.
