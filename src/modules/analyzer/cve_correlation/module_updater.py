@@ -69,6 +69,8 @@ def update_module(results: list):
                 return
             zipfiles.append(outname)
 
+    if __name__ == "__main__":
+        os.remove(WGET_OUTFILE)
 
     CREATED_FILES.append(WGET_OUTFILE)
 
