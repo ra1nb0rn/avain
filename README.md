@@ -4,7 +4,7 @@
 A framework for the automated vulnerability analysis in normal computer and IoT networks that enables its modules to work collaboratively by sharing results.
 
 ## About
-AVAIN can automatically *assess* and *quantify* the security level of an (IoT) network. Its final output is a *score* between 0 and 10, where the higher the score, the more vulnerable / insecure the network. Additionally, AVAIN keeps all of the intermediate result files to empower the user in *investigating* the network's security state *in more detail*. As IT and IoT security is a continuously evolving field, AVAIN was designed to be *modular* and thereby *easily extensible*. AVAIN separates the network's security assessment into two phases: the *scanning*, i.e. reconnaissance phase and the actual vulnerability *analysis* phase. The module structure is based upon this concept, i.e. there are *scanner* and *analyzer* modules. All of these modules can work collaboratively to achieve a more sophisticated vulnerability assessment. As of now, AVAIN only supports the assessment of IPv4 and IPv6 enabled (IoT) devices. Note that IPv6 zone IDs are not guaranteed to work with AVAIN. Also, the two *Hydra brute force modules* do currently *not* work with *IPv6* addresses.
+AVAIN can automatically *assess* and *quantify* the security level of an (IoT) network. Its final output is a *score* between 0 and 10, where the higher the score, the more vulnerable / insecure the network. Additionally, AVAIN keeps all of the intermediate result files to empower the user in *investigating* the network's security state *in more detail*. As IT and IoT security is a continuously evolving field, AVAIN was designed to be *modular* and thereby *easily extensible*. AVAIN separates the network's security assessment into two phases: the *scanning*, i.e. reconnaissance phase and the actual vulnerability *analysis* phase. The module structure is based upon this concept, i.e. there are *scanner* and *analyzer* modules. All of these modules can work *collaboratively* to achieve a *more sophisticated* vulnerability assessment. As of now, AVAIN only supports the assessment of IPv4 and IPv6 enabled (IoT) devices. Note that IPv6 zone IDs are not guaranteed to work with AVAIN. Also, the two *Hydra brute force modules* do currently *not* work with *IPv6* addresses.
 
 **Disclaimer:** While AVAIN can only be used in IP based (IoT) networks as of now, it is possible to extend AVAIN to make it capable of working in different kinds of networks.
 
@@ -76,8 +76,8 @@ avain_output-20180905_005831/
 │   │   └── result.json
 │   ├── host_scores.json
 │   ├── login_bruteforce
-│   │   ├── mirai_ssh
-│   │   └── mirai_telnet
+│   │   ├── hydra_ssh
+│   │   └── hydra_telnet
 │   └── results.json
 ├── avain.log
 ├── results.json
