@@ -271,6 +271,8 @@ On macOS a running version of Homebrew is required for the automated installatio
 ### Installation on Linux
 On Linux the package manager ``apt`` is used for installing software. Therefore, the installation script has to be run as root.
 
+## Contribution & Bugs
+If you want to contribute, or have any questions, use GitHub or directly contact me via Email <a href="mailto:dustin.born@stud.tu-darmstadt.de">here</a>. If you found a bug, feel free to open an issue.
 
 ## About the Creation of AVAIN
-I created AVAIN as part of my Bachelor Thesis at TU Darmstadt (located in Germany) under the guidance of my advisor Rolf Egert.
+I created AVAIN as part of my Bachelor Thesis at TU Darmstadt (located in Germany) under the guidance of my advisor Rolf Egert. 
