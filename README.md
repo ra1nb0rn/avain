@@ -237,13 +237,13 @@ Like in many programming languages, comments can be made with ``//`` and ``/* */
 In case the user specifies a separate config file to use, AVAIN overwrites its default configuration settings with the ones specified in the user's config file. Therefore, the user's config file is not required to contain all settings available but only the ones the user wants changed. It is advised that the user supplies their own configuration file instead of manually overwriting the default configuration file.
 
 ## Examples
-{...}
+Three examples of how you can call AVAIN:
 * ``avain -n 192.168.0.* -uM -p TCP:80,UDP:53 -o http_dns_sec``
-* ``avain -n 192.168.0.1 192.168.0.100-150 -sN -c config/example_configs/fast_nmap_scan.txt -v``
+* ``avain -n 192.168.0.1 192.168.0.100-150 -sN -c config/someconfig.cfg -v``
 * ``avain -aO -sR path_to_sr_1 path_to_sr_2 -o network_analysis``
 
 
-## Detailed installation information <a id="detail_install"></a>
+## Detailed Installation Information <a id="detail_install"></a>
 Below you can find more information on required software and installation instructions.
 
 ### Common Software Requirements
@@ -272,7 +272,7 @@ On macOS a running version of Homebrew is required for the automated installatio
 On Linux the package manager ``apt`` is used for installing software. Therefore, the installation script has to be run as root.
 
 ## License
-AVAIN is licensed under the MIT license, see [here](https://github.com/RE4CT10N/avain/blob/master/LICENSE.mit).
+AVAIN is licensed under the MIT license, see [here](https://github.com/DustinBorn/avain/blob/master/LICENSE.mit).
 
 ## Contribution & Bugs
 If you want to contribute, or have any questions, use GitHub or directly contact me via Email <a href="mailto:dustin.born@stud.tu-darmstadt.de">here</a>. If you found a bug, feel free to open an issue.
