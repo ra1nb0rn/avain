@@ -271,6 +271,9 @@ On macOS a running version of Homebrew is required for the automated installatio
 ### Installation on Linux
 On Linux the package manager ``apt`` is used for installing software. Therefore, the installation script has to be run as root.
 
+## License
+AVAIN is licensed under the MIT license, see [here](https://github.com/RE4CT10N/avain/blob/master/LICENSE.mit).
+
 ## Contribution & Bugs
 If you want to contribute, or have any questions, use GitHub or directly contact me via Email <a href="mailto:dustin.born@stud.tu-darmstadt.de">here</a>. If you found a bug, feel free to open an issue.
 
