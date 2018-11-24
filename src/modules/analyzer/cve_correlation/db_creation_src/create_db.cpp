@@ -276,11 +276,11 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
             }
             else if (config_nodes_entry.find("children") != config_nodes_entry.end()) {
                 if (config_nodes_entry.find("operator") == config_nodes_entry.end()) {
-                    std::cerr << "Cannot parse CVE " << cve_id << " properly. Needs fixing!" << std::endl;
+                    // std::cerr << "Cannot parse CVE " << cve_id << " properly. Needs fixing!" << std::endl;
                     continue;
                 }
                 else if (config_nodes_entry["operator"] != "AND") {
-                    std::cerr << "Cannot parse CVE " << cve_id << " properly. Needs fixing!" << std::endl;
+                    // std::cerr << "Cannot parse CVE " << cve_id << " properly. Needs fixing!" << std::endl;
                     continue;
                 }
 
@@ -464,7 +464,7 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
 
-        std::cout << "Creating CVE database " << outfile << " ..." << std::endl;
+        std::cout << "Creating local copy of NVD" << outfile << " ..." << std::endl;
         for (const auto &file : cve_files) {
             add_to_db(db, file);
         }
@@ -478,7 +478,7 @@ int main(int argc, char *argv[]) {
     char *db_abs_path = realpath(outfile.c_str(), NULL);
     std::cout << "Database creation took " <<
     (float) (std::chrono::duration_cast<std::chrono::microseconds>(time).count()) / (1e6) << "s .\n";
-    std::cout << "CVE database created as " << db_abs_path << " ." << std::endl;
+    std::cout << "Local copy of NVD created as " << db_abs_path << " ." << std::endl;
     free(db_abs_path);
     return EXIT_SUCCESS;
 }
