@@ -1,7 +1,7 @@
 
 
 # AVAIN - Automated Vulnerability Analysis (in) IoT Networks </B>
-A toolkit for automatically assessing the security level of an IoT network
+A modular framework for automatically assessing the security level of an IoT network
 
 ## About
 AVAIN can automatically *assess* and *quantify* the security level of an (IoT) network. AVAIN's final output is a *score* between 0 and 10, where the higher the score, the more vulnerable / insecure the network. Additionally, AVAIN keeps all of the intermediate result files to empower the user in *investigating* the network's security state *in more detail*. As IT and IoT security is a continuously evolving field, AVAIN was designed to be *modular* and thereby *easily extensible*. AVAIN separates the network's security assessment into two phases: the *scanning*, i.e. reconnaissance phase and the actual vulnerability *analysis* phase. The module structure is based upon this concept, i.e. there are *scanner* and *analyzer* modules. As of now, AVAIN only supports the assessment of IPv4 and IPv6 enabled (IoT) devices. Note that IPv6 zone IDs are not guaranteed to work with AVAIN. Also, the two *Hydra brute force modules* do currently *not* work with *IPv6* addresses.
