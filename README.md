@@ -1,68 +1,48 @@
 
+
 # AVAIN - Automated Vulnerability Analysis (in) IoT Networks </B>
 A toolkit for automatically assessing the security level of an IoT network
 
 ## About
-AVAIN can automatically *assess* and *quantify* the security level of an (IoT) network. AVAIN's final output is a *score* between 0 and 10, where the higher the score, the more vulnerable / insecure the network. Additionally, AVAIN keeps all of the intermediate result files to empower the user in *investigating* the network's security state *in more detail*. As IT and IoT security is a continuously evolving field, AVAIN was designed to be *modular* and thereby *easily extensible*. AVAIN separates the network's security assessment into two phases: the *scanning*, i.e. reconnaissance phase and the actual vulnerability *analysis* phase. The module structure is based upon this concept, i.e. there are *scanner* and *analysis* modules. As of now, AVAIN only supports the assessment of IPv4 and IPv6 enabled (IoT) devices. Note that IPv6 zone IDs are not guaranteed to work with AVAIN. Also, the two *Hydra brute force modules* do currently *not* work with *IPv6* addresses.
+AVAIN can automatically *assess* and *quantify* the security level of an (IoT) network. AVAIN's final output is a *score* between 0 and 10, where the higher the score, the more vulnerable / insecure the network. Additionally, AVAIN keeps all of the intermediate result files to empower the user in *investigating* the network's security state *in more detail*. As IT and IoT security is a continuously evolving field, AVAIN was designed to be *modular* and thereby *easily extensible*. AVAIN separates the network's security assessment into two phases: the *scanning*, i.e. reconnaissance phase and the actual vulnerability *analysis* phase. The module structure is based upon this concept, i.e. there are *scanner* and *analyzer* modules. As of now, AVAIN only supports the assessment of IPv4 and IPv6 enabled (IoT) devices. Note that IPv6 zone IDs are not guaranteed to work with AVAIN. Also, the two *Hydra brute force modules* do currently *not* work with *IPv6* addresses.
+
+**Disclaimer:** While AVAIN can only be used in IP based (IoT) networks as of now, it is possible to extend AVAIN to be capable of working in different kinds of networks.
 
 ## Features
-* **Automated installation** on macOS and Linux (Ubuntu / Kali)
-* **Fully automated program execution**
+* **Highly modular** framework for vulnerability analysis in computer networks. Entirely new modules or wrappers for other programs can easily be written using **Pyhon**.
 * **Various levels of detail** for output:
-    * Highly detailed output: All intermediate files are kept, even the ones from modules.
-    * Less detailed output: Aggregated intermediate results and host / network scores.
-* **Easily extensible** using Python
+    * Highly detailed output: All intermediate files are kept, even the ones from modules
+    * Less detailed output: Aggregated intermediate results and host / network scores
+* **Automated installation** on macOS and Linux (Ubuntu / Kali)
+* **Fully automated** vulnerability assessment without requiring user interaction
+* Partitioning the assessment into different phases enables the user to **skip an undesired phase** or **provide custom intermediate results**.
 * **Logging** for core and modules
-* Partitioning the assessment into different phases enables the user to **skip an undesired phase** or **provide custom intermediate results.**
-* Provided modules:
+* Current modules:
     * (Post-processed) **Nmap reconnaissance**
     * **Correlation** of discovered [**CPEs**](https://csrc.nist.gov/projects/security-content-automation-protocol/specifications/cpe/ "About CPE") with **[CVE](https://cve.mitre.org "About CVE") / [NVD](https://nvd.nist.gov "About NVD")** entries
-    * [**Mirai**](https://www.grahamcluley.com/mirai-botnet-password/ "About Mirai") Credential Check for **SSH** services
-    * [**Mirai**](https://www.grahamcluley.com/mirai-botnet-password/ "About Mirai") Credential Check for **Telnet** services
+    * Brute Force Credential Check for **SSH** services
+    * Brute Force Credential Check for **Telnet** services
 
 
 ## Installation
-As of now, this tool only works on macOS and Linux (Ubuntu / Kali). Before installing, make sure to read the OS specific requirements below. To install AVAIN and all of its required software automatically, run ``./install.sh``. A list of all required/installed packages is also listed below. Software packages are installed with a platform specific package manager and ``pip3``. For more detailed information have a look at the ``install.sh`` script directly.
+As of now, this tool only works on macOS and Linux (Ubuntu / Kali). Before installing, make sure to read the OS specific requirements below. To install AVAIN and all of its required software automatically, run ``./install.sh``. A list of all required / installed packages is also listed further down [below](#detail_install). Software packages are installed with a platform specific package manager and ``pip3``. For more detailed information have a look at the ``install.sh`` script directly. On Linux, the script has to be run with root privileges to allow AVAIN to install new APT packages.
 
 So far this software has been successfully installed and run on:
-* macOS High Sierra (10.13.4, 10.13.6)
+* macOS High Sierra (10.13.4, 10.13.6) and Mojave (10.14.0)
 * Ubuntu 18.04 LTS
 * Kali Linux 2018.3
 
-### Common Software Requirements
-The following list provides an overview of the software used by AVAIN for both macOS and Linux. The versions listed below have shown to work. Other versions may work as well. To install the Git submodules manually, run ``git submodule init && git submodule update``.
+**Disclaimer (macOS):** As of recently, Hydra can not be installed with SSH support via Homebrew anymore, see the README and issues of Hydra's [repository](https://github.com/vanhauser-thc/thc-hydra/). If you are affected by this, you have to setup Hydra with SSH support manually.
 
-* Homebrew / Apt
-    * Python 3 (3.7.0) with pip3
-    * wget (1.19.5)
-    * cmake (3.12.1)
-    * nmap (7.7.0)
-    * sqlite (3.24.0)
-    * hydra (8.6_2) with libssh
-* Pip3
-    * vulners >= 1.1.1
-    * requests >= 2.18.4
-    * beautifulsoup4 >= 4.6.0
-    * cvsslib >= 0.5.5
-    * packaging >= 17.1
-* Git submodules
-    * [SRombauts/SQLiteCpp](https://github.com/SRombauts/SQLiteCpp "SQLiteCpp GitHub Page")
-    * [nlohmann/json](https://github.com/nlohmann/json "json GitHub Page")
-* [The official CPE v2.2 dictionary](https://nvd.nist.gov/products/cpe), stored as ``resources/official-cpe-dictionary_v2.2.xml`` in AVAIN's base directory.
-
-### Specific macOS Requirements
-On macOS a running version of Homebrew is required for the automated installation. Look [here](https://brew.sh/index_de) for instructions on how to install Homebrew. Additionally, Homebrew's ``coreutils`` package has to be installed.
-
-### Installation on Linux
-On Linux the package manager ``apt`` is used for installing software. Therefore, the installation script has to be run as root.
 
 ## Usage
 To execute AVAIN, run ``./avain``. Also, during the installation AVAIN is symlinked to ``/usr/local/bin`` and can therefore be called from anywhere with just ``avain``. Calling AVAIN without any arguments displays the usage information:
 ```
-usage: avain [-h] [-n NETWORKS [NETWORKS {...}]] [-nL NETWORK_LIST] [-uM] [-aO]
+usage: avain [-h] [-n NETWORKS [NETWORKS {...}]] [-nL NETWORK_LIST]
+             [-uM] [-aO]
              [-c CONFIG] [-o OUTPUT] [-p PORTS] [-sN]
              [-sR SCAN_RESULTS [SCAN_RESULTS {...}]]
-             [-aR ANALYSIS_RESULTS [ANALYSIS_RESULTS {...}]] [-sO] [-oO] [-v]
+             [-aR ANALYSIS_RESULTS [ANALYSIS_RESULTS {...}]] [-sO] [-v]
 avain: error: at least one of the following arguments is required: -n/--network,-nL/--network-list, -uD/--update-modules or -aO/--analysis-only
 ```
 The different program arguments are described as follows:
@@ -89,26 +69,26 @@ AVAIN puts its output into a directory that generally looks like the following:
 ```
 avain_output-20180905_005831/
 ├── analysis_results
-│   ├── cve_correlation
-│   │   ├── cve_summary.json
-│   │   ├── found_cves.json
-│   │   └── result.json
-│   ├── host_scores.json
-│   ├── login_bruteforce
-│   │   ├── mirai_ssh
-│   │   └── mirai_telnet
-│   └── results.json
+│   ├── cve_correlation
+│   │   ├── cve_summary.json
+│   │   ├── found_cves.json
+│   │   └── result.json
+│   ├── host_scores.json
+│   ├── login_bruteforce
+│   │   ├── mirai_ssh
+│   │   └── mirai_telnet
+│   └── results.json
 ├── avain.log
 ├── results.json
 └── scan_results
     ├── add_scan_results
-    │   └── results.json
+    │   └── results.json
     ├── nmap
-    │   ├── networks.list
-    │   ├── potential_oses.json
-    │   ├── raw_nmap_scan_results.txt
-    │   ├── raw_nmap_scan_results.xml
-    │   └── result.json
+    │   ├── networks.list
+    │   ├── potential_oses.json
+    │   ├── raw_nmap_scan_results.txt
+    │   ├── raw_nmap_scan_results.xml
+    │   └── result.json
     └── results.json
 ```
 
@@ -120,11 +100,11 @@ avain_output-20180905_011115/
 ├── avain.log
 ├── net_dir_map.json
 ├── network_1
-│   ├── analysis_results
-│   └── scan_results
+│   ├── analysis_results
+│   └── scan_results
 ├── network_2
-│   ├── analysis_results
-│   └── scan_results
+│   ├── analysis_results
+│   └── scan_results
 └── results.json
 ```
 Here, the different networks are listed as ``network_1`` and ``network_2``. This is because a directory on Unix cannot be named like e.g. the network expression ``192.168.0.0/24``. The directories are order in the way the user provided them. Still, a translation between the output directories and given network expressions is available in the file ``net_dir_map.json``.
@@ -182,13 +162,13 @@ The results for analysis modules have to be in a specific format as well. In com
 It is as simple as listing every host with the score it was rated with.
 
 ### Core Results
-The main files created by the core are the aggregated scan / analysis results for every network as well as the final output file that lists for every network expression its respective security score. The aggregated scan results consist of a final aggregation result that is located in ``scan_results/results.json`` and the intermediate result files for the aggregation containing for example a collection of all Operating Systems suggested by the different scanner modules. The file structure for the scan aggregation result is the same as the one for intermediate scanning results as detailed above. The main result file for the analysis is stored in ``analysis_results/results.json`` and just lists the assessed network with its final security score. The file ``analysis_results/host-scores.json`` on the other hand shows a more detailed version, where every (detected) host within network is listed with its final score (similar to the analysis module result format). At last, AVAIN also produces the file ``results.json`` located on the same directory level as the log file. This file contains for every network expression specified by the user the security score the respective network was rated with.
+The main files created by the core are the aggregated scan / analysis results for every network as well as the final output file that lists for every network expression its respective security score. The aggregated scan results consist of a final aggregation result that is located in ``scan_results/results.json`` and the intermediate result files for the aggregation containing for example a collection of all Operating Systems suggested by the different scanner modules. The file structure for the scan aggregation result is the same as the one for intermediate scanning results as detailed above. The main result file for the analysis is stored in ``analysis_results/results.json`` and just lists the assessed network with its final security score. The files ``analysis_results/host_scores.json`` and ``analysis_results/module_scores.json`` on the other hand show more detailed versions of the result, where every (detected) host within the network is listed with its final score (similar to the analysis module result format) and the scores returned by the different modules. At last, AVAIN also produces the file ``results.json`` located on the same directory level as the log file. This file contains for every network expression specified by the user the security score the respective network was rated with.
 
 ### Supplying User Data
 With the ``-sR`` and ``-aR`` argument, the user can provide AVAIN with additional and even manually crafted intermediate result files. These files have to be JSON files with the scan / analysis result structure as described above. For example, supplying AVAIN with custom results can come in handy when AVAIN, or more specifically its utilized scanners, have difficulty determining the OS of a host.
 
 ## Adding New Modules
-Modules have to follow certain rules in order to successfully work with AVAIN. The data format for a module's results is shown above. Scanner modules have to be put into ``src/modules/scanner`` and analyzer modules into ``src/modules/analyzer``. Furthermore, scanner modules have to be prefixed with ``scanner_``, while analyzer modules have to be prefixed with ``analyzer_``. Have a look at the current module structure to see some examples. As modules have to be written in Python, their file extension has to be ``.py``. Scanner modules are required to have a ``conduct_scan(results: list)`` function; analyzer modules a ``conduct_analysis(results: list)``. A module's result can either be the filepath to a JSON file or the result itself as a Python dictionary. Returning the result is as easy as appending it to the ``results`` list seen in the ``conduct_scan`` / ``conduct_analysis`` function's signature. All non-essential / intermediate results of a module can be returned as well. Every intermediate result needs to be stored in a separate file. Finally, to return all of these files, the module has to append their filepaths to a / its **global** ``CREATED_FILES`` variable / list. Also, it is important to mention that AVAIN switches into the directory of a module when calling it, so that every module can run within its own environment.
+Modules have to follow certain rules in order to successfully work with AVAIN. The data format for a module's results is shown above. Scanner modules have to be put into ``src/modules/scanner`` and analyzer modules into ``src/modules/analyzer``. Furthermore, scanner modules have to be prefixed with ``scanner``, while analyzer modules have to be prefixed with ``analyzer``. Have a look at the current module structure to see some examples. As modules have to be written in Python, their file extension has to be ``.py``. Scanner modules are required to have a ``conduct_scan(results: list)`` function; analyzer modules a ``conduct_analysis(results: list)``. A module's result can either be the filepath to a JSON file or the result itself as a Python dictionary. Returning the result is as easy as appending it to the ``results`` list seen in the ``conduct_scan`` / ``conduct_analysis`` function's signature. All non-essential / intermediate results of a module can be returned as well. Every intermediate result needs to be stored in a separate file. Finally, to return all of these files, the module has to append their filepaths to a / its **global** ``CREATED_FILES`` variable / list. Also, it is important to mention that AVAIN switches into the directory of a module when calling it, so that every module can run within its own environment.
 
 ### Module Parameters
 There are two ways a module can receive parameters from the core: configuration files ([see further below](#config_expl)) and global variables within the module. E.g. if a module has defined the global variable ``NETWORKS``, the core assigns that variable its corresponding value. Currently available module parameters are:
@@ -223,22 +203,38 @@ Since modules, except for their Python interface, are not restricted to any kind
 As some modules may rely on data that needs to stay up-to-date like "the 1000 most common passwords", AVAIN provides a way for modules to be updated. Similar to the scanner and analyzer modules, there are separate "modules" that can update their respective scanner or analyzer module. Similar to above, these modules have to interface with the core in Python (file extension ``.py``) and their name has to be prefixed with ``module_updater``. Furthermore, they have to provide a function with the signature ``update_module()``. Any files that should be stored by the AVAIN core have to be put into the global list ``CREATED_FILES``, just as above. For an example of the update module concept have a look at the ``module_updater.py`` file in ``src/modules/analyzer/cve_correlation``. To update all of AVAIN's modules that provide this update mechanism, the user has to call AVAIN with the **-uM / --update modules** argument.
 
 ## Configuration Files <a id="config_expl"></a>
-AVAIN can also accept a separate configuration file as program argument. Therefore a configuration file can act as a profile for AVAIN that specifies many different arguments at once. The default configuration file is called ``default_config.txt`` and can be found in AVAIN's ``config`` directory. Note that this file has to be present for AVAIN to work correctly. Its contents look like the following:
+AVAIN can also accept a separate configuration file as program argument. A configuration file can act as a profile for AVAIN that specifies many different arguments at once. The default configuration file is called ``default_config.txt`` and can be found in AVAIN's ``config`` directory. Note that this file has to be present for AVAIN to work correctly. Its contents look like the following:
 ```
 // here defined are default configuration settings
 [core]
+scan_modules = ALL  // the list of scanner modules to use (in order), or ALL
 default_trust = 3
 scan_aggregation_scheme = TRUST_AGGR  // possible values --> {TRUST_MAX, TRUST_AGGR}
 DB_expire = 20160  // in minutes, i.e. every other week
 
 // here defined are module specific configuration settings
+[modules.scanner.nmap.scanner_nmap]
+// add_nmap_params = "--max-rtt-timeout 100ms --max-retries 1"  // additional Nmap params
+scan_type = "SU"  // SYN scan and UDP scan require root privileges
+fast_scan = False  // whether Nmap should use T5 and F option as speedup
+add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use
+
 [modules.analyzer.cve_correlation.analyzer_cve_correlation]
 DB_expire = 10080  // in minutes, i.e. every week
 skip_os = False  // whether to skip OS CVE analysis --> {True, False}
 max_cve_count = -1  // the maximum number of CVEs to retrieve; -1 for unlimited
+squash_cpes = True  // whether to squash every discovered CPE in case of invalid CPE
+allow_versionless_search = True  // whether to fully search for CVEs when CPE has no version
+
+[modules.analyzer.login_bruteforce.hydra_ssh.analyzer]
+wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
+
+[modules.analyzer.login_bruteforce.hydra_telnet.analyzer]
+wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
+timeout = 300  // Hydra timeout in seconds (if Telnet bruteforce does not work)
 ```
 Like in many programming languages, comments can be made with ``//`` and ``/* */``. The strings surrounded by ``[`` and ``]`` specify the module the following configuration settings apply to. Every setting has to be placed on a separate line. Settings are specified using a ``key = value`` structure. The keys and values can be custom for every every module, AVAIN does not restrict the keys in any way. The only thing AVAIN does for every module is parse its section of the config file into a dictionary whose keys and values are the same as the config's. *Every module itself is responsible for parsing its config values.*
-In case the user specifies a separate config file to use, AVAIN overwrites its default configuration with the ones specified in the user's config file. Therefore, the user's config file is not required to contain all settings available but only the ones the user wants changed. Of course it is advised that the user supplies its own configuration file instead of manually overwriting the default configuration file.
+In case the user specifies a separate config file to use, AVAIN overwrites its default configuration settings with the ones specified in the user's config file. Therefore, the user's config file is not required to contain all settings available but only the ones the user wants changed. It is advised that the user supplies their own configuration file instead of manually overwriting the default configuration file.
 
 ## Examples
 {...}
@@ -246,6 +242,35 @@ In case the user specifies a separate config file to use, AVAIN overwrites its d
 * ``avain -n 192.168.0.1 192.168.0.100-150 -sN -c config/example_configs/fast_nmap_scan.txt -v``
 * ``avain -aO -sR path_to_sr_1 path_to_sr_2 -o network_analysis``
 
-## Authors
-* **Rolf Egert** - *AVAIN idea, guidance and suggestions during development*
-* **Dustin Born** - *development of first release as part of his Bachelor Thesis*
+
+## Detailed installation information <a id="detail_install"></a>
+Below you can find more information on required software and installation instructions.
+
+### Common Software Requirements
+The following list provides an overview of the software used by AVAIN for both macOS and Linux. The versions listed below have shown to work. Other versions may work as well. To install the Git submodules manually, run ``git submodule init && git submodule update``.
+
+* Homebrew / APT
+    * Python 3 (3.7.0) with pip3
+    * wget (1.19.5)
+    * cmake (3.12.1)
+    * nmap (7.7.0)
+    * sqlite (3.24.0)
+    * hydra (8.6_2) with libssh
+* Pip3
+    * requests >= 2.18.4
+    * cvsslib >= 0.5.5
+    * packaging >= 17.1
+* Git submodules
+    * [SRombauts/SQLiteCpp](https://github.com/SRombauts/SQLiteCpp "SQLiteCpp GitHub Page")
+    * [nlohmann/json](https://github.com/nlohmann/json "json GitHub Page")
+* [The official CPE v2.2 dictionary](https://nvd.nist.gov/products/cpe), stored as ``resources/official-cpe-dictionary_v2.2.xml`` relative to AVAIN's base directory.
+
+### Specific macOS Requirements
+On macOS a running version of Homebrew is required for the automated installation. Look [here](https://brew.sh/index_de) for instructions on how to install Homebrew. Additionally, Homebrew's ``coreutils`` package has to be installed.
+
+### Installation on Linux
+On Linux the package manager ``apt`` is used for installing software. Therefore, the installation script has to be run as root.
+
+
+## About the Creation of AVAIN
+I created AVAIN as part of my Bachelor Thesis at TU Darmstadt (located in Germany) under the guidance of my advisor Rolf Egert.
