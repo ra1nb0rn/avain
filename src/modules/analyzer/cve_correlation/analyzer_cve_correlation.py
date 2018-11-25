@@ -446,7 +446,7 @@ def is_neq_prefix(text_1, text_2):
 def get_cpe_version(cpe: str):
     """Return the version entry of the given CPE"""
     split_cpe = cpe.split(":")
-    if len(split_cpe) > 3:
+    if len(split_cpe) > 4:
         return split_cpe[4]
     return ""
 
