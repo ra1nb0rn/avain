@@ -464,7 +464,7 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
 
-        std::cout << "Creating local copy of NVD" << outfile << " ..." << std::endl;
+        std::cout << "Creating local copy of NVD " << outfile << " ..." << std::endl;
         for (const auto &file : cve_files) {
             add_to_db(db, file);
         }
