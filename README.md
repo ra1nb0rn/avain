@@ -108,7 +108,7 @@ avain_output-20180905_011115/
 │   └── scan_results
 └── results.json
 ```
-Here, the different networks are listed as ``network_1`` and ``network_2``. This is because a directory on Unix cannot be named like e.g. the network expression ``192.168.0.0/24``. The directories are order in the way the user provided them. Still, a translation between the output directories and given network expressions is available in the file ``net_dir_map.json``.
+Here, the different networks are listed as ``network_1`` and ``network_2``. This is because directories on Unix have naming restrictions that e.g. prevent the creation of a single directory called ``192.168.0.0/24``. The directories are numberered according to the order of their network expressions in the AVAIN call. Still, a translation between the output directories and given network expressions is available in the file ``net_dir_map.json``.
 
 ## AVAIN File Formats
 AVAIN uses JSON as a common exchange format for (intermediate) results. This allows for human-readable, but also computationally processable information. Modules can on the one hand have their own output files, but they also have to deliver a result to the AVAIN core. The result shared with AVAIN's core has to abide by the common exchange formats detailed below. Furthermore, modules always work in the scope of one network, i.e. if the user would like four networks to be assessed, every module is called four times, not just once. Therefore, an intermediate result generally lists hosts with their results and not networks.
