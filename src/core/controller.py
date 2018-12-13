@@ -3,28 +3,22 @@ import logging
 import os
 import sys
 
-from core.module_updater import ModuleUpdater
-from core.scanner import Scanner
-from core.analyzer import Analyzer
+from core.module_manager import ModuleManager
+from core.scan_result_processor import ScanResultProcessor
+from core.vuln_score_processor import VulnScoreProcessor
 import core.utility as util
 import core.visualizer as visualizer
 
 LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOGFILE = "avain.log"
-SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572",
-                         "\u2502", "\u2571", "\u2500", "\u2572"]
-UPDATER_JOIN_TIMEOUT = 0.38
 DEFAULT_CONFIG_PATH = "%s%sconfig/default_config.txt" % (os.environ["AVAIN_DIR"], os.sep)
-SCANNER_OUTPUT_DIR = "scan_results"
-ANALYZER_OUTPUT_DIR = "analysis_results"
-UPDATE_OUTPUT_DIR = "update_output"
 NET_DIR_MAP_FILE = "net_dir_map.json"
 
 class Controller():
 
     def __init__(self, networks: list, add_networks: list, omit_networks: list, update_modules: bool,
-                 config_path: str, ports: list, output_dir: str, scan_results: list, analysis_results: list,
-                 single_network: bool, verbose: bool, scan_only: bool, analysis_only: bool):
+                 config_path: str, ports: list, output_dir: str, user_results: dict,
+                 single_network: bool, verbose: bool):
         """
         Create a Controller object.
 
@@ -35,17 +29,14 @@ class Controller():
         :param config_path: The path to a config file
         :param ports: A list of port expressions
         :param output_dir: A string specifying the output directory of the analysis
-        :param scan_results: A list of filenames whose files contain additional scan results
-        :param analysis_results: A list of filenames whose files contain additional analysis results
+        :param user_results: A list of filenames whose files contain user provided results
         :param single_network: A boolean specifying whether all given networks are to be considered
                                hosts in one single network
         :param vebose: Specifying whether to provide verbose output or not
-        :param scan_only: Whether to only do a network scan
-        :param analysis_only: Whether to only do an analysis with the specified scan results
         """
 
         self.networks = networks if networks is not None else []
-        self.add_networks = add_networks
+        self.networks += add_networks if add_networks is not None else []
         self.omit_networks = omit_networks
 
         # determine output directory
@@ -58,13 +49,14 @@ class Controller():
         os.makedirs(self.output_dir, exist_ok=True)
 
         # check for user scan and analysis results
-        self.scan_results = None
-        self.analysis_results = None
+        self.user_results = {}
 
-        if scan_results:
-            self.scan_results = [os.path.abspath(scan_result) for scan_result in scan_results]
-        if analysis_results:
-            self.analysis_results = [os.path.abspath(analysis_result) for analysis_result in analysis_results]
+        if user_results:
+            for rtype, filenames in user_results.items():
+                if rtype not in self.user_results:
+                    self.user_results[rtype] = []
+                for filename in filenames:
+                    self.user_results[rtype] = (filename, os.path.abspath(filename))
 
         # store absolute config path
         if config_path:
@@ -99,11 +91,12 @@ class Controller():
         # set remaining variables
         self.single_network = single_network
         self.verbose = verbose
-        self.hosts = set()
         self.ports = ports
         self.update_modules = update_modules
-        self.scan_only = scan_only
-        self.analysis_only = analysis_only
+
+        # setup module_manager
+        self.module_manager = ModuleManager(self.networks, self.output_dir, self.omit_networks, self.ports,
+                                            self.user_results, self.config, self.verbose)
 
         # setup logging
         self.setup_logging()
@@ -111,9 +104,9 @@ class Controller():
         self.logger.info("Executed call: avain %s", " ".join(sys.argv[1:]))
 
         # inform user about not being root
-        if (networks or add_networks) and os.getuid() != 0:
+        if networks and os.getuid() != 0:
             print(util.MAGENTA + "Warning: not running this program as root user leads"
-                  " to less effective scanning (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
+                  " to a less effective assessment (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
 
     def setup_logging(self):
         """
@@ -130,76 +123,67 @@ class Controller():
         Execute the main program depending on the given program parameters.
         """
         if self.update_modules:
-            updater = ModuleUpdater(os.path.join(self.output_dir, UPDATE_OUTPUT_DIR),
-                                    self.config, self.verbose)
-            updater.run()
+            self.module_manager.update_modules()
+            self.module_manager.reset_results()
 
-        if self.networks or self.add_networks or self.scan_only or self.analysis_only:
+        if self.networks or self.user_results:
             self.do_assessment()
+
+        self.logger.info("All created files have been written to '%s'", self.output_dir)  # use absolute path
+        print("All created files have been written to: %s" % self.orig_out_dir)  # use relative path
 
         # change back to original directory
         os.chdir(self.original_cwd)
+
 
     def do_assessment(self):
         """
         Conduct the vulnerability assessment either in "normal" or "single network mode".
         """
 
-        def do_assessment_helper(networks: list, out_dir: str):
-            # First conduct network reconnaissance and then analyze the hosts
-            # of the specified network(s) for vulnerabilities.
-            scanner = Scanner(os.path.join(out_dir, SCANNER_OUTPUT_DIR), self.config,
-                              self.verbose, self.scan_results, networks, self.omit_networks,
-                              self.ports, self.analysis_only)
-            hosts = scanner.run()
-
-            if not self.scan_only:
-                analyzer = Analyzer(os.path.join(out_dir, ANALYZER_OUTPUT_DIR), self.config,
-                                    self.verbose, self.analysis_results, hosts)
-                net_score = analyzer.run()
-                return hosts, net_score
-            return hosts, None
-
-        networks = self.networks + self.add_networks
-        network_scores = {}
-        scan_results = {}
+        networks = self.networks
         net_dir_map = {}
+        network_vuln_scores = {}
 
-        if self.single_network or len(networks) <= 1 or self.analysis_only:
-            # if there is only one or no scan
-            hosts, score = do_assessment_helper(networks, self.output_dir)
-            if self.single_network or self.analysis_only:
-                scan_results = hosts
+        def do_network_assessment(networks: list, out_dir: str):
+            nonlocal network_vuln_scores
+            self.module_manager.set_networks(networks)
+            self.module_manager.set_output_dir(out_dir)
+            self.module_manager.run()
+            self.module_manager.create_results()
+            self.module_manager.store_results()
+            self.module_manager.print_results()
+            net_score = self.module_manager.get_network_vuln_score()
+            self.module_manager.reset_results()
+            return net_score
+
+        if self.single_network or len(networks) <= 1:
+            # if there is only one assessment
+            score = do_network_assessment(networks, self.output_dir)
+            if self.single_network or not self.networks:
                 if score is not None:
-                    network_scores["assessed_network"] = score
+                    network_vuln_scores["assessed_network"] = score
             else:
-                if (not networks) or util.is_ipv4(networks[0]) or util.is_ipv6(networks[0]):
-                    scan_results = hosts
-                else:
-                    scan_results[networks[0]] = hosts
                 if score is not None:
-                    network_scores[networks[0]] = score
+                    network_vuln_scores[networks[0]] = score
         else:
             # if there are multiple scans, place results into separate directory
             for i, net in enumerate(networks):
+                util.printit("Assessment of network %s" % net, color=util.YELLOW)
+                util.printit("===========================================", color=util.YELLOW)
                 net_dir_map[net] = "network_%d" % (i + 1)
-                hosts, score = do_assessment_helper([net], os.path.join(self.output_dir, net_dir_map[net]))
-                scan_results[net] = hosts
-                network_scores[net] = score
+                score = do_network_assessment([net], os.path.join(self.output_dir, net_dir_map[net]))
+                network_vuln_scores[net] = score
             if net_dir_map:
                 net_dir_map_out = os.path.join(self.output_dir, NET_DIR_MAP_FILE)
                 with open(net_dir_map_out, "w") as file:
                     file.write(json.dumps(net_dir_map, ensure_ascii=False, indent=3))
 
         # visualize results
-        results = network_scores if not self.scan_only else scan_results
-        if results is not None:
-            outfile = os.path.join(self.output_dir, "results.json")
-            outfile_orig = os.path.join(self.orig_out_dir, "results.json")
+        if not all((not score) or score == "N/A" for score in network_vuln_scores):
+            outfile = os.path.join(self.output_dir, "network_vulnerability_ratings.json")
+            outfile_orig = os.path.join(self.orig_out_dir, "network_vulnerability_ratings.json")
 
-            visualizer.visualize_dict_results(results, outfile)
+            visualizer.visualize_dict_results(network_vuln_scores, outfile)
             self.logger.info("The main output file is called '%s'", outfile)
             print("The main output file is called: %s" % outfile_orig)
-
-        self.logger.info("All created files have been written to '%s'", self.output_dir)  # use absolute path
-        print("All created files have been written to: %s" % self.orig_out_dir)  # use relative path

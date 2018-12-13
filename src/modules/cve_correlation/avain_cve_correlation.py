@@ -14,18 +14,22 @@ from packaging import version
 
 if __name__ != "__main__":
     from . import module_updater
+    from core.result_types import ResultType
+    import core.utility as util
 
-HOST_CVE_FILE = "found_cves.json"
-DATABASE_FILE = "nvd_db.db3"
-SUMMARY_FILE = "cve_summary.json"
-
-HOSTS = {}  # a string representing the network to analyze
+# Parameter definition
+if __name__ != "__main__":
+    PUT_RESULT_TYPES = [ResultType.SCAN]  # get the current scan result
+    PUT_RESULTS = {}
 VERBOSE = False  # specifying whether to provide verbose output or not
 CONFIG = {}
 
 CREATED_FILES = []
+HOST_CVE_FILE = "found_cves.json"
+DATABASE_FILE = "nvd_db.db3"
+SUMMARY_FILE = "cve_summary.json"
 
-CPE_DICT_FILEPATH = ("..{0}..{0}..{0}..{0}resources{0}" +
+CPE_DICT_FILEPATH = ("..{0}..{0}..{0}resources{0}" +
                      "official-cpe-dictionary_v2.2.xml").format(os.sep)
 CPE_DICT_ET_CPE_ITEMS = None
 MAX_LOG_CPES = 30
@@ -48,7 +52,7 @@ CVSSV3_VAL_NAMES = {"AV": {"N": "Network", "A": "Adjacent", "L": "Local", "P": "
 QUERIED_CPES = {}
 
 
-def conduct_analysis(results: list):
+def run(results: list):
     """
     Analyze the specified hosts in HOSTS for CVEs that its software (or hardware) is affected by.
     """
@@ -64,19 +68,23 @@ def conduct_analysis(results: list):
     LOGGER = logging.getLogger(__name__)
     LOGGER.info("Starting with CVE analysis")
 
-    hosts = HOSTS
+    hosts = PUT_RESULTS[ResultType.SCAN]
 
     # initialize database and check for up-to-dateness
     db_conn = None
     try:
         check_database()
+    except Exception as excpt:
+        util.printit(str(excpt), color=util.RED)
+    try:
         db_creation_date = datetime.datetime.fromtimestamp(os.stat(DATABASE_FILE).st_ctime)
         LOGGER.info("Gathering information using the local CVE database last updated on %s",
                     str(db_creation_date))
         db_conn = sqlite3.connect(DATABASE_FILE)
         DB_CURSOR = db_conn.cursor()
     except Exception as excpt:
-        print(str(excpt))
+        util.printit(str(excpt), color=util.RED)
+        return
 
     # start CVE discovery
     LOGGER.info("Starting with CVE discovery of all hosts")
@@ -104,7 +112,7 @@ def conduct_analysis(results: list):
     create_cve_summary(hosts)
     LOGGER.info("Done")
 
-    results.append(scores)
+    results.append((ResultType.VULN_SCORE, scores))
 
 
 def add_cves_to_node(node: dict, ip: str):
@@ -878,10 +886,10 @@ def check_database():
         global CREATED_FILES
 
         LOGGER.info(log_msg)
-        module_updater.update_module([])
+        module_updater.run([])
         LOGGER.info("Done.")
         os.makedirs("db_update", exist_ok=True)
-        update_files = getattr(module_updater, "CREATED_FILES")
+        update_files = module_updater.CREATED_FILES
         update_files_renamed = []
         for file in update_files:
             new_file = os.path.join("db_update", file)

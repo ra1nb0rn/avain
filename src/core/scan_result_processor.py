@@ -2,41 +2,22 @@ import copy
 import inspect
 import json
 import os
+import pprint
 from typing import Callable
 
 import core.utility as util
-from core.module_manager_feedback import ModuleManagerFeedback
-from core.module_manager import ModuleManager
+from core.result_processor import ResultProcessor
 
 AGGR_GROUP_FILE = "aggregation_groups.json"
 AGGR_OPTION_FILE = "aggregation_options.json"
-ADDITIONAL_RESULTS_DIR = "add_scan_results"
 DEFAULT_TRUSTWORTHINESS = 3
 
-class Scanner(ModuleManagerFeedback):
+class ScanResultProcessor(ResultProcessor):
 
-    def __init__(self, output_dir: str, config: dict, verbose: bool,
-                 add_results: list, networks: list, omit_networks: list, ports: list,
-                 analysis_only: bool):
-        """
-        Create a Scanner object with the given networks and output directory
-
-        :param output_dir: A string specifying the output directory of the scan
-        :param config: The used config
-        :param verbose: Specifies whether to provide verbose output or not
-        :param add_results: Additional result files to include into the result
-        :param networks: A list of strings representing the networks to scan
-        :param omit_networks: A list of networks as strings to omit from the scan
-        :param ports: A list of port expressions
-        :param analysis_only: Whether to only do an analysis with the specified scan results
-        """
-
-        self.networks = networks
-        self.hosts = []  # only parse network expressions if necessary
-        self.omit_networks = omit_networks
-        self.ports = ports
-        self.analysis_only = analysis_only
-        super().__init__(output_dir, config, verbose, add_results)
+    def __init__(self, output_dir: str, config: dict, results: dict = None):
+        super().__init__(output_dir, results)
+        os.makedirs(output_dir, exist_ok=True)
+        self.config = config
 
         if "default_trust" in self.config["core"]:
             try:
@@ -46,93 +27,34 @@ class Scanner(ModuleManagerFeedback):
                                     "Setting default trust value to %d .", DEFAULT_TRUSTWORTHINESS)
                 self.default_trust = DEFAULT_TRUSTWORTHINESS
 
-    def _assign_init_values(self):
-        config_modules = self.config["core"].get("scan_modules", "all")
-        if config_modules.lower() == "all":
-            modules = ModuleManager.find_all_prefixed_modules("modules/scanner", "scanner")
-        else:
-            modules = [os.path.join("modules", m.strip()) for m in config_modules.split(",")]
+    def add_to_results(self, result_id: str, result):
+        if not "trust" in result:
+            result["trust"] = self.default_trust
+        self.results[result_id] = result
 
-        if len(self.networks) == 1:
-            run_title_str = "Starting network scans for '%s'" % self.networks[0]
-        else:
-            run_title_str = "Starting network scans"
+    @staticmethod
+    def parse_result_file(filepath: str):
+        return ResultProcessor.parse_result_from_json_file(filepath)
 
-        return (modules, "results.json", "scan", "conduct_scan", "modules.scanner.",
-                run_title_str, True)
+    @staticmethod
+    def print_result(result: dict):
+        pprint.pprint(result)
 
-    def _assign_add_results_dir(self):
-        return ADDITIONAL_RESULTS_DIR
+    @staticmethod
+    def print_aggr_result(result):
+        ScanResultProcessor.print_result(result)
 
-    def _only_result_files(self):
-        return self.analysis_only
+    @staticmethod
+    def store_result(result: dict, filepath: str):
+        """Store the given result at the specified location"""
 
-    def _sort_results(self):
-        super()._sort_results_by_ip()
+        ScanResultProcessor.store_json_convertable_result(result, filepath)
 
-    def _add_to_results(self, module_id, module_result):
-        if not "trust" in module_result:
-            module_result["trust"] = self.default_trust
-        if len(self.networks) == 1:  # not in single network mode
-            util.del_hosts_outside_net(module_result, self.networks[0])
-        self.results[module_id] = module_result
+    @staticmethod
+    def store_aggregated_result(aggr_result, filepath: str):
+        """Store the given aggregated result at the specified location"""
 
-    def _cleanup(self):
-        """
-        Remove all potential "trust" fields included in the scan result
-        stored in "self.result".
-        """
-        def remove_in_protocol(protocol: str):
-            """
-            Remove the trust values stored under the given transport protocol.
-            """
-            if protocol in host:
-                if "trust" in host[protocol]:
-                    del host[protocol]["trust"]
-
-                for _, portinfo in host[protocol].items():
-                    if "trust" in portinfo:
-                        del portinfo["trust"]
-
-        if "trust" in self.result:
-            del self.result["trust"]
-
-        for _, host in self.result.items():
-            if "trust" in host:
-                del host["trust"]
-
-            if "os" in host and "trust" in host["os"]:
-                del host["os"]["trust"]
-
-            remove_in_protocol("tcp")
-            remove_in_protocol("udp")
-
-    def _set_extra_module_parameters(self, module):
-        """
-        Set the given modules's scan parameters depening on which parameters it has declared.
-
-        :param module: the module whose scan parameters to set
-        """
-
-        # execute the scanning function of the module and save result
-        all_module_attributes = [attr_tuple[0] for attr_tuple in inspect.getmembers(module)]
-
-        if "NETWORKS" in all_module_attributes:
-            module.NETWORKS = self.networks
-
-        if "OMIT_NETWORKS" in all_module_attributes:
-            module.OMIT_NETWORKS = self.omit_networks
-
-        if "PORTS" in all_module_attributes:
-            module.PORTS = self.ports
-
-        if "HOSTS" in all_module_attributes:
-            if not self.hosts:
-                self._extend_networks_to_hosts()
-            module.HOSTS = self.hosts
-
-        if "SCAN_RESULT" in all_module_attributes:
-            module.SCAN_RESULT = copy.deepcopy(self._construct_result())
+        ScanResultProcessor.store_json_convertable_result(aggr_result, filepath)
 
     def _extend_networks_to_hosts(self):
         """
@@ -159,26 +81,22 @@ class Scanner(ModuleManagerFeedback):
 
         self.hosts = list(self.hosts)
 
-    def _construct_result(self):
+    def aggregate_results(self):
         """
         Accumulate the results from all the different scanner modules into one scanning result.
 
         :return: a dict having host IPs as keys and their scan results as values
         """
 
-        ##############################################
-        ######## Main construct_result() code ########
-        ##############################################
-
         if not self.results:
-            results = {}
+            result = {}
         elif len(self.results) == 1:
-            results = self.results[list(self.results.keys())[0]]
+            result = copy.deepcopy(self.results[list(self.results.keys())[0]])
         else:
-            results = self._aggregate_results()
+            result = self._aggregate_results()
 
         # make sure every host contains an "os", "tcp" and "udp" field
-        for key, val in results.items():
+        for key, val in result.items():
             if key != "trust":
                 if not "os" in val:
                     val["os"] = {}
@@ -187,7 +105,8 @@ class Scanner(ModuleManagerFeedback):
                 if not "udp" in val:
                     val["udp"] = {}
 
-        return results
+        ScanResultProcessor.remove_trust_values(result)
+        return ResultProcessor.sort_result_by_ip(result)
 
     def _aggregate_results(self):
         """
@@ -212,6 +131,7 @@ class Scanner(ModuleManagerFeedback):
                 host["os"] = max(host["os"], key=lambda entry: entry["trust"])
             select_port_entries("tcp")
             select_port_entries("udp")
+
         return processed_results
 
 
@@ -272,7 +192,7 @@ class Scanner(ModuleManagerFeedback):
             for ip, host in result.items():
                 if ip not in groups:
                     groups[ip] = {}
-                Scanner._add_trust(host, module_trust_rating)
+                ScanResultProcessor._add_trust(host, module_trust_rating)
 
                 if "os" in host:
                     group_os()
@@ -345,6 +265,37 @@ class Scanner(ModuleManagerFeedback):
         add_to_ports("tcp")
         add_to_ports("udp")
 
+    @staticmethod
+    def remove_trust_values(result: dict):
+        """
+        Remove all potential "trust" fields stored in the given scan result
+        """
+
+        def remove_in_protocol(protocol: str):
+            """
+            Remove the trust values stored under the given transport protocol.
+            """
+            if protocol in host:
+                if "trust" in host[protocol]:
+                    del host[protocol]["trust"]
+
+                for _, portinfo in host[protocol].items():
+                    if "trust" in portinfo:
+                        del portinfo["trust"]
+
+        if "trust" in result:
+            del result["trust"]
+
+        for _, host in result.items():
+            if "trust" in host:
+                del host["trust"]
+
+            if "os" in host and "trust" in host["os"]:
+                del host["os"]["trust"]
+
+            remove_in_protocol("tcp")
+            remove_in_protocol("udp")
+
     def _group_item(self, ip: str, module, item: dict, dest: dict,
                     iter_access_func: Callable[[dict], dict]):
         """
@@ -395,7 +346,7 @@ class Scanner(ModuleManagerFeedback):
                         item_group.append(item_iter)
 
         # if all items of the current group are not already existent in another group
-        if not Scanner._group_in(item_group, dest):
+        if not ScanResultProcessor._group_in(item_group, dest):
             # remove existent groups that are more broad, meaning all of its entries
             # are contained in the current item_group
             dest[:] = [other for other in dest if not
@@ -487,12 +438,12 @@ class Scanner(ModuleManagerFeedback):
         # Check the config for aggregation scheme
         if not "scan_aggregation_scheme" in self.config["core"]:
             # If no config entry available, use trust aggregation scheme
-            return Scanner._aggregate_group_by_trust_aggregation(group)
+            return ScanResultProcessor._aggregate_group_by_trust_aggregation(group)
         if self.config["core"]["scan_aggregation_scheme"] == "TRUST_AGGR":
-            return Scanner._aggregate_group_by_trust_aggregation(group)
+            return ScanResultProcessor._aggregate_group_by_trust_aggregation(group)
         if self.config["core"]["scan_aggregation_scheme"] == "TRUST_MAX":
-            return Scanner._aggregate_group_by_trust_max(group)
-        return Scanner._aggregate_group_by_trust_aggregation(group)
+            return ScanResultProcessor._aggregate_group_by_trust_max(group)
+        return ScanResultProcessor._aggregate_group_by_trust_aggregation(group)
 
     ################################################
     #### Different group aggregation algorithms ####
@@ -517,10 +468,70 @@ class Scanner(ModuleManagerFeedback):
         :param group: the group to reduce
         """
         grouping_strength = 0.675
-        most_specific_entry = copy.deepcopy(Scanner._get_most_specific_group_entry(group))
+        most_specific_entry = copy.deepcopy(ScanResultProcessor._get_most_specific_group_entry(group))
         trust_sum = sum([entry["trust"] for entry in group])
         # The following equation is rather preliminary and was created in a way
         # that "it makes sense" for simple cases.
         aggr_trust = trust_sum / (len(group)**grouping_strength)
         most_specific_entry["trust"] = aggr_trust
         return most_specific_entry
+
+
+    def is_valid_result(result):
+        def check_name(node: dict):
+            if "name" in node and (not isinstance(node["name"], str)):
+                return False
+            return True
+
+        def check_cpes(node: dict):
+            if "cpes" in node and (not isinstance(node["cpes"], list)):
+                return False
+            for cpe in node["cpes"]:
+                if not isinstance(cpe, str):
+                    return False
+            return True
+
+        def check_protocol(protocol: str):
+            nonlocal value
+
+            if protocol in value:
+                if not isinstance(value, dict):
+                    return False
+                for portid, port in value[protocol].items():
+                    if not isinstance(portid, str):
+                        return False
+                    if not isinstance(port, dict):
+                        return False
+                    if not check_name(port):
+                        return False
+                    if not check_cpes(port):
+                        return False
+                    if "service" in port and not isinstance(port["service"], str):
+                        return False
+            return True
+
+        if not isinstance(result, dict):
+            return False
+
+        for key, value in result.items():
+            if (not util.is_ipv4(key)) and (not util.is_ipv6) and (not key == "trust"):
+                return False
+
+            if key == "trust" and (not isinstance(value, float)) and (not isinstance(value, str)):
+                return False
+            else:
+                if not isinstance(value, dict):
+                    return False
+                if "os" in value:
+                    if not isinstance(value["os"], dict):
+                        return False
+                    if not check_name(value["os"]):
+                        return False
+                    if not check_cpes(value["os"]):
+                        return False
+                if not check_protocol("tcp"):
+                    return False
+                if not check_protocol("udp"):
+                    return False
+
+        return True

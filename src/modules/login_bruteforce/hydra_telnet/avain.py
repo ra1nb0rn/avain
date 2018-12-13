@@ -4,15 +4,19 @@ import os
 import shutil
 import subprocess
 
+from core.result_types import ResultType
+
 # Output files
 HYDRA_OUTPUT_DIR = "hydra_output"
 HYDRA_TEXT_OUTPUT = "hydra_output.txt"
 HYDRA_JSON_OUTPUT = "hydra_output.json"
 HYDRA_TARGETS_FILE = "targets.txt"
+TIMEOUT_FILE = "timeout.txt"
 VALID_CREDS_FILE = "valid_credentials.txt"
 
 # Module parameters
-HOSTS = {}  # a string representing the network to analyze
+PUT_RESULT_TYPES = [ResultType.SCAN]  # get the current scan result
+PUT_RESULTS = {}
 VERBOSE = False  # specifying whether to provide verbose output or not
 CONFIG = None  # the configuration to use
 
@@ -26,18 +30,20 @@ LOGGER = None
 ## Score calculation aligned to CVSS v3 for default credential vulnerability resulted in: ##
 ##           CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H with base score of 9.8          ##
 
-def conduct_analysis(results: list):
+def run(results: list):
     """
-    Analyze the specified hosts in HOSTS for susceptibility to SSH password
+    Analyze the specified hosts in HOSTS for susceptibility to Telnet password
     cracking with the configured list of credentials (by default the Mirai creds).
 
     :return: a tuple containing the analyis results/scores
     """
 
     # setup logger
-    global LOGGER, CREATED_FILES
+    global HOSTS, LOGGER, CREATED_FILES
+
+    HOSTS = PUT_RESULTS[ResultType.SCAN]
     LOGGER = logging.getLogger(__name__)
-    LOGGER.info("Starting with Mirai SSH susceptibility analysis")
+    LOGGER.info("Starting with Mirai Telnet susceptibility analysis")
 
     # cleanup potentially old files
     cleanup()
@@ -60,24 +66,44 @@ def conduct_analysis(results: list):
                 continue
 
             # determine correct output file names
-            text_out, json_out = HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT
+            text_out, json_out, to_file = HYDRA_TEXT_OUTPUT, HYDRA_JSON_OUTPUT, TIMEOUT_FILE
             if i > 0:
                 txt_base, txt_ext = os.path.splitext(text_out)
                 json_base, json_ext = os.path.splitext(json_out)
+                to_base, to_ext = os.path.splitext(to_file)
                 text_out = txt_base + "_%d" % i + txt_ext
                 json_out = json_base + "_%d" % i + json_ext
-
+                to_file = to_base + "_%d" % i + to_ext
             if len(wordlists) > 1:
                 text_out = os.path.join(HYDRA_OUTPUT_DIR, text_out)
                 json_out = os.path.join(HYDRA_OUTPUT_DIR, json_out)
+                to_file = os.path.join(HYDRA_OUTPUT_DIR, to_file)
 
             # Preparse Hydra call and run it
             hydra_call = ["hydra", "-C", wlist, "-I", "-M", HYDRA_TARGETS_FILE,
-                          "-b", "json", "-o", json_out, "ssh"]
-            LOGGER.info("Beginning Hydra SSH Brute Force with command: %s", " ".join(hydra_call))
+                          "-b", "json", "-o", json_out, "telnet"]
+            LOGGER.info("Beginning Hydra Telnet Brute Force with command: %s", " ".join(hydra_call))
             redr_file = open(text_out, "w")
             CREATED_FILES += [text_out, json_out]
-            subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
+
+            # Sometimes, Hydra and other cracking tools do not seem to work properly
+            # with Telnet services. Therefore, Hydra is run with a timeout.
+            hydra_timeout = int(CONFIG.get("timeout", 300))  # in seconds
+            try:
+                subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT,
+                                timeout=hydra_timeout)
+            except subprocess.TimeoutExpired:
+                with open(to_file, "w") as file:
+                    if len(wordlists) > 1:
+                        file.write("Hydra took longer than %ds and thereby timed out with wordlist %s" % (hydra_timeout, wlist))
+                        LOGGER.warning("Hydra took longer than %ds and thereby timed out with wordlist %s", hydra_timeout, wlist)
+                    else:
+                        file.write("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful." % hydra_timeout)
+                        LOGGER.warning("Hydra took longer than %ds and thereby timed out. Analysis was unsuccessful.", hydra_timeout)
+                CREATED_FILES.append(to_file)
+                redr_file.close()
+                continue
+
             redr_file.close()
             LOGGER.info("Done")
 
@@ -104,7 +130,7 @@ def conduct_analysis(results: list):
         CREATED_FILES.append(VALID_CREDS_FILE)
 
     # return result
-    results.append(result)
+    results.append((ResultType.VULN_SCORE, result))
 
 
 def write_targets_file():
@@ -117,13 +143,13 @@ def write_targets_file():
     with open(HYDRA_TARGETS_FILE, "w") as file:
         for ip, host in HOSTS.items():
             for portid, portinfo in host["tcp"].items():
-                if portid == "22":
+                if portid == "23":
                     file.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
-                elif "service" in portinfo and "ssh" in portinfo["service"].lower():
+                elif "service" in portinfo and "telnet" in portinfo["service"].lower():
                     file.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
-                elif "name" in portinfo and "ssh" in portinfo["name"].lower():
+                elif "name" in portinfo and "telnet" in portinfo["name"].lower():
                     file.write("%s:%s\n" % (ip, portid))
                     wrote_target = True
     return wrote_target
@@ -141,6 +167,7 @@ def cleanup():
     remove_file(HYDRA_TEXT_OUTPUT)
     remove_file(HYDRA_JSON_OUTPUT)
     remove_file(HYDRA_TARGETS_FILE)
+    remove_file(TIMEOUT_FILE)
     if os.path.isdir(HYDRA_OUTPUT_DIR):
         shutil.rmtree(HYDRA_OUTPUT_DIR)
 
@@ -154,6 +181,7 @@ def process_hydra_output(filepath: str):
 
     global CREATED_FILES
 
+    hydra_results = None
     with open(filepath) as file:
         try:
             hydra_results = json.load(file)
@@ -177,10 +205,10 @@ def process_hydra_output(filepath: str):
                     LOGGER.warning("Got JSONDecodeError when parsing %s", filepath)
 
     # extract valid credentials stored in Hydra output
-    if isinstance(hydra_results, list):
+    if hydra_results and isinstance(hydra_results, list):
         for hydra_result in hydra_results:
             process_hydra_result(hydra_result)
-    elif isinstance(hydra_results, dict):
+    elif hydra_results and isinstance(hydra_results, dict):
         process_hydra_result(hydra_results)
     else:
         LOGGER.warning("Cannot parse JSON of Hydra output.")

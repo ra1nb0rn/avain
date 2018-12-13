@@ -16,7 +16,7 @@ DB_FILE = "nvd_db.db3"
 DB_BACKUP_FILE = "nvd_db_bak.db3"
 CREATED_FILES = []
 
-def update_module(results: list):
+def run(results: list):
     """Update the CVE correlation analyzer module"""
     global logger
     if __name__ != "__main__":
@@ -113,8 +113,6 @@ def update_module(results: list):
     if os.path.isfile(DB_BACKUP_FILE):
         os.remove(DB_BACKUP_FILE)
 
-    results.append(None)
-
 def rollback():
     """Rollback the DB / module update"""
     communicate_warning("An error occured, rolling back database update")
@@ -133,4 +131,4 @@ def communicate_warning(msg: str):
         print("Warning: " + msg)
 
 if __name__ == "__main__":
-    update_module([])
+    run([])

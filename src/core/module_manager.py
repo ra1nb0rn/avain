@@ -9,70 +9,104 @@ import shutil
 import threading
 
 import core.utility as util
+from core.result_types import ResultType
+from core.result_processor import InvalidResultException
+from core.scan_result_processor import ScanResultProcessor
+from core.vuln_score_processor import VulnScoreProcessor
 
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572",
                          "\u2502", "\u2571", "\u2500", "\u2572"]
 PRINT_LOCK_ACQUIRE_TIMEOUT = 1  # in s
 DEFAULT_JOIN_TIMEOUT = 0.38
+MODULE_DIR_PREFIX = "modules"
+MODULE_FUNCTION = "run"
+USER_RESULT_DIR = "user_results"
+UPDATE_OUT_DIR = "update_output"
 
-class ModuleManager(metaclass=ABCMeta):
+RESULT_AGGR_DIRS = {ResultType.SCAN: "scan_result_aggregation",
+                    ResultType.VULN_SCORE: "vuln_score_aggregation"}
 
-    def __init__(self, output_dir: str, config: dict, verbose: bool):
-        # assign subclass independent variables directly
-        self.output_dir = output_dir
+class ModuleManager():
+
+    def __init__(self, networks: list, output_dir: str, omit_networks: list, ports: list,
+                 user_results: dict, config: dict, verbose: bool):
+        """ Construct a module manager instance"""
+
+        self.networks = networks
+        self.omit_networks = omit_networks
+        self.ports = ports
+        self.user_results = user_results
         self.config = config
-        self.logger = logging.getLogger(self.__module__)
         self.verbose = verbose
+        self.output_dir = output_dir
+
+        self.hosts = set()
+        self.logger = logging.getLogger(self.__module__)
         self.join_timeout = DEFAULT_JOIN_TIMEOUT
         self.results = {}
-        self.result = {}
+        self._set_modules()
+        self._setup_result_processors()
+        self._add_user_results()
 
-        (self.modules, self.result_filename, self.mgmt_type,
-         self.module_call_func, self.module_dir_prefix,
-         self.run_title_str, self.require_result) = self._assign_init_values()
+    def _set_modules(self):
+        """Assign the modules to use for the assessment"""
 
-    @abstractmethod
+        # actual assessment modules
+        config_modules = self.config["core"].get("modules", None)
+        if config_modules is None:
+            util.printit("Warning: No modules specified in config file(s)\n" +
+                         "Did you modify the default config file?", color=util.RED)
+
+        self.modules = []
+        for module in config_modules.split(","):
+            module_path = os.path.join(MODULE_DIR_PREFIX, module.strip()).replace(".", os.sep)
+            self.modules.append(module_path + ".py")
+
+    def _add_user_results(self):
+        for rtype, result_file in self.user_results.items():
+            relpath, abspath = result_file
+            basename = os.path.basename(abspath)
+            user_result_dir = os.path.join(self.output_dir, USER_RESULT_DIR)
+            copy_path = os.path.join(os.path.join(user_result_dir, rtype.value.lower()), basename)
+            copy_path = ModuleManager.save_copy_file(abspath, copy_path)
+            result = self.result_processors[rtype].parse_result_file(copy_path)
+            self.result_processors[rtype].add_to_results(relpath, result)
+
+    def _setup_result_processors(self):
+        """Setup the different result processors"""
+        self.result_processors = {
+            ResultType.SCAN: ScanResultProcessor(os.path.join(self.output_dir,
+                                                 RESULT_AGGR_DIRS[ResultType.SCAN]), self.config),
+            ResultType.VULN_SCORE: VulnScoreProcessor(os.path.join(self.output_dir,
+                                                      RESULT_AGGR_DIRS[ResultType.VULN_SCORE]))
+        }
+
+    def set_output_dir(self, directory: str):
+        """Change output directory of the module manager (and thereby its result processors)"""
+        self.output_dir = directory
+        for rtype, result_processor in self.result_processors.items():
+            result_processor.set_output_dir(os.path.join(self.output_dir, RESULT_AGGR_DIRS[rtype]))
+
+    @staticmethod
+    def _get_module_name(module_path: str):
+        """Return the name of the module specified by the filepath"""
+
+        module_name = module_path.replace(os.sep, ".")
+        return module_name.replace(".py", "")
+
+    def set_networks(self, networks):
+        self.networks = networks
+
+    def update_modules(self):
+        self.update_modules = ModuleManager.find_all_prefixed_modules("%s/" % MODULE_DIR_PREFIX, "module_updater")
+        self.run_modules(self.update_modules, mtype="update")
+
     def run(self):
-        """Call to invoke a module manager"""
-        raise NotImplementedError
+        self.run_modules(self.modules)
 
-    @abstractmethod
-    def _assign_init_values(self):
+    def run_modules(self, modules, mtype=""):
         """
-        Have subclasses initialize the following instance variables:
-
-        :return: a tuple as (modules, result_filename, mgmt_type, module_call_func,
-                             module_dir_prefix, run_title_str, require_result) with
-                 modules           : the modules to invoke
-                 result_filename   : filename of the module manager's final result
-                 mgmt_type         : the management type to print (e.g. scan or analysis)
-                 module_call_func  : the function for the manager to call when invoking a module
-                 module_dir_prefix : the prefix to strip off a module's (python) path when naming it
-                 run_title_str     : the common title of the status messages printed when running
-                                     modules
-                 require_result    : whether modules need to return a result for success
-        """
-
-        raise NotImplementedError
-
-    @abstractmethod
-    def _set_extra_module_parameters(self, module):
-        """Set more specific parameters for the given module"""
-
-        raise NotImplementedError
-
-    def _handle_results(self, module_id, module_result):
-        """What to do if a module returns a result"""
-        pass
-
-    def _get_call_func(self, module):
-        """Get the given module's signature call function"""
-
-        return getattr(module, self.module_call_func, None)
-
-    def _run_modules(self):
-        """
-        Run the modules stored in self.modules
+        Run the given modules
         """
 
         def get_created_files(module):
@@ -89,22 +123,24 @@ class ModuleManager(metaclass=ABCMeta):
         # create the output directory for all module results
         os.makedirs(self.output_dir, exist_ok=True)
 
-        self.logger.info(self.run_title_str)
-        print(util.BRIGHT_BLUE + self.run_title_str + ":")
-        if len(self.modules) == 1:
-            self.logger.info("1 %s module has been found", self.mgmt_type)
+        if mtype:
+            self.logger.info("Invoking the available %s-modules" % mtype)
+            print(util.BRIGHT_BLUE + "Running the available %s-modules:" % mtype)
         else:
-            self.logger.info("%d %s modules have been found",
-                             len(self.modules), self.mgmt_type)
-        self.logger.debug("The following %s modules have been found: %s",
-                          self.mgmt_type, ", ".join(self.modules))
+            self.logger.info("Invoking the available modules")
+            print(util.BRIGHT_BLUE + "Running the available modules:")
+
+        if len(modules) == 1:
+            self.logger.info("1 module was found")
+        else:
+            self.logger.info("%d modules were found", len(modules))
+        self.logger.debug("The following modules have been found: %s" % ", ".join(modules))
 
         # iterate over all available modules
-        for i, module_path in enumerate(self.modules):
+        for i, module_path in enumerate(modules):
             # get module name
-            module_name = module_path.replace(os.sep, ".")
-            module_name = module_name.replace(".py", "")
-            module_name_no_prefix = module_name.replace(self.module_dir_prefix, "", 1)
+            module_name = self._get_module_name(module_path)
+            module_name_no_prefix = module_name.replace("%s." % MODULE_DIR_PREFIX, "", 1)
 
             # import the respective python module
             module = importlib.import_module(module_name)
@@ -113,21 +149,21 @@ class ModuleManager(metaclass=ABCMeta):
             main_cwd = os.getcwd()
             os.chdir(os.path.dirname(module_path))
 
-            # set the module's parameters (e.g. logfile, config, ... + mgmt-type specific params)
+            # set the module's parameters (e.g. config, verbosity, ...)
             self._set_module_parameters(module)
 
             # setup execution of module with its specific function to run
-            self.logger.info("Starting %s %d of %d - %s",
-                             self.mgmt_type, i+1, len(self.modules), module_name_no_prefix)
-            module_result = []
-            module_func = self._get_call_func(module)
+            self.logger.info("Invoking module %d of %d - %s", i+1,
+                             len(modules), module_name_no_prefix)
+            module_results = []
+            module_func = getattr(module, MODULE_FUNCTION, None)
             if not module_func:
                 self.logger.warning("Module '%s' does not have a '%s' function. Module is skipped.",
-                                    module_name, self.module_call_func)
+                                    module_name, MODULE_FUNCTION)
+                os.chdir(main_cwd)
                 continue
 
-            module_thread = threading.Thread(target=self._get_call_func(module),
-                                             args=(module_result,))
+            module_thread = threading.Thread(target=module_func, args=(module_results,))
 
             # run module
             module_thread.start()
@@ -138,11 +174,10 @@ class ModuleManager(metaclass=ABCMeta):
                 if not util.PRINT_MUTEX.acquire(timeout=PRINT_LOCK_ACQUIRE_TIMEOUT):
                     continue
 
-                print(util.GREEN + "Conducting %s %d of %d - " %
-                      (self.mgmt_type, i+1, len(self.modules)), end="")
+                print(util.GREEN + "Running module %d of %d - " % (i+1, len(modules)), end="")
                 print(util.SANE + module_name_no_prefix + "  ", end="")
                 print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
-                print(util.SANE, end="")  # cleanup colors, if module would like to print
+                print(util.SANE, end="")  # cleanup colors
                 util.clear_previous_line()
 
                 util.PRINT_MUTEX.release()
@@ -152,91 +187,89 @@ class ModuleManager(metaclass=ABCMeta):
                 else:
                     show_progress_state += 1
 
-            if module_result and isinstance(module_result[0], dict) == 1:
-                result = module_result[0]
-            else:
-                self.logger.info("%s module '%s' delivered an unprocessable result. %s",
-                                 self.mgmt_type.capitalize(), module_name,
-                                 "Its results have been discarded.")
-                result = {}
-
-            created_files = get_created_files(module)
-
             # change back into the main directory
             os.chdir(main_cwd)
 
-            self._process_module_result(module_name, result, created_files, module_path)
+            created_files = get_created_files(module)
+            if mtype != "update" and module_results:
+                for i, res in enumerate(module_results):
+                    if not isinstance(res, tuple):
+                        self.logger.warning("Warning - module '%s' returned a non-tuple result: %s", module_name, type(res))
+                        util.printit("Warning - module '%s' returned a non-tuple result: %s\n" %
+                                     (module_name, type(res)), color=util.RED)
+                        del module_results[i]
+                self._process_module_results(module_path, module_results, created_files)
+            elif mtype == "update":
+                update_output_dir = os.path.join(self.output_dir, UPDATE_OUT_DIR)
+                module_output_dir = os.path.join(update_output_dir, os.sep.join(module_name_no_prefix.split(".")[:-1]))
+                os.makedirs(module_output_dir, exist_ok=True)
+                ModuleManager.move_files_to_outdir(created_files, os.path.dirname(module_path), module_output_dir)
+            else:
+                self.logger.info("Module %s did not return any results" % module_name)
 
-            self.logger.info("%s %d of %d done",
-                             self.mgmt_type.capitalize(), i+1, len(self.modules))
+            self.logger.info("Module %d of %d completed", i+1, len(modules))
 
-        if len(self.modules) == 1:
-            print(util.GREEN + "The %s module has completed." % self.mgmt_type)
+        if len(modules) == 1:
+            print(util.GREEN + "The one module has completed.")
         else:
-            print(util.GREEN + "All %d %s modules have completed." %
-                  (len(self.modules), self.mgmt_type))
+            print(util.GREEN + "All %d modules have completed." % len(modules))
         print(util.SANE)
-        self.logger.info("All %s modules have been executed", self.mgmt_type)
+        self.logger.info("All modules have been executed")
 
-    def _process_module_result(self, module_name, result, created_files, module_path):
+    def _process_module_results(self, module_path: str, results: list, created_files: list):
+        """
+        Process the given modules results, i.e. move all result files and parse the main results
+        """
+
         # create output directory for the module's results
-        module_name_short = module_name.replace(self.module_dir_prefix, "", 1)
-        module_output_dir = os.path.join(self.output_dir,
+        module_name = self._get_module_name(module_path)
+        module_name_short = module_name.replace("%s." % MODULE_DIR_PREFIX, "", 1)
+        module_output_dir = os.path.join(self.output_dir, MODULE_DIR_PREFIX)
+        module_output_dir = os.path.join(module_output_dir,
                                          os.sep.join(module_name_short.split(".")[:-1]))
         os.makedirs(module_output_dir, exist_ok=True)
 
-        module_dir = os.path.dirname(module_path)
-        # process the module's potential result
-        if isinstance(result, str):  # if module provides json output file
-            # add result file to created_files (in case module has not)
-            if result not in created_files:
-                created_files.add(result)
+        for rtype, result in results:
+            if rtype in ResultType:
+                # if module provides result as file, parse it to a python data structure
+                is_valid_result, is_file_result = True, False
+                if isinstance(result, str):
+                    try:
+                        result = self.result_processors[rtype].parse_result(result)
+                        is_file_result = True
+                    except InvalidResultException as e:
+                        is_valid_result = False
+                else:
+                    is_valid_result = self.result_processors[rtype].__class__.is_valid_result(result)
 
-            # parse the json output into a python dict
-            result_path = result
-            if not os.path.isabs(result_path):
-                result_path = os.path.join(module_dir, result_path)
-            try:
-                with open(result_path) as file:
-                    self._handle_results(module_path, json.load(file))
-            except Exception as excpt:
-                print(util.RED + "Warning: %s result from module '%s' could not be used.\n" %
-                      (self.mgmt_type, module_name) +
-                      "Only JSON files or python dicts can be used.")
-                print("Exception: %s" % str(excpt))
-                print(util.SANE)
-        elif isinstance(result, dict):  # if module provides output as python dict
-            module_result_path = os.path.join(module_output_dir, "result.json")
-            with open(module_result_path, "w") as file:  # write dict output to json file
-                file.write(json.dumps(result, ensure_ascii=False, indent=3))
-            self._handle_results(module_path, result)
-        elif self.require_result:  # if result cannot be processed, skip this module
-            print(util.RED + "Warning: %s results from module '%s' could not be used.\n" %
-                  (self.mgmt_type, module_name) + "Only JSON files or python dicts can be used.")
-            print(util.SANE)
+                # if result is valid, store it
+                if is_valid_result:
+                    # if not in single network mode, delete hosts outside of the network
+                    if len(self.networks) == 1:
+                        util.del_hosts_outside_net(result, self.networks[0])
+
+                    if not is_file_result:
+                        result_path = os.path.join(module_output_dir, "%s_result.json" % rtype.value.lower())
+                        self.result_processors[rtype].store_result(result, result_path)
+                        if not result_path in created_files:
+                            created_files.append(result_path)
+
+                    self.result_processors[rtype].add_to_results(module_path, result)
+                else:
+                    self.logger.warning("Warning - module '%s' returned an unprocessable %s result: %s\n",
+                                        module_name, rtype.value, result)
+                    util.printit("Warning - module '%s' returned an unprocessable %s result: %s\n" %
+                                 (module_name, rtype.value, result), color=util.RED)
+            else:
+                self.logger.warning("Warning - module '%s' returned a result with unknown type: %s\n",
+                                    module_name, rtype.value)
+                util.printit("Warning - module '%s' returned a result with unknown type: %s\n" %
+                             (module_name, rtype.value), color=util.RED)
 
         # move all created files into the output directory of the current module
         ModuleManager.move_files_to_outdir(created_files, os.path.dirname(module_path),
                                            module_output_dir)
 
-    def _set_module_parameters(self, module):
-        """
-        Set the given modules's parameters depening on which parameters it has declared.
-
-        :param module: the module whose parameters to set
-        """
-        all_module_attributes = [attr_tuple[0] for attr_tuple in inspect.getmembers(module)]
-
-        if "VERBOSE" in all_module_attributes:
-            module.VERBOSE = self.verbose
-
-        if "CONFIG" in all_module_attributes:
-            module.CONFIG = self.config.get(module.__name__, {})
-
-        if "CORE_CONFIG" in all_module_attributes:
-            module.CONFIG = copy.deepcopy(self.config.get("core", {}))
-
-        self._set_extra_module_parameters(module)
 
     @staticmethod
     def move_files_to_outdir(created_files: list, module_dir: str, module_output_dir: str):
@@ -254,6 +287,129 @@ class ModuleManager(metaclass=ABCMeta):
                 abs_file = os.path.join(module_dir, file)
                 if os.path.isfile(abs_file):
                     shutil.move(abs_file, file_out_path)
+
+    @staticmethod
+    def save_copy_file(infile: str, outfile: str):
+        # Find a unique name for the file when it is copied to the result directory
+        i = 1
+        while os.path.isfile(outfile):
+            outname, ext = os.path.splitext(os.path.basename(outfile))
+            outdir = os.path.dirname(outfile)
+            if not outname.endswith("_%d" % i):
+                # remove number from last iteration if exists
+                if outname.endswith("_%d" % (i-1)):
+                    outname = outname[:outname.rfind("_%d" % (i-1))]
+                outfile = os.path.join(outdir, outname + "_%d" % i + ext)
+            i += 1
+        # Copy and load the file result
+        os.makedirs(os.path.dirname(outfile), exist_ok=True)
+        shutil.copyfile(infile, outfile)
+        return outfile
+
+    def get_network_vuln_score(self):
+        if ResultType.VULN_SCORE in self.results:
+            return self.results[ResultType.VULN_SCORE]
+        return "N/A"
+
+    def store_results(self):
+        # store results in files
+        for rtype, result in self.results.items():
+            filename = os.path.join(self.result_processors[rtype].output_dir,
+                                    rtype.value.lower() + "_result.json")
+            self.result_processors[rtype].store_aggregated_result(result, filename)
+
+    def create_results(self):
+        for rtype, result_processor in self.result_processors.items():
+            self.results[rtype] = result_processor.aggregate_results()
+
+    def get_results(self):
+        return copy.deepcopy(self.results)
+
+    def print_results(self):
+        rtypes = [rtype.strip() for rtype in self.config["core"].get("print_result_types", "").split(",")]
+        for rtype, result in self.results.items():
+            if rtype.value in rtypes:
+                util.printit("%s Result:" % rtype.value, color=util.BRIGHT_BLUE)
+                self.result_processors[rtype].print_aggr_result(result)
+                print()
+
+    def reset_results(self):
+        for _, result_processor in self.result_processors.items():
+            result_processor.reset()
+            if os.path.isdir(result_processor.output_dir):
+                if not os.listdir(result_processor.output_dir):
+                    shutil.rmtree(result_processor.output_dir)
+        self.results = {}
+
+    def _set_module_parameters(self, module):
+        """
+        Set the given modules's parameters depening on which parameters it has declared.
+
+        :param module: the module whose parameters to set
+        """
+        all_module_attributes = [attr_tuple[0] for attr_tuple in inspect.getmembers(module)]
+
+        # "normal" parameters
+        if "VERBOSE" in all_module_attributes:
+            module.VERBOSE = self.verbose
+
+        if "CONFIG" in all_module_attributes:
+            module_name = module.__name__.replace("modules.", "", 1)
+            module.CONFIG = self.config.get(module_name, {})
+
+        if "CORE_CONFIG" in all_module_attributes:
+            module.CONFIG = copy.deepcopy(self.config.get("core", {}))
+
+        if "NETWORKS" in all_module_attributes:
+            module.NETWORKS = copy.deepcopy(self.networks)
+
+        if "OMIT_NETWORKS" in all_module_attributes:
+            module.OMIT_NETWORKS = copy.deepcopy(self.omit_networks)
+
+        if "PORTS" in all_module_attributes:
+            module.PORTS = copy.deepcopy(self.ports)
+
+        if "HOSTS" in all_module_attributes:
+            self._extend_networks_to_hosts()
+            module.HOSTS = copy.deepcopy(self.hosts)
+
+        # intermediate results
+        if "PUT_RESULT_TYPES" in all_module_attributes:
+            intermediate_results = {}
+            for rtype in module.PUT_RESULT_TYPES:
+                if rtype in ResultType or rtype in ResultType.values():
+                    intermediate_results[rtype] = copy.deepcopy(self.result_processors[rtype].aggregate_results())
+                else:
+                    util.printit("Warning - module '%s' requested an intermediate result " % module_name +
+                                 "with an unknown type: %s\n" % rtype, color=util.RED)
+            if "PUT_RESULTS" in all_module_attributes:
+                module.PUT_RESULTS = intermediate_results
+
+    def _extend_networks_to_hosts(self):
+        """
+        Parse the network strings of the main network, the additional networks and the networks
+        to omit into an enumeration of all hosts to analyse.
+        """
+
+        def add_to_hosts(network):
+            hosts = util.extend_network_to_hosts(network)
+            if isinstance(hosts, list):
+                self.hosts |= set(hosts)
+            else:
+                self.hosts.add(hosts)
+
+        if not self.hosts:
+            for net in self.networks:
+                add_to_hosts(net)
+
+            for network in self.omit_networks:
+                hosts = util.extend_network_to_hosts(network)
+                if isinstance(hosts, list):
+                    self.hosts = self.hosts - set(hosts)
+                else:
+                    self.hosts.remove(hosts)
+
+            self.hosts = list(self.hosts)
 
     @staticmethod
     def find_all_prefixed_modules(start_dir: str, prefix: str):

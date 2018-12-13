@@ -7,6 +7,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 from core import utility as util
+from core.result_types import ResultType
 
 XML_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.xml"
 TEXT_NMAP_OUTPUT_PATH = "raw_nmap_scan_results.txt"
@@ -26,7 +27,7 @@ CREATED_FILES = []  # stores created intermediate files
 LOGGER = None
 
 
-def conduct_scan(results: list):
+def run(results: list):
     """
     Scan the above specified networks with Nmap and process the results.
     """
@@ -76,7 +77,7 @@ def conduct_scan(results: list):
     CREATED_FILES.append(OS_SELECTION_SCORES_PATH)
 
     LOGGER.info("Done")
-    results.append(result)
+    results.append((ResultType.SCAN, result))
 
 
 def create_nmap_call():

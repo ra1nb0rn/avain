@@ -63,7 +63,8 @@ elif [ "${KERNEL}" == "Linux" ]; then
     echo "Using packet manager: apt"
     install_apt_packages
 else
-    printf "Could not identify running OS.\\nPlease install software packages manually."
+    printf "Could not identify running OS.\\nPlease install AVAIN manually."
+    exit 1
 fi
 
 echo ""
@@ -110,6 +111,7 @@ echo ""
 CWD=$(pwd)
 find src/modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
     cd "$(dirname ${file})"
+    pwd
     ./avain_build.sh
     if [ $? != 0 ]; then
         printf "Could not successfully build module in %s\\n\\n" "$(dirname "${file}")"

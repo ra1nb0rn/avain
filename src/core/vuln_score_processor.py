@@ -2,62 +2,53 @@ import copy
 import inspect
 import json
 import os
+import pprint
 
-from core.module_manager_feedback import ModuleManagerFeedback
-from core.module_manager import ModuleManager
+from core.result_processor import ResultProcessor
+import core.utility as util
 
-ADDITIONAL_RESULTS_DIR = "add_analysis_results"
 HOST_SCORES_FILE = "host_scores.json"
 MODULE_SCORES_FILE = "module_scores.json"
 
-class Analyzer(ModuleManagerFeedback):
+class VulnScoreProcessor(ResultProcessor):
 
-    def __init__(self, output_dir: str, config: dict, verbose: bool,
-                 add_results: list, hosts: dict):
-        """
-        Create an Analyzer object to analyze the given hosts.
+    def __init__(self, output_dir: str, results: dict = None):
+        super().__init__(output_dir, results)
 
-        :param output_dir: A string specifying the output directory of the analysis
-        :param config: The used config
-        :param verbose: Specifies whether to provide verbose output or not
-        :param add_results: additional result files to include into the result
-        :param hosts: The hosts to analyze for vulnerabilities
-        """
+    def is_valid_result(result):
+        if not isinstance(result, dict):
+            return False
 
-        super().__init__(output_dir, config, verbose, add_results)
-        self.hosts = hosts
+        for key, value in result.items():
+            if (not util.is_ipv4(key)) and (not util.is_ipv6(key)):
+                return False
 
-    def _assign_init_values(self):
-        modules = ModuleManager.find_all_prefixed_modules("modules/analyzer", "analyzer")
-        return (modules, "results.json", "analysis", "conduct_analysis", "modules.analyzer.",
-                "Starting host analyses", True)
+            if ((not isinstance(value, float)) and (not isinstance(value, int))
+                and (not isinstance(value, str))):
+                return False
+        return True
 
-    def _assign_add_results_dir(self):
-        return ADDITIONAL_RESULTS_DIR
+    @staticmethod
+    def print_result(result: dict):
+        pprint.pprint(result)
 
-    def _only_result_files(self):
-        return False
+    @staticmethod
+    def parse_result_file(filepath: str):
+        return ResultProcessor.parse_result_from_json_file(filepath)
 
-    def _sort_results(self):
-        pass
+    @staticmethod
+    def store_result(result: dict, filepath: str):
+        """Store the given result at the specified location"""
 
-    def _cleanup(self):
-        pass
+        VulnScoreProcessor.store_json_convertable_result(result, filepath)
 
-    def _add_to_results(self, module_id, module_result):
-        self.results[module_id] = module_result
+    @staticmethod
+    def store_aggregated_result(aggr_result, filepath: str):
+        """Store the given aggregated result at the specified location"""
 
-    def _set_extra_module_parameters(self, module):
-        """
-        Set the given modules's analysis parameters depening on which parameters it has declared.
+        result = [aggr_result]
+        VulnScoreProcessor.store_json_convertable_result(result, filepath)
 
-        :param module: the module whose analysis parameters to set
-        """
-
-        all_module_attributes = [attr_tuple[0] for attr_tuple in inspect.getmembers(module)]
-
-        if "HOSTS" in all_module_attributes:
-            module.HOSTS = copy.deepcopy(self.hosts)
 
     def _save_module_scores(self, hosts: list):
         """
@@ -76,11 +67,6 @@ class Analyzer(ModuleManagerFeedback):
         module_scores = {}
 
         for module, result in self.results.items():
-            # assume file prefix "modules/analyzer/" and extension ".py"
-            module = module[len("modules/analyzer/"):]
-            module = module[:-len(".py")]
-            module = module.replace("/", ".")
-
             # save existent scores
             for host, score in result.items():
                 add_module_result()
@@ -92,11 +78,12 @@ class Analyzer(ModuleManagerFeedback):
                     add_module_result()
 
         # dump module scores to file
+        module_scores = ResultProcessor.sort_result_by_ip(module_scores)
         module_scores_file = os.path.join(self.output_dir, MODULE_SCORES_FILE)
         with open(module_scores_file, "w") as file:
             file.write(json.dumps(module_scores, ensure_ascii=False, indent=3))
 
-    def _construct_result(self):
+    def aggregate_results(self):
         """
         Accumulate the results from all the different analysis modules into one analysis result.
 
@@ -162,7 +149,7 @@ class Analyzer(ModuleManagerFeedback):
         if len(self.results) == 1:
             host_scores = self.results[list(self.results.keys())[0]]
         else:
-            host_scores = aggregate_module_scores(self.results)
+            host_scores = ResultProcessor.sort_result_by_ip(aggregate_module_scores(self.results))
 
         result = aggregate_host_scores(host_scores)
 

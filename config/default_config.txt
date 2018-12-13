@@ -5,28 +5,30 @@
 
 // here defined are default configuration settings
 [core]
-scan_modules = ALL  // the list of scanner modules to use (in order), or ALL
+// the list of modules to use (in order)
+modules = nmap.avain_nmap, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
 default_trust = 3
 scan_aggregation_scheme = TRUST_AGGR  // possible values --> {TRUST_MAX, TRUST_AGGR}
 DB_expire = 20160  // in minutes, i.e. every other week
+print_result_types = SCAN
 
 // here defined are module specific configuration settings
-[modules.scanner.nmap.scanner_nmap]
+[nmap.avain_nmap]
 // add_nmap_params = "--max-rtt-timeout 100ms --max-retries 1"  // additional Nmap params
 scan_type = "SU"  // SYN scan and UDP scan require root privileges
 fast_scan = False  // whether Nmap should use T5 and F option as speedup
 add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use
 
-[modules.analyzer.cve_correlation.analyzer_cve_correlation]
+[cve_correlation.avain_cve_correlation]
 DB_expire = 10080  // in minutes, i.e. every week
 skip_os = False  // whether to skip OS CVE analysis --> {True, False}
 max_cve_count = -1  // the maximum number of CVEs to retrieve; -1 for unlimited
 squash_cpes = True  // whether to squash every discovered CPE in case of invalid CPE
 allow_versionless_search = True  // whether to fully search for CVEs when CPE has no version
 
-[modules.analyzer.login_bruteforce.hydra_ssh.analyzer]
+[login_bruteforce.hydra_ssh.avain]
 wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
 
-[modules.analyzer.login_bruteforce.hydra_telnet.analyzer]
+[login_bruteforce.hydra_telnet.avain]
 wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
 timeout = 300  // Hydra timeout in seconds (if Telnet bruteforce does not work)

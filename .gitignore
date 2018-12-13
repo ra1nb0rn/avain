@@ -3,6 +3,6 @@ __pycache__
 avain_output-*
 avain
 resources/official-cpe-dictionary_v2.2.xml
-src/modules/analyzer/cve_correlation/create_db
-src/modules/analyzer/cve_correlation/db_creation_src/build/
-src/modules/analyzer/cve_correlation/nvd_db.db3
+src/modules/cve_correlation/create_db
+src/modules/cve_correlation/db_creation_src/build/
+src/modules/cve_correlation/nvd_db.db3
