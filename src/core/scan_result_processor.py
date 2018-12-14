@@ -16,7 +16,6 @@ class ScanResultProcessor(ResultProcessor):
 
     def __init__(self, output_dir: str, config: dict, results: dict = None):
         super().__init__(output_dir, results)
-        os.makedirs(output_dir, exist_ok=True)
         self.config = config
 
         if "default_trust" in self.config["core"]:
