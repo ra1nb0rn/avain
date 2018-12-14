@@ -274,11 +274,15 @@ class ModuleManager():
     @staticmethod
     def move_files_to_outdir(created_files: list, module_dir: str, module_output_dir: str):
         """ Move all files in created_files from module_dir to module_output_dir. """
+
         for file in created_files:
-            rel_dir = os.path.dirname(file)
-            if os.path.isabs(rel_dir):
-                rel_dir = os.path.relpath(rel_dir, os.path.abspath(module_dir))
-            file_out_dir = os.path.join(module_output_dir, rel_dir)
+            if os.path.isabs(module_output_dir):
+                file_out_dir = module_output_dir
+            else:
+                rel_dir = os.path.dirname(file)
+                if os.path.isabs(rel_dir):
+                    rel_dir = os.path.relpath(rel_dir, os.path.abspath(module_dir))
+                file_out_dir = os.path.join(module_output_dir, rel_dir)
             os.makedirs(file_out_dir, exist_ok=True)
             file_out_path = os.path.join(file_out_dir, os.path.basename(file))
             if os.path.isabs(file) and os.path.isfile(file):
