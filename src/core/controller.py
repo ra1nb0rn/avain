@@ -169,7 +169,7 @@ class Controller():
         else:
             # if there are multiple scans, place results into separate directory
             for i, net in enumerate(networks):
-                util.printit("Assessment of network %s" % net, color=util.YELLOW)
+                util.printit("Assessment of network '%s':" % net, color=util.YELLOW)
                 util.printit("===========================================", color=util.YELLOW)
                 net_dir_map[net] = "network_%d" % (i + 1)
                 score = do_network_assessment([net], os.path.join(self.output_dir, net_dir_map[net]))
