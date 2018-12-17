@@ -30,7 +30,7 @@ class Cli():
                                          "Networks - A toolkit for automatically assessing " +
                                          "the securtiy level of an IoT network", prog="avain")
         optional_args = parser._action_groups.pop()
-        required_args = parser.add_argument_group("required arguments")
+        required_args = parser.add_argument_group("required arguments (at least one)")
         parser._action_groups.append(optional_args)
 
         required_args.add_argument("-n", "--networks", nargs="+", help="specify networks to scan " +
@@ -39,6 +39,11 @@ class Cli():
                                    "to include into or exclude from the scan")
         required_args.add_argument("-uM", "--update-modules", action="store_true", help="make " +
                                    "the modules that have an update mechanism update")
+        for rtype, args in USER_RESULT_ARGS.items():
+            required_args.add_argument(args[0], args[1], nargs="+", help="specify additional " +
+                                       "%s results to include into the final scan result" %
+                                       rtype.value)
+
         optional_args.add_argument("-c", "--config", help="specify a config file to use")
         optional_args.add_argument("-o", "--output", help="specify the output folder name")
         optional_args.add_argument("-p", "--ports", help="specify which ports to scan on every host")
@@ -46,11 +51,6 @@ class Cli():
                                    "in single network mode meaning that all specified networks " +
                                    "are considered to be a subnet of one common supernet")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
-
-        for rtype, args in USER_RESULT_ARGS.items():
-            optional_args.add_argument(args[0], args[1], nargs="+", help="specify additional " +
-                                       "%s results to include into the final scan result" % 
-                                       rtype.value)
 
         self.args = parser.parse_args()
         self.parse_user_results(parser)
