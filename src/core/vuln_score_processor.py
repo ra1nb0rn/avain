@@ -31,10 +31,6 @@ class VulnScoreProcessor(ResultProcessor):
         pprint.pprint(result)
 
     @staticmethod
-    def parse_result_file(filepath: str):
-        return ResultProcessor.parse_result_from_json_file(filepath)
-
-    @staticmethod
     def store_result(result: dict, filepath: str):
         """Store the given result at the specified location"""
 
@@ -47,6 +43,8 @@ class VulnScoreProcessor(ResultProcessor):
         result = [aggr_result]
         VulnScoreProcessor.store_json_convertable_result(result, filepath)
 
+    def parse_result_file(self, filepath: str):
+        return self.parse_result_from_json_file(filepath)
 
     def _save_module_scores(self, hosts: list):
         """

@@ -29,9 +29,32 @@ class ResultProcessor(metaclass=ABCMeta):
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
+    def parse_result_from_json_file(self, filepath: str):
+        if not os.path.isfile(filepath):
+            self.logger.warning("Specified result '%s' is not a file", filepath)
+            raise InvalidResultException(filepath, "File does not exist")
+
+        try:
+            with open(filepath) as file:
+                try:
+                    return json.load(file)
+                except json.decoder.JSONDecodeError:
+                    self.logger.warning("JSON of custom result stored in '%s' cannot be parsed",
+                                        filepath)
+                    raise InvalidResultException(filepath, "Json file cannot be parsed")
+        except IOError:
+            self.logger.warning("Specified custom result '%s' cannot be opened", filepath)
+            raise InvalidResultException(filepath, "File cannot be opened")
+
     @abstractmethod
     def aggregate_results(self):
         """Aggregate the given results to one (representative) result"""
+
+        raise NotImplementedError
+
+    @abstractmethod
+    def parse_result_file(self, filepath: str):
+        """Return the type of results the processor class handles"""
 
         raise NotImplementedError
 
@@ -40,13 +63,6 @@ class ResultProcessor(metaclass=ABCMeta):
     def is_valid_result(result):
         """Return True if the result is valid"""
         
-        raise NotImplementedError
-
-    @staticmethod
-    @abstractmethod
-    def parse_result_file(filepath: str):
-        """Return the type of results the processor class handles"""
-
         raise NotImplementedError
 
     @staticmethod
@@ -86,26 +102,6 @@ class ResultProcessor(metaclass=ABCMeta):
         return sorted_result
 
     @staticmethod
-    def parse_result_from_json_file(filepath: str):
-        if not os.path.isfile(filepath):
-            self.logger.warning("Specified result '%s' is not a file", filepath)
-            raise InvalidResultException(filepath, "File does not exist")
-
-        try:
-            with open(filepath) as file:
-                try:
-                    return json.load(file)
-                except json.decoder.JSONDecodeError:
-                    self.logger.warning("JSON of %s result stored in '%s' cannot be parsed",
-                                        self.classname, filepath)
-                    raise InvalidResultException(filename, "Json file cannot be parsed")
-        except IOError:
-            self.logger.warning("Specified %s result '%s' cannot be opened",
-                                self.classname, filepath)
-            raise InvalidResultException(filename, "File cannot be opened")
-
-
-    @staticmethod
     def store_json_convertable_result(result: dict, filepath: str):
         """Store the given result at the specified location"""
 
@@ -118,3 +114,6 @@ class InvalidResultException(Exception):
     def __init__(self, result, message: str):
         self.result = result
         self.message = message
+
+    def __str__(self):
+        return "%s: %s" % (self.message, self.result)

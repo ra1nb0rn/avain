@@ -31,10 +31,6 @@ class ScanResultProcessor(ResultProcessor):
         self.results[result_id] = result
 
     @staticmethod
-    def parse_result_file(filepath: str):
-        return ResultProcessor.parse_result_from_json_file(filepath)
-
-    @staticmethod
     def print_result(result: dict):
         pprint.pprint(result)
 
@@ -53,6 +49,9 @@ class ScanResultProcessor(ResultProcessor):
         """Store the given aggregated result at the specified location"""
 
         ScanResultProcessor.store_json_convertable_result(aggr_result, filepath)
+
+    def parse_result_file(self, filepath: str):
+        return self.parse_result_from_json_file(filepath)
 
     def aggregate_results(self):
         """

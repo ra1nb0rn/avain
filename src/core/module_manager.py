@@ -67,8 +67,11 @@ class ModuleManager():
             user_result_dir = os.path.join(self.output_dir, USER_RESULT_DIR)
             copy_path = os.path.join(os.path.join(user_result_dir, rtype.value.lower()), basename)
             copy_path = ModuleManager.save_copy_file(abspath, copy_path)
-            result = self.result_processors[rtype].parse_result_file(copy_path)
-            self.result_processors[rtype].add_to_results(relpath, result)
+            try:
+                result = self.result_processors[rtype].parse_result_file(copy_path)
+                self.result_processors[rtype].add_to_results(relpath, result)
+            except InvalidResultException as e:
+                util.printit(e, color=util.RED)
 
     def _setup_result_processors(self):
         """Setup the different result processors"""
