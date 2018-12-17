@@ -457,11 +457,12 @@ class ScanResultProcessor(ResultProcessor):
             return True
 
         def check_cpes(node: dict):
-            if "cpes" in node and (not isinstance(node["cpes"], list)):
-                return False
-            for cpe in node["cpes"]:
-                if not isinstance(cpe, str):
+            if "cpes" in node:
+                if (not isinstance(node["cpes"], list)):
                     return False
+                for cpe in node["cpes"]:
+                    if not isinstance(cpe, str):
+                        return False
             return True
 
         def check_protocol(protocol: str):
@@ -490,7 +491,8 @@ class ScanResultProcessor(ResultProcessor):
             if (not util.is_ipv4(key)) and (not util.is_ipv6) and (not key == "trust"):
                 return False
 
-            if key == "trust" and (not isinstance(value, float)) and (not isinstance(value, str)):
+            if (key == "trust" and (not isinstance(value, float)) and (not isinstance(value, float))
+                and (not isinstance(value, str))):
                 return False
             else:
                 if not isinstance(value, dict):
