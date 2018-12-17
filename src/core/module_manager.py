@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import importlib
 import inspect
 import logging
@@ -251,6 +252,10 @@ class ModuleManager():
 
                     if not is_file_result:
                         result_path = os.path.join(module_output_dir, "%s_result.json" % rtype.value.lower())
+                        if os.path.isfile(result_path):
+                            base, ext = os.path.splitext(result_path)
+                            name_hash = hashlib.sha256(module_name_short.encode()).hexdigest()[:5]
+                            result_path = base + name_hash + ext
                         self.result_processors[rtype].store_result(result, result_path)
                         if not result_path in created_files:
                             created_files.append(result_path)
