@@ -54,31 +54,6 @@ class ScanResultProcessor(ResultProcessor):
 
         ScanResultProcessor.store_json_convertable_result(aggr_result, filepath)
 
-    def _extend_networks_to_hosts(self):
-        """
-        Parse the network strings of the main network, the additional networks and the networks
-        to omit into an enumeration of all hosts to analyse.
-        """
-
-        def add_to_hosts(network):
-            hosts = util.extend_network_to_hosts(network)
-            if isinstance(hosts, list):
-                self.hosts |= set(hosts)
-            else:
-                self.hosts.add(hosts)
-
-        for net in self.networks:
-            add_to_hosts(net)
-
-        for network in self.omit_networks:
-            hosts = util.extend_network_to_hosts(network)
-            if isinstance(hosts, list):
-                self.hosts = self.hosts - set(hosts)
-            else:
-                self.hosts.remove(hosts)
-
-        self.hosts = list(self.hosts)
-
     def aggregate_results(self):
         """
         Accumulate all retrieved scan results to one scan result.
