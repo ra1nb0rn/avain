@@ -82,7 +82,7 @@ class ScanResultProcessor(ResultProcessor):
 
     def aggregate_results(self):
         """
-        Accumulate the results from all the different scanner modules into one scanning result.
+        Accumulate all retrieved scan results to one scan result.
 
         :return: a dict having host IPs as keys and their scan results as values
         """
