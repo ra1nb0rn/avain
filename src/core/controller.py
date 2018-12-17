@@ -4,8 +4,6 @@ import os
 import sys
 
 from core.module_manager import ModuleManager
-from core.scan_result_processor import ScanResultProcessor
-from core.vuln_score_processor import VulnScoreProcessor
 import core.utility as util
 import core.visualizer as visualizer
 
