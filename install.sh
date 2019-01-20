@@ -111,7 +111,6 @@ echo ""
 CWD=$(pwd)
 find src/modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
     cd "$(dirname ${file})"
-    pwd
     ./avain_build.sh
     if [ $? != 0 ]; then
         printf "Could not successfully build module in %s\\n\\n" "$(dirname "${file}")"
