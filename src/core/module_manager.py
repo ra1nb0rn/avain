@@ -126,11 +126,11 @@ class ModuleManager():
         os.makedirs(self.output_dir, exist_ok=True)
 
         if mtype:
-            self.logger.info("Invoking the available %s-modules" % mtype)
-            print(util.BRIGHT_BLUE + "Running the available %s-modules:" % mtype)
+            self.logger.info("Invoking the specified %s-modules" % mtype)
+            print(util.BRIGHT_BLUE + "Running the specified %s-modules:" % mtype)
         else:
-            self.logger.info("Invoking the available modules")
-            print(util.BRIGHT_BLUE + "Running the available modules:")
+            self.logger.info("Invoking the specified modules")
+            print(util.BRIGHT_BLUE + "Running the specified modules:")
 
         if len(modules) == 1:
             self.logger.info("1 module was found")
@@ -138,7 +138,7 @@ class ModuleManager():
             self.logger.info("%d modules were found", len(modules))
         self.logger.debug("The following modules have been found: %s" % ", ".join(modules))
 
-        # iterate over all available modules
+        # iterate over all specified modules
         for i, module_path in enumerate(modules):
             # get module name
             module_name = self._get_module_name(module_path)
