@@ -21,7 +21,7 @@ if __name__ != "__main__":
 if __name__ != "__main__":
     PUT_RESULT_TYPES = [ResultType.SCAN]  # get the current scan result
     PUT_RESULTS = {}
-VERBOSE = False  # specifying whether to provide verbose output or not
+VERBOSE = False  # specifies whether to provide verbose output or not
 CONFIG = {}
 
 CREATED_FILES = []
@@ -526,18 +526,22 @@ def gather_cve_cpe_information(cpe: str):
         nonlocal general_cpe, cpe_version, values
 
         parse_cpe_dict()
+        found_more_precise = False
         for cpe_item in CPE_DICT_ET_CPE_ITEMS:
             dict_cpe = cpe_item.attrib["name"]
             dict_cpe_fields = dict_cpe[7:].split(":")
             dict_general_cpe = dict_cpe[:7] + ":".join(dict_cpe_fields[:2])
 
             if len(dict_cpe_fields) > 2:
-                if general_cpe == dict_general_cpe and is_neq_prefix(cpe_version, dict_cpe_fields[2]):
-                    return True
+                if general_cpe == dict_general_cpe:
+                    if cpe_version == dict_cpe_fields[2]:  # if exact CPE version match found, version is not broad
+                        return False
+                    elif is_neq_prefix(cpe_version, dict_cpe_fields[2]):
+                        found_more_precise = True
             if len(values) > 3 and dict_cpe.startswith((general_cpe + ":" + cpe_version + ":")):
-                return True
+                found_more_precise = True
 
-        return False
+        return found_more_precise
 
     def is_unknown_version():
         """
