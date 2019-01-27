@@ -80,7 +80,7 @@ avain_output-20180905_005831
 ├── scan_result_aggregation
 ├── vuln_score_aggregation
 ├── avain.log
-└── network_vulnerability_ratings.json   
+└── network_vulnerability_ratings.json
 ```
 
 AVAIN's log ``avain.log`` and the final results as ``network_vulnerability_ratings.json`` are clearly visible on the first directory level. The remaining files are put into a ``modules`` subdirectory, a ``user_results`` subdirectory and several result aggregation subdirectories, one for every type of result. As stated above, AVAIN keeps all (intermediate) results, as can be seen with all of the found CVEs stored within the ``cve_correlation`` module's subdirectory.
@@ -105,7 +105,7 @@ For the the current two result types, AVAIN uses JSON (or Python dicts) as a com
 
 ### Scan Results
 An example scan result could look like to following (as JSON):
-```
+```json
 {
    "192.168.178.36": {
       "os": {
@@ -145,7 +145,7 @@ As the interfacing language between the core and modules is Python, intermediate
 
 ### Vulnerability Score Results
 Vulnerability score results have to be in a specific format as well. In comparison to the scan results, the format is fairly simple. An example result could be:
-```
+```json
 {
     "192.168.0.24": 6.8,
     "192.168.0.42": 7.9,
@@ -175,12 +175,14 @@ There are two ways a module can receive parameters from the core: configuration 
     * ``PORTS`` &ndash; A list of ports to scan, possibly containing the prefix "T" for TCP or "U" for UDP as well a range of ports to scan
     * ``HOSTS`` &ndash; A list of all (pure) host addresses to scan, **not** containing any wildcards or prefixes
 
-Furthermore, to retrieve any of the shared results, modules have to define which kind of results they want to retrieve, as well as a variable to store them in. The list ``PUT_RESULT_TYPES`` has to store the types of results, while the dictionary ``PUT_RESULTS`` can be an empty dict in which the aggregated results will be stored in under their type as key from the enum in ``core/result_types.py`` . Example:
+Furthermore, to retrieve any of the intermediate / shared results, modules have to define which kind of results they want to retrieve as well as a variable to store them in. This can be done by defining the global dict ``INTERMEDIATE_RESULTS`` and putting into it the requested types of intermediate results as keys. The available results types are defined in ``core/result_types.py`` as enum. Example:
+```python
+INTERMEDIATE_RESULTS = {ResultType.SCAN: None}  # get the current SCAN result
 ```
-PUT_RESULT_TYPES = [ResultType.SCAN]  # get the current scan result
-PUT_RESULTS = {}  # aggregation of all available scan results will be put here
+Alternatively to the enum keys, their values can be put into the dict of intermediate results. Example:
+```python
+INTERMEDIATE_RESULTS = {"SCAN": None}  # get the current SCAN result
 ```
-
 
 
 ## Configuration Files <a id="config_expl"></a>
@@ -208,12 +210,12 @@ As an example, at the beginning of the excerpt the modules AVAIN should run (in 
 
 ### Logging
 Every module has the ability to log events. First a logger needs to be setup. This can be done simply with:
-```
+```python
 import logging
 logger = logging.getLogger(__name__)
 ```
 Once set up, the logger can be used like this:
-```
+```python
 logger.info("Starting the Nmap scan")
 ```
 

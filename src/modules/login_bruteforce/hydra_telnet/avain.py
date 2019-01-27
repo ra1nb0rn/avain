@@ -15,8 +15,7 @@ TIMEOUT_FILE = "timeout.txt"
 VALID_CREDS_FILE = "valid_credentials.txt"
 
 # Module parameters
-PUT_RESULT_TYPES = [ResultType.SCAN]  # get the current scan result
-PUT_RESULTS = {}
+INTERMEDIATE_RESULTS = {ResultType.SCAN: None}  # get the current scan result
 VERBOSE = False  # specifying whether to provide verbose output or not
 CONFIG = None  # the configuration to use
 
@@ -41,7 +40,7 @@ def run(results: list):
     # setup logger
     global HOSTS, LOGGER, CREATED_FILES
 
-    HOSTS = PUT_RESULTS[ResultType.SCAN]
+    HOSTS = INTERMEDIATE_RESULTS[ResultType.SCAN]
     LOGGER = logging.getLogger(__name__)
     LOGGER.info("Starting with Mirai Telnet susceptibility analysis")
 

@@ -384,16 +384,20 @@ class ModuleManager():
             module.HOSTS = copy.deepcopy(self.hosts)
 
         # intermediate results
-        if "PUT_RESULT_TYPES" in all_module_attributes:
+        if "INTERMEDIATE_RESULTS" in all_module_attributes:
             intermediate_results = {}
-            for rtype in module.PUT_RESULT_TYPES:
-                if rtype in ResultType or rtype in ResultType.values():
+            for rtype in module.INTERMEDIATE_RESULTS:
+                if rtype in ResultType:
                     intermediate_results[rtype] = copy.deepcopy(self.result_processors[rtype].aggregate_results())
                 else:
-                    util.printit("Warning - module '%s' requested an intermediate result " % module_name +
-                                 "with an unknown type: %s\n" % rtype, color=util.RED)
-            if "PUT_RESULTS" in all_module_attributes:
-                module.PUT_RESULTS = intermediate_results
+                    rtype_keys = list(filter(lambda item: item.value==rtype, ResultType))
+                    if rtype_keys:
+                        rtype_key = rtype_keys[0]
+                        intermediate_results[rtype] = copy.deepcopy(self.result_processors[rtype_key].aggregate_results())
+                    else:
+                        util.printit("Warning - module '%s' requested an intermediate result " % module_name +
+                                     "with an unknown type: %s\n" % rtype, color=util.RED)
+            module.INTERMEDIATE_RESULTS = intermediate_results
 
     def _extend_networks_to_hosts(self):
         """

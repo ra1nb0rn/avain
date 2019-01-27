@@ -19,8 +19,8 @@ if __name__ != "__main__":
 
 # Parameter definition
 if __name__ != "__main__":
-    PUT_RESULT_TYPES = [ResultType.SCAN]  # get the current scan result
-    PUT_RESULTS = {}
+    INTERMEDIATE_RESULTS = {ResultType.SCAN: None}  # get the current scan result
+
 VERBOSE = False  # specifies whether to provide verbose output or not
 CONFIG = {}
 
@@ -68,7 +68,7 @@ def run(results: list):
     LOGGER = logging.getLogger(__name__)
     LOGGER.info("Starting with CVE analysis")
 
-    hosts = PUT_RESULTS[ResultType.SCAN]
+    hosts = INTERMEDIATE_RESULTS[ResultType.SCAN]
 
     # initialize database and check for up-to-dateness
     db_conn = None
