@@ -62,7 +62,7 @@ class ResultProcessor(metaclass=ABCMeta):
     @abstractmethod
     def is_valid_result(result):
         """Return True if the result is valid"""
-        
+
         raise NotImplementedError
 
     @staticmethod
