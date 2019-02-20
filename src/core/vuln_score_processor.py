@@ -81,7 +81,8 @@ class VulnScoreProcessor(ResultProcessor):
 
     def aggregate_results(self):
         """
-        Accumulate the results from all the different analysis modules into one analysis result.
+        Accumulate the results from all the different vuln_score modules into one
+        vulnerabiltiy score per network.
 
         :return: the network's score as 0 <= score <= 10
         """
