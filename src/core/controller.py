@@ -54,7 +54,7 @@ class Controller():
                 if rtype not in self.user_results:
                     self.user_results[rtype] = []
                 for filename in filenames:
-                    self.user_results[rtype] = (filename, os.path.abspath(filename))
+                    self.user_results[rtype].append((filename, os.path.abspath(filename)))
 
         # store absolute config path
         if config_path:

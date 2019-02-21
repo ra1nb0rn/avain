@@ -58,21 +58,23 @@ class ModuleManager():
 
         self.modules = []
         for module in config_modules.split(","):
-            module_path = os.path.join(MODULE_DIR_PREFIX, module.strip()).replace(".", os.sep)
-            self.modules.append(module_path + ".py")
+            if module:
+                module_path = os.path.join(MODULE_DIR_PREFIX, module.strip()).replace(".", os.sep)
+                self.modules.append(module_path + ".py")
 
     def _add_user_results(self):
-        for rtype, result_file in self.user_results.items():
-            relpath, abspath = result_file
-            basename = os.path.basename(abspath)
-            user_result_dir = os.path.join(self.output_dir, USER_RESULT_DIR)
-            copy_path = os.path.join(os.path.join(user_result_dir, rtype.value.lower()), basename)
-            copy_path = ModuleManager.save_copy_file(abspath, copy_path)
-            try:
-                result = self.result_processors[rtype].parse_result_file(copy_path)
-                self.result_processors[rtype].add_to_results(relpath, result)
-            except InvalidResultException as e:
-                util.printit(e, color=util.RED)
+        for rtype, result_files in self.user_results.items():
+            for result_file in result_files:
+                relpath, abspath = result_file
+                basename = os.path.basename(abspath)
+                user_result_dir = os.path.join(self.output_dir, USER_RESULT_DIR)
+                copy_path = os.path.join(os.path.join(user_result_dir, rtype.value.lower()), basename)
+                copy_path = ModuleManager.save_copy_file(abspath, copy_path)
+                try:
+                    result = self.result_processors[rtype].parse_result_file(copy_path)
+                    self.result_processors[rtype].add_to_results(relpath, result)
+                except InvalidResultException as e:
+                    util.printit(e, color=util.RED)
 
     def _setup_result_processors(self):
         """Setup the different result processors"""
