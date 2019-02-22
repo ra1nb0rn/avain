@@ -144,12 +144,13 @@ class ScanResultProcessor(ResultProcessor):
     def _aggregate_results(self):
         """
         Aggregate the "grouped and reduced" results to one final result. The
-        aggregation is done depening on the config value for scan_result_aggr_scheme.
+        aggregation is done depending on the config value for "scan_result_aggr_scheme".
 
-        Value "SINGLE": the option with the highest trust rating is chosen
-        Value "MULTIPLE": the results are returned without further processing
-        Value "FILTER": similar products are filtered out, i.e. out of macOS 12.0
-                        and macOS 13.0, only one is returned
+        Value "SINGLE"   : the single result with the highest trust rating is chosen
+        Value "MULTIPLE" : the results are returned without further processing
+        Value "FILTER"   : similar products are filtered out, i.e. out of macOS 10.12
+                           and macOS 10.13, only the one with the highest trust rating
+                           is returned
         """ 
 
         processed_results = self._group_and_reduce()
@@ -197,7 +198,7 @@ class ScanResultProcessor(ResultProcessor):
         First groups all the different OS and port information of every host
         retrieved from the different scanning modules into groups that contain
         similar items. For example, "OS: macOS 10.10 is" grouped together with
-        "macOS 10.10.12".
+        "macOS 10.10.4".
         Next, these groups are reduced / aggregated to one entry each. This
         can be done in several ways. Currently supported are: 1. Reducing
         to the item with the highest trust value; 2. Reducing to the most
