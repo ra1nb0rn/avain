@@ -59,8 +59,9 @@ def run(results: list):
 
     def process_port_cves(protocol: str):
         nonlocal host, ip
-        for _, portinfo in host[protocol].items():
-            add_cves_to_node(portinfo, ip)
+        for _, portinfos in host[protocol].items():
+            for portinfo in portinfos:
+                add_cves_to_node(portinfo, ip)
 
     global LOGGER, DB_CURSOR, CREATED_FILES
 
@@ -93,7 +94,8 @@ def run(results: list):
         if CONFIG.get("skip_os", "false").lower() == "true":
             LOGGER.info("Skipping OS CVE analysis as stated in config file")
         else:
-            add_cves_to_node(host["os"], ip)
+            for os_info in host["os"]:
+                add_cves_to_node(os_info, ip)
 
         # get TCP and UDP cves
         process_port_cves("tcp")
@@ -162,7 +164,7 @@ def create_cve_summary(hosts: dict):
     For every host create a summary of its CVE analysis and store all summaries in SUMMARY_FILE
     """
 
-    def create_node_summary(node_src: dict, node_dst: dict):
+    def create_node_summary(node_src: dict, node_dst_list: list):
         """
         Create the CVE analysis summary of the given node
         :param node_src: node containing the detailed analysis results
@@ -171,6 +173,7 @@ def create_cve_summary(hosts: dict):
         """
         counted_cves, cve_count = set(), 0
         # iterate over the node's attributes
+        node_dst = {}
         for key, value in node_src.items():
             if key not in ("cpes", "original_cpes"):
                 node_dst[key] = value
@@ -191,6 +194,8 @@ def create_cve_summary(hosts: dict):
         except ValueError:
             pass
 
+        node_dst_list.append(node_dst)
+
         return cve_count
 
     def create_port_summaries(protocol: str):
@@ -200,21 +205,23 @@ def create_cve_summary(hosts: dict):
         nonlocal host, host_summary, total_cve_count
         if protocol in host:
             host_summary[protocol] = {}
-            for portid, portinfo in host[protocol].items():
-                host_summary[protocol][portid] = {}
-                cve_count = create_node_summary(portinfo, host_summary[protocol][portid])
-                total_cve_count += cve_count
+            for portid, portinfos in host[protocol].items():
+                host_summary[protocol][portid] = []
+                for portinfo in portinfos:
+                    cve_count = create_node_summary(portinfo, host_summary[protocol][portid])
+                    total_cve_count += cve_count
 
 
     summary = {}
     for ip, host in hosts.items():
         host_summary = {}
         total_cve_count = 0
-        host_summary["os"] = {}
+        host_summary["os"] = []
         # create OS and port summaries
         if "os" in host and not CONFIG.get("skip_os", "false").lower() == "true":
-            cve_count = create_node_summary(host["os"], host_summary["os"])
-            total_cve_count += cve_count
+            for os_info in host["os"]:
+                cve_count = create_node_summary(os_info, host_summary["os"])
+                total_cve_count += cve_count
         create_port_summaries("tcp")
         create_port_summaries("udp")
 
@@ -382,10 +389,11 @@ def calculate_final_scores(hosts: dict):
         """Aggregate all port nodes with services using TCP as transport protocol"""
         nonlocal host
         if protocol in host:
-            for _, portinfo in host[protocol].items():
-                is_broad_entry, score = aggregate_node_scores(portinfo)
-                portinfo["aggregated_cvssv3"] = score
-                add_to_score_lists(is_broad_entry, portinfo["aggregated_cvssv3"])
+            for _, portinfos in host[protocol].items():
+                for portinfo in portinfos:
+                    is_broad_entry, score = aggregate_node_scores(portinfo)
+                    portinfo["aggregated_cvssv3"] = score
+                    add_to_score_lists(is_broad_entry, portinfo["aggregated_cvssv3"])
 
     host_scores = {}
     for ip, host in hosts.items():
@@ -394,9 +402,10 @@ def calculate_final_scores(hosts: dict):
 
         # aggregate scores of OS and every port to a respective node score
         if "os" in host and not CONFIG.get("skip_os", "false").lower() == "true":
-            broad_aggr, score = aggregate_node_scores(host["os"])
-            host["os"]["aggregated_cvssv3"] = score
-            add_to_score_lists(broad_aggr, score)
+            for os_info in host["os"]:
+                broad_aggr, score = aggregate_node_scores(os_info)
+                os_info["aggregated_cvssv3"] = score
+                add_to_score_lists(broad_aggr, score)
         aggregate_protocol_entry("tcp")
         aggregate_protocol_entry("udp")
 

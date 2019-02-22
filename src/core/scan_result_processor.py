@@ -80,31 +80,116 @@ class ScanResultProcessor(ResultProcessor):
         ScanResultProcessor.remove_trust_values(result)
         return ResultProcessor.sort_result_by_ip(result)
 
+
+    def _group_by_product(self, intermediate_results):
+        """
+        Group the intermediate results by their CPE product value (if it exists). Two items
+        are grouped if they have the same part and vendor and the cosine similarity of their
+        product strings is greater than 0.45.
+
+        :param intermediate_results: the intermediate results after first group and reduce
+        :return: the intermediate results grouped by their CPE product
+        """
+        # CPE 2.2 notation: cpe:/{part}:{vendor}:{product}:{version}:{update}:{edition}:{language}
+        
+        def group_item_by_product(item, groups):
+            for group in groups:
+                for gitem in group:
+                    for cpe in item.get("cpes", []):
+                        for gcpe in gitem.get("cpes", []):
+                            # [5:] to remove leading cpe:/
+                            cpe_split, gcpe_split = cpe[5:].split(":"), gcpe[5:].split(":")
+                            if len(cpe_split) > 2 and len(gcpe_split) > 2:
+                                if cpe_split[0] == gcpe_split[0] and cpe_split[1] == gcpe_split[1]:
+                                    if util.compute_cosine_similarity(cpe_split[2], gcpe_split[2], r"[^\W_]+") > 0.45:
+                                        group.append(item)
+                                        return True
+            return False
+
+        def group_protocol(protocol):
+            nonlocal ip, host, product_groups
+
+            if protocol in host:
+                if protocol not in product_groups:
+                    product_groups[ip][protocol] = {}
+
+                for portid, port_nodes in host[protocol].items():
+                    port_groups = []
+                    for port_node in port_nodes:
+                        if not group_item_by_product(port_node, port_groups):
+                            port_groups.append([port_node])
+
+                    product_groups[ip][protocol][portid] = port_groups
+
+
+        product_groups = {}
+        for ip, host in intermediate_results.items():
+            if ip not in product_groups:
+                product_groups[ip] = {}
+
+            if "os" in host:
+                os_groups = []
+                for os_node in host["os"]:
+                    if not group_item_by_product(os_node, os_groups):
+                        os_groups.append([os_node])
+
+                product_groups[ip]["os"] = os_groups
+
+            group_protocol("tcp")
+            group_protocol("udp")
+
+        return product_groups
+
+
     def _aggregate_results(self):
         """
         Aggregate the "grouped and reduced" results to one final result. The
-        aggregation is done by selecting the entry with the biggest trust value
-        as final result.
-        """
+        aggregation is done depening on the config value for scan_result_aggr_scheme.
 
-        def select_port_entries(protocol: str):
-            """
-            Aggregate the intermediary results of the ports used by the
-            given transport protocol to one final result.
-            """
-            nonlocal host
-            if protocol in host:
-                for portid, port_entries in host[protocol].items():
-                    host[protocol][portid] = max(port_entries, key=lambda entry: entry["trust"])
+        Value "SINGLE": the option with the highest trust rating is chosen
+        Value "MULTIPLE": the results are returned without further processing
+        Value "FILTER": similar products are filtered out, i.e. out of macOS 12.0
+                        and macOS 13.0, only one is returned
+        """ 
 
         processed_results = self._group_and_reduce()
-        for _, host in processed_results.items():
-            if "os" in host:
-                host["os"] = max(host["os"], key=lambda entry: entry["trust"])
-            select_port_entries("tcp")
-            select_port_entries("udp")
 
-        return processed_results
+        if self.config["core"].get("scan_result_aggr_scheme", "").upper() == "MULTIPLE":
+            return processed_results
+
+        if self.config["core"].get("scan_result_aggr_scheme", "").upper() == "SINGLE":
+            for _, host in processed_results.items():
+                if "os" in host:
+                    host["os"] = [max(host["os"], key=lambda entry: entry["trust"])]
+
+                for protocol in ("tcp", "udp"):
+                    if protocol in host:
+                        for portid, port_entries in host[protocol].items():
+                            host[protocol][portid] = [max(port_entries, key=lambda entry: entry["trust"])]
+            return processed_results
+
+        if self.config["core"].get("scan_result_aggr_scheme", "FILTER").upper() == "FILTER":
+            product_groups = self._group_by_product(processed_results)
+
+            for _, host in product_groups.items():
+                if "os" in host:
+                    os_items = []
+                    for group in host["os"]:
+                        os_items.append(max(group, key=lambda entry: entry["trust"]))
+                    host["os"] = os_items
+
+                for protocol in ("tcp", "udp"):
+                    if protocol in host:
+                        for portid, port_groups in host[protocol].items():
+                            port_items = []
+                            for group in port_groups:
+                                port_items.append(max(group, key=lambda entry: entry["trust"]))
+                            host[protocol][portid] = port_items
+
+            return product_groups
+
+        util.printit("Warning: unknown config value for 'scan_result_aggr_scheme'", color=util.RED)
+        return {}
 
 
     def _group_and_reduce(self):
@@ -130,7 +215,12 @@ class ScanResultProcessor(ResultProcessor):
                 return
             if not "os" in groups[ip]:
                 groups[ip]["os"] = []
-            self._group_item(ip, module, host["os"], groups[ip]["os"], lambda host: host["os"])
+
+            if isinstance(host["os"], list):
+                for item in host["os"]:
+                    self._group_item(ip, module, item, groups[ip]["os"], lambda host: host["os"])
+            else:
+                self._group_item(ip, module, host["os"], groups[ip]["os"], lambda host: host["os"])
 
         def group_ports(protocol):
             """
@@ -146,8 +236,14 @@ class ScanResultProcessor(ResultProcessor):
             for portid, port in host[protocol].items():
                 if not portid in groups[ip][protocol]:
                     groups[ip][protocol][portid] = []
-                self._group_item(ip, module, port, groups[ip][protocol][portid],
-                                 lambda host: host[protocol][portid])
+
+                if isinstance(port, list):
+                    for item in port:
+                        self._group_item(ip, module, item, groups[ip][protocol][portid],
+                                         lambda host: host[protocol][portid])
+                else:
+                    self._group_item(ip, module, port, groups[ip][protocol][portid],
+                                     lambda host: host[protocol][portid])
 
 
         # create the different groups
@@ -219,20 +315,32 @@ class ScanResultProcessor(ResultProcessor):
             Add trust values to the ports used by the given transport protocol.
             """
             if protocol in host:
-                for _, port in host[protocol].items():
-                    if "trust" not in port:
-                        if "trust" in host[protocol]:
-                            port["trust"] = host[protocol]["trust"]
-                        elif "trust" in host:
-                            port["trust"] = host["trust"]
-                        else:
-                            port["trust"] = trust_value
+                for portid, portitems in host[protocol].items():
+                    if not isinstance(portitems, list):
+                        portitems = [portitems]
 
-        if "os" in host and "trust" not in host["os"]:
-            if "trust" in host:
-                host["os"]["trust"] = host["trust"]
-            else:
-                host["os"]["trust"] = trust_value
+                    for port in portitems:
+                        if "trust" not in port:
+                            if "trust" in host[protocol][portid]:
+                                port["trust"] = host[protocol][portid]["trust"]
+                            if "trust" in host[protocol]:
+                                port["trust"] = host[protocol]["trust"]
+                            elif "trust" in host:
+                                port["trust"] = host["trust"]
+                            else:
+                                port["trust"] = trust_value
+
+        if "os" in host:
+            ositems = host["os"] if isinstance(host["os"], list) else [host["os"]]
+
+            for ositem in ositems:
+                if "trust" not in ositem:
+                    if "trust" in host["os"]:
+                        ositem["trust"] = host["os"]["trust"]
+                    if "trust" in host:
+                        ositem["trust"] = host["trust"]
+                    else:
+                        ositem["trust"] = trust_value
 
         add_to_ports("tcp")
         add_to_ports("udp")
@@ -251,9 +359,10 @@ class ScanResultProcessor(ResultProcessor):
                 if "trust" in host[protocol]:
                     del host[protocol]["trust"]
 
-                for _, portinfo in host[protocol].items():
-                    if "trust" in portinfo:
-                        del portinfo["trust"]
+                for _, portinfos in host[protocol].items():
+                    for portinfo in portinfos:
+                        if "trust" in portinfo:
+                            del portinfo["trust"]
 
         if "trust" in result:
             del result["trust"]
@@ -262,8 +371,10 @@ class ScanResultProcessor(ResultProcessor):
             if "trust" in host:
                 del host["trust"]
 
-            if "os" in host and "trust" in host["os"]:
-                del host["os"]["trust"]
+            if "os" in host:
+                for osinfo in host["os"]:
+                    if "trust" in osinfo:
+                        del osinfo["trust"]
 
             remove_in_protocol("tcp")
             remove_in_protocol("udp")
@@ -291,31 +402,35 @@ class ScanResultProcessor(ResultProcessor):
                 try:
                     # try to access the iterating module's host item that
                     # is equivalent to the base item given as function parameter
-                    item_iter = iter_access_func(result_iter[ip])
+                    items_iter = iter_access_func(result_iter[ip])
                 except KeyError:
                     continue
 
-                addded_to_group = False
-                # check if iter_item has a cpe that is broader
-                # than one of the current host's cpes
-                for cpe in item.get("cpes", []):
-                    if any(cpe_iter in cpe for cpe_iter in item_iter.get("cpes", [])):
-                        item_group.append(item_iter)
-                        addded_to_group = True
-                        break
+                if not isinstance(items_iter, list):
+                    items_iter = [items_iter]
 
-                # if the currently iterating item has not been added yet,
-                # but the base item and current iterating item can be compared by name
-                if not addded_to_group and "name" in item and "name" in item_iter:
-                    item_str, item_iter_str = item["name"], item_iter["name"]
-                    # if both have a service field, append it to the name for comparison
-                    if "service" in item and "service" in item_iter:
-                        item_str += " " + item["service"]
-                        item_iter_str += " " + item_iter["service"]
+                for item_iter in items_iter:
+                    addded_to_group = False
+                    # check if iter_item has a cpe that is broader
+                    # than one of the current host's cpes
+                    for cpe in item.get("cpes", []):
+                        if any(cpe_iter in cpe for cpe_iter in item_iter.get("cpes", [])):
+                            item_group.append(item_iter)
+                            addded_to_group = True
+                            break
 
-                    # if the two items have prefixed names
-                    if item_iter_str in item_str:
-                        item_group.append(item_iter)
+                    # if the currently iterating item has not been added yet,
+                    # but the base item and current iterating item can be compared by name
+                    if not addded_to_group and "name" in item and "name" in item_iter:
+                        item_str, item_iter_str = item["name"], item_iter["name"]
+                        # if both have a service field, append it to the name for comparison
+                        if "service" in item and "service" in item_iter:
+                            item_str += " " + item["service"]
+                            item_iter_str += " " + item_iter["service"]
+
+                        # if the two items have prefixed names
+                        if item_iter_str in item_str:
+                            item_group.append(item_iter)
 
         # if all items of the current group are not already existent in another group
         if not ScanResultProcessor._group_in(item_group, dest):
@@ -408,12 +523,12 @@ class ScanResultProcessor(ResultProcessor):
             return group[0]
 
         # Check the config for aggregation scheme
-        if not "scan_aggregation_scheme" in self.config["core"]:
+        if not "scan_trust_aggr_scheme" in self.config["core"]:
             # If no config entry available, use trust aggregation scheme
             return ScanResultProcessor._aggregate_group_by_trust_aggregation(group)
-        if self.config["core"]["scan_aggregation_scheme"] == "TRUST_AGGR":
+        if self.config["core"]["scan_trust_aggr_scheme"] == "TRUST_AGGR":
             return ScanResultProcessor._aggregate_group_by_trust_aggregation(group)
-        if self.config["core"]["scan_aggregation_scheme"] == "TRUST_MAX":
+        if self.config["core"]["scan_trust_aggr_scheme"] == "TRUST_MAX":
             return ScanResultProcessor._aggregate_group_by_trust_max(group)
         return ScanResultProcessor._aggregate_group_by_trust_aggregation(group)
 
@@ -470,17 +585,25 @@ class ScanResultProcessor(ResultProcessor):
             if protocol in value:
                 if not isinstance(value, dict):
                     return False
-                for portid, port in value[protocol].items():
-                    if not isinstance(portid, str):
+
+                for portid, port_node in value[protocol].items():
+                    if (not isinstance(portid, str)) and (not isinstance(portid, int)):
                         return False
-                    if not isinstance(port, dict):
-                        return False
-                    if not check_name(port):
-                        return False
-                    if not check_cpes(port):
-                        return False
-                    if "service" in port and not isinstance(port["service"], str):
-                        return False
+
+                    if isinstance(port_node, list):
+                        items = port_node
+                    else:
+                        items = [port_node]
+
+                    for port in items:
+                        if not isinstance(port, dict):
+                            return False
+                        if not check_name(port):
+                            return False
+                        if not check_cpes(port):
+                            return False
+                        if "service" in port and not isinstance(port["service"], str):
+                            return False
             return True
 
         if not isinstance(result, dict):
@@ -496,15 +619,24 @@ class ScanResultProcessor(ResultProcessor):
             else:
                 if not isinstance(value, dict):
                     return False
+
                 if "os" in value:
-                    if not isinstance(value["os"], dict):
-                        return False
-                    if not check_name(value["os"]):
-                        return False
-                    if not check_cpes(value["os"]):
-                        return False
+                    if isinstance(value["os"], list):
+                        items = value["os"]
+                    else:
+                        items = [value["os"]]
+
+                    for item in items:
+                        if not isinstance(item, dict):
+                            return False
+                        if not check_name(item):
+                            return False
+                        if not check_cpes(item):
+                            return False
+
                 if not check_protocol("tcp"):
                     return False
+
                 if not check_protocol("udp"):
                     return False
 

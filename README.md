@@ -1,6 +1,3 @@
-
-
-
 # AVAIN - Automated Vulnerability Analysis (in) IoT Networks </B>
 A framework for the automated vulnerability analysis in normal computer and IoT networks that enables its modules to work collaboratively by sharing results.
 
@@ -101,43 +98,47 @@ avain_output-20180905_011115/
 Here, the different networks are listed as ``network_1`` and ``network_2``. This is because directories on Unix have naming restrictions that e.g. prevent the creation of a single directory called ``192.168.0.0/24``. The directories are numberered according to the order of their network expressions in the AVAIN call. Still, a translation between the output directories and given network expressions is available in the file ``net_dir_map.json``.
 
 ## AVAIN File Formats
-For the the current two result types, AVAIN uses JSON (or Python dicts) as a common exchange format. This allows for human-readable, but also computationally processable data. Modules can have their own results (stored in separate files) as well as results intended to be shared with other modules and the AVAIN core. The results shared with AVAIN have to abide by the common exchange formats detailed below. Furthermore, modules always work in the scope of one network, i.e. if the user would like four networks to be assessed, every module is called four times, not just once (unless configured otherwise). Therefore, an intermediate result generally lists hosts with their results and not networks.
+For the the current two result types, AVAIN uses JSON (or Python dicts) as a common exchange format. This allows for human-readable, but also computationally processable data. Modules can have their own results (stored in separate files) as well as results intended to be shared with other modules and the AVAIN core. The results shared with AVAIN have to abide by the common exchange formats detailed below. Furthermore, modules always work in the scope of one network, i.e. if the user would like four networks to be assessed, every module is called four times, not just once (unless configured otherwise). Therefore, an intermediate result generally lists hosts with their results instead of entire networks.
 
 ### Scan Results
 An example scan result could look like to following (as JSON):
 ```json
 {
    "192.168.178.36": {
-      "os": {
-         "name": "Apple OS X 10.10.X",
-         "cpes": [
-            "cpe:/o:apple:mac_os_x:10.10"
-         ],
-         "accuracy": "97"
-      },
+      "os": [
+         {
+            "name": "Apple OS X 10.10.X",
+            "cpes": [
+               "cpe:/o:apple:mac_os_x:10.10"
+            ],
+            "accuracy": "97"
+         }
+      ],
       "ip": {
          "addr": "192.168.178.36",
          "type": "ipv4"
       },
       "tcp": {
-         "80": {
-            "portid": "80",
-            "protocol": "tcp",
-            "cpes": [
-               "cpe:/a:apache:http_server:2.4.33"
-            ],
-            "name": "Apache httpd 2.4.33",
-            "service": "http"
-         }
+         "80": [
+            {
+               "portid": "80",
+               "protocol": "tcp",
+               "cpes": [
+                  "cpe:/a:apache:http_server:2.4.33"
+               ],
+               "name": "Apache httpd 2.4.33",
+               "service": "http"
+            }
+         ]
       }
    },
    "trust": 4
 }
 ```
 For brevity, only one host is shown above. All hosts are indexed by their (IPv4) network address. Their content is another object that can contain several more fields. AVAIN requires the ``os``, ``tcp`` and ``udp`` fields to abide by a certain format:
-* If the ``os`` has an entry called ``cpes``, it has to be a list of CPEs for the detected / assumed OS. ``name`` has to be the corresponding name as string.
-* The ``tcp`` and ``udp`` entries are each dissected into objects for every detected port.
-* Every port entry has to be indexed by its port number. The same rules apply for the ``os`` and ``cpes`` entry. Furthermore, if the ``service`` field exists, it has to be a string describing the service, e.g, ``"ssh"`` or ``"http"``.
+* The ``os`` node is a list that contains one or more OS information nodes. If an OS information node has an entry called ``cpes``, it has to be a list of CPEs for the detected / assumed OS. ``name`` has to be the OSs name as string.
+* The ``tcp`` and ``udp`` entries are each dissected into objects for every detected port, hence their indexing.
+* Every port node contains one or more port information nodes stored within a list, similar to the "os" node. For port information nodes the same rules apply for the ``name`` and ``cpes`` entry as for OS information nodes. Furthermore, if the ``service`` field exists, it has to be a string describing the service, e.g, ``"ssh"`` or ``"http"``.
 
 Additionally, a scan result can contain one or more ``"trust"`` fields that can reside on any one of the different hierarchy levels. This fields symbolizes how much a module trusts its results, i.e. how accurate and valuable it perceives its results to be. It is basically a quality of data indicator. The value of the ``"trust"`` field can be any integer or floating point number. Apart from the aforementioned restrictions, scan results can contain other custom information.
 
@@ -193,7 +194,8 @@ AVAIN can also accept a separate configuration file as program argument. A confi
 // the list of modules to use (in order)
 modules = nmap.avain_nmap, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
 default_trust = 3
-scan_aggregation_scheme = TRUST_AGGR  // possible values --> {TRUST_MAX, TRUST_AGGR}
+scan_trust_aggr_scheme = TRUST_AGGR  // possible values --> {TRUST_MAX, TRUST_AGGR}
+scan_result_aggr_scheme = FILTER  // possible value --> {SINGLE, MULTIPLE, FILTER}
 DB_expire = 20160  // in minutes, i.e. every other week
 print_result_types = SCAN
 

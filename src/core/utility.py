@@ -288,7 +288,7 @@ def printit(text: str, end: str = "\n", color=SANE):
     PRINT_MUTEX.release()
 
 
-def compute_cosine_similarity(text_1: str, text_2: str):
+def compute_cosine_similarity(text_1: str, text_2: str, text_vector_regex=r"\w+"):
     """
     Compute the cosine similarity of two text strings.
     :param text_1: the first text
@@ -303,7 +303,7 @@ def compute_cosine_similarity(text_1: str, text_2: str):
         :return: a Counter object that stores the word frequencies in a dict
                  with the respective word as key
         """
-        word = re.compile(r'\w+')
+        word = re.compile(text_vector_regex)
         words = word.findall(text)
         return Counter(words)
 

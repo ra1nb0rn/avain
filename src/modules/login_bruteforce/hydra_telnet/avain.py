@@ -141,16 +141,17 @@ def write_targets_file():
     wrote_target = False
     with open(HYDRA_TARGETS_FILE, "w") as file:
         for ip, host in HOSTS.items():
-            for portid, portinfo in host["tcp"].items():
-                if portid == "23":
-                    file.write("%s:%s\n" % (ip, portid))
-                    wrote_target = True
-                elif "service" in portinfo and "telnet" in portinfo["service"].lower():
-                    file.write("%s:%s\n" % (ip, portid))
-                    wrote_target = True
-                elif "name" in portinfo and "telnet" in portinfo["name"].lower():
-                    file.write("%s:%s\n" % (ip, portid))
-                    wrote_target = True
+            for portid, portinfos in host["tcp"].items():
+                for portinfo in portinfos:
+                    if portid == "23":
+                        file.write("%s:%s\n" % (ip, portid))
+                        wrote_target = True
+                    elif "service" in portinfo and "telnet" in portinfo["service"].lower():
+                        file.write("%s:%s\n" % (ip, portid))
+                        wrote_target = True
+                    elif "name" in portinfo and "telnet" in portinfo["name"].lower():
+                        file.write("%s:%s\n" % (ip, portid))
+                        wrote_target = True
     return wrote_target
 
 
