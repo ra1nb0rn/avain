@@ -24,7 +24,7 @@ AVAIN can automatically *assess* and *quantify* the security level of an (IoT) n
 
 
 ## Installation
-As of now, this tool only works on macOS and Linux (Ubuntu / Kali). Before installing, make sure to read the OS specific requirements below. To install AVAIN and all of its required software automatically, run ``./install.sh``. A list of . Software packages are installed with a platform specific package manager and ``pip3``. For more detailed information have a look at the ``install.sh`` script directly or the list of all required / installed software packages further down [below](#used_software).
+As of now, this tool only works on macOS and Linux (Ubuntu / Kali). Before installing, make sure to read the OS specific requirements below. To install AVAIN and all of its required software automatically, run ``./install.sh``. The software packages are installed with a platform specific package manager and ``pip3``. For more detailed information have a look at the ``install.sh`` script directly or the list of all required / installed software packages further down [below](#used_software). After installation, AVAIN may only be fully useable by the original user that installed it (and root).
 
 ### Specific macOS Requirements
 On macOS a running version of Homebrew is required for the automated installation. Look [here](https://brew.sh/index_de) for instructions on how to install Homebrew. Additionally, Homebrew's ``coreutils`` package has to be installed.
