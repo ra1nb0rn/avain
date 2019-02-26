@@ -143,6 +143,15 @@ ln -sf "${AVAIN_DIR}/avain" /usr/local/bin/avain
 echo "Done"
 echo ""
 
+# Change AVAIN directory and file ownership to actual user if installation is run with sudo
+EUID_=$(id -u)
+UID_=$(who | awk '{print $1; exit}' | xargs id -u)
+
+if [ "${EUID_}" != "${UID_}" ]; then
+    GID_=$(id -g ${UID_})
+    chown -R "${UID_}:${GID_}" .
+fi
+
 # cd into original directory
 cd "${PREV_CWD}"
 
