@@ -78,6 +78,18 @@ class ScanResultProcessor(ResultProcessor):
                     val["udp"] = {}
 
         ScanResultProcessor.remove_trust_values(result)
+
+        # check if OS and port info are separated into lists
+        for _, host in result.items():
+            if "os" in host:
+                if not isinstance(host["os"], list):
+                    host["os"] = [host["os"]]
+            for protocol in ("tcp", "udp"):
+                if protocol in host:
+                    for portid, portinfos in host[protocol].items():
+                        if not isinstance(portinfos, list):
+                            host[protocol][portid] = [portinfos]
+
         return ResultProcessor.sort_result_by_ip(result)
 
 
