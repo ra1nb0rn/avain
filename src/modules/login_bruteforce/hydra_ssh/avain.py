@@ -76,7 +76,8 @@ def run(results: list):
                 json_out = os.path.join(HYDRA_OUTPUT_DIR, json_out)
 
             # Preparse Hydra call and run it
-            hydra_call = ["hydra", "-C", wlist, "-I", "-M", HYDRA_TARGETS_FILE,
+            tasks = CONFIG.get("tasks", "16")
+            hydra_call = ["hydra", "-C", wlist, "-I", "-t", tasks, "-M", HYDRA_TARGETS_FILE,
                           "-b", "json", "-o", json_out, "ssh"]
             LOGGER.info("Beginning Hydra SSH Brute Force with command: %s", " ".join(hydra_call))
             redr_file = open(text_out, "w")

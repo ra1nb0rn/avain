@@ -30,7 +30,9 @@ allow_versionless_search = True  // whether to fully search for CVEs when CPE ha
 
 [login_bruteforce.hydra_ssh.avain]
 wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
+tasks = 16
 
 [login_bruteforce.hydra_telnet.avain]
 wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
 timeout = 300  // Hydra timeout in seconds (if Telnet bruteforce does not work)
+tasks = 16

@@ -79,7 +79,8 @@ def run(results: list):
                 to_file = os.path.join(HYDRA_OUTPUT_DIR, to_file)
 
             # Preparse Hydra call and run it
-            hydra_call = ["hydra", "-C", wlist, "-I", "-M", HYDRA_TARGETS_FILE,
+            tasks = CONFIG.get("tasks", "16")
+            hydra_call = ["hydra", "-C", wlist, "-I", "-t", tasks, "-M", HYDRA_TARGETS_FILE,
                           "-b", "json", "-o", json_out, "telnet"]
             LOGGER.info("Beginning Hydra Telnet Brute Force with command: %s", " ".join(hydra_call))
             redr_file = open(text_out, "w")
