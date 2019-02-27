@@ -102,13 +102,13 @@ def create_nmap_call():
 
     # prepare the base of the nmap call
     if CONFIG.get("fast_scan", "false").lower() == "false":
-        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T3",
+        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess",
                      "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
     elif PORTS:
-        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T5",
+        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess",
                      "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
     else:
-        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess", "-T5",
+        nmap_call = ["nmap", "-Pn", "-n", "-A", "--osscan-guess",
                      "-F", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
 
     # use configuration setting to specify scan type
@@ -116,6 +116,12 @@ def create_nmap_call():
     nmap_call.append("-s" + scan_type)
     # check if privileges are sufficient for scan type
     check_sufficient_privs()
+
+    # set timing template
+    timing_template = CONFIG.get("timing_template", "3")
+    if not timing_template.startswith("T"):
+        timing_template = "T" + timing_template
+    nmap_call.append("-" + timing_template)
 
     # add nmap scripts to nmap call
     if "add_scripts" in CONFIG:

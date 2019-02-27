@@ -20,6 +20,7 @@ print_result_types = SCAN
 scan_type = "SU"  // SYN scan and UDP scan require root privileges
 fast_scan = False  // whether Nmap should use T5 and F option as speedup
 add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use
+timing_template = "3"
 
 [cve_correlation.avain_cve_correlation]
 DB_expire = 10080  // in minutes, i.e. every week
