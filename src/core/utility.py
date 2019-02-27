@@ -276,7 +276,7 @@ def parse_config(filepath: str, base_config: dict = {}):
     return config
 
 
-def printit(text: str, end: str = "\n", color=SANE):
+def printit(text: str = "", end: str = "\n", color=SANE):
     """A function allowing for thread safe printing in AVAIN."""
 
     PRINT_MUTEX.acquire()
