@@ -199,9 +199,17 @@ def process_hydra_result(hydra_result: dict):
     vulnerable hosts and valid credentials
     """
     global VALID_CREDS
+
+    if VERBOSE:
+        util.printit()
+
     for entry in hydra_result["results"]:
         addr, port = entry["host"], entry["port"]
         account = {"user": entry["login"], "pass": entry["password"]}
+
+        if VERBOSE:
+            util.printit("[%s:%s]" % (addr, port), end=" ", color=util.BRIGHT_BLUE)
+            util.printit("Valid SSH account found: " + str(account))
 
         # Add to credential storage
         if addr not in VALID_CREDS:
