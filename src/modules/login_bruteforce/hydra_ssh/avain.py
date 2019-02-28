@@ -5,6 +5,7 @@ import shutil
 import subprocess
 
 from core.result_types import ResultType
+import core.utility as util
 
 # Output files
 HYDRA_OUTPUT_DIR = "hydra_output"
