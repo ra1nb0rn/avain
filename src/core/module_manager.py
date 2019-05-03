@@ -12,6 +12,7 @@ from core.result_types import ResultType
 from core.result_processor import InvalidResultException
 from core.scan_result_processor import ScanResultProcessor
 from core.vuln_score_processor import VulnScoreProcessor
+from core.webserver_map_processor import WebserverMapProcessor
 
 SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572",
                          "\u2502", "\u2571", "\u2500", "\u2572"]
@@ -23,7 +24,8 @@ USER_RESULT_DIR = "user_results"
 UPDATE_OUT_DIR = "update_output"
 
 RESULT_AGGR_DIRS = {ResultType.SCAN: "scan_result_aggregation",
-                    ResultType.VULN_SCORE: "vuln_score_aggregation"}
+                    ResultType.VULN_SCORE: "vuln_score_aggregation",
+                    ResultType.WEBSERVER_MAP: "webserver_map_aggregation"}
 
 class ModuleManager():
 
@@ -82,7 +84,9 @@ class ModuleManager():
             ResultType.SCAN: ScanResultProcessor(os.path.join(self.output_dir,
                                                  RESULT_AGGR_DIRS[ResultType.SCAN]), self.config),
             ResultType.VULN_SCORE: VulnScoreProcessor(os.path.join(self.output_dir,
-                                                      RESULT_AGGR_DIRS[ResultType.VULN_SCORE]))
+                                                      RESULT_AGGR_DIRS[ResultType.VULN_SCORE])),
+            ResultType.WEBSERVER_MAP: WebserverMapProcessor(os.path.join(self.output_dir,
+                                                          RESULT_AGGR_DIRS[ResultType.WEBSERVER_MAP]))
         }
 
     def set_output_dir(self, directory: str):
