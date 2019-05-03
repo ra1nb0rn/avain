@@ -27,9 +27,9 @@ class Cli():
         :param args: the raw program arguments as a list (e.g. sys.argv)
         """
 
-        parser = argparse.ArgumentParser(description="Automated Vulnerability Analysis (in) IoT " +
+        parser = argparse.ArgumentParser(description="Automated Vulnerability Analysis (in) IP-based " +
                                          "Networks - A toolkit for automatically assessing " +
-                                         "the securtiy level of an IoT network", prog="avain")
+                                         "the securtiy level of an IP-based network", prog="avain")
         optional_args = parser._action_groups.pop()
         required_args = parser.add_argument_group("required arguments (at least one)")
         parser._action_groups.append(optional_args)
