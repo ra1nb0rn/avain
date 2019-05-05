@@ -242,20 +242,22 @@ Below you can find more information on required software and installation instru
 The following list provides an overview of the software used by AVAIN for both macOS and Linux. The versions listed below have shown to work. Other versions may work as well. To install the Git submodules manually, run ``git submodule init && git submodule update``.
 
 * Homebrew / APT
-    * Python 3 (3.7.0) with pip3
-    * wget (1.19.5)
-    * cmake (3.12.1)
-    * nmap (7.7.0)
-    * sqlite (3.24.0)
-    * hydra (8.6_2) with libssh
+    * [Python 3](https://www.python.org/downloads/release/python-373/) (3.7.3) with pip3
+    * [wget](https://www.gnu.org/software/wget/) (1.19.5)
+    * [cmake](https://cmake.org/) (3.12.1)
+    * [nmap](https://nmap.org/) (7.7.0)
+    * [sqlite](https://www.sqlite.org/index.html) (3.24.0)
+    * [hydra](https://github.com/vanhauser-thc/thc-hydra/) (8.6_2) with libssh
+    * [gobuster](https://github.com/OJ/gobuster) (2.0.1)
 * Pip3
-    * requests >= 2.18.4
-    * cvsslib >= 0.5.5
-    * packaging >= 17.1
+    * [requests](https://pypi.org/project/requests/) >= 2.18.4
+    * [cvsslib](https://github.com/ctxis/cvsslib) >= 0.5.5
+    * [packaging](https://pypi.org/project/packaging/) >= 17.1
 * Git submodules
     * [SRombauts/SQLiteCpp](https://github.com/SRombauts/SQLiteCpp "SQLiteCpp GitHub Page")
     * [nlohmann/json](https://github.com/nlohmann/json "json GitHub Page")
 * [The official CPE v2.2 dictionary](https://nvd.nist.gov/products/cpe), stored as ``resources/official-cpe-dictionary_v2.2.xml`` relative to AVAIN's base directory.
+* [DirBuster](https://sourceforge.net/projects/dirbuster/)'s wordlists.
 
 ## License
 AVAIN is licensed under the MIT license, see [here](https://github.com/DustinBorn/avain/blob/master/LICENSE.mit).
