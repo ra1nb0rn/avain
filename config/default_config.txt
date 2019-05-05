@@ -9,7 +9,7 @@
 modules = nmap.avain_nmap, web.gobuster.avain, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
 default_trust = 3                                                // the default quality of data / trust level for scan modules
 scan_trust_aggr_scheme = TRUST_AGGR                              // possible values --> {TRUST_MAX, TRUST_AGGR}
-scan_result_aggr_scheme = FILTER                                 // possible value --> {SINGLE, MULTIPLE, FILTER}
+scan_result_aggr_scheme = MULTIPLE                               // possible value --> {SINGLE, MULTIPLE, FILTER}
 DB_expire = 20160                                                // in minutes, i.e. every other week
 print_result_types = SCAN, WEBSERVER_MAP                         // the intermediate result types to output
 
