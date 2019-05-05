@@ -202,10 +202,10 @@ def remove_quotes(text: str):
 def add_to_config(config: dict, statement: str):
     """Add the information from the statement to the given config"""
     key, val = statement.split("=")
-    key = key.strip()
-    val = val.strip()
     key = remove_quotes(key)
     val = remove_quotes(val)
+    key = key.strip()
+    val = val.strip()
     config[key] = val
 
 def parse_config(filepath: str, base_config: dict = {}):

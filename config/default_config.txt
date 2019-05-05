@@ -3,48 +3,48 @@
 //////////////////////////////////////////////
 
 
-// here defined are default configuration settings
+/* here defined are default configuration settings */
 [core]
 // the list of modules to use (in order)
 modules = nmap.avain_nmap, web.gobuster.avain, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
-default_trust = 3
-scan_trust_aggr_scheme = TRUST_AGGR  // possible values --> {TRUST_MAX, TRUST_AGGR}
-scan_result_aggr_scheme = FILTER  // possible value --> {SINGLE, MULTIPLE, FILTER}
-DB_expire = 20160  // in minutes, i.e. every other week
-print_result_types = SCAN, WEBSERVER_MAP
+default_trust = 3                                                // the default quality of data / trust level for scan modules
+scan_trust_aggr_scheme = TRUST_AGGR                              // possible values --> {TRUST_MAX, TRUST_AGGR}
+scan_result_aggr_scheme = FILTER                                 // possible value --> {SINGLE, MULTIPLE, FILTER}
+DB_expire = 20160                                                // in minutes, i.e. every other week
+print_result_types = SCAN, WEBSERVER_MAP                         // the intermediate result types to output
 
 
 // here defined are module specific configuration settings
 [nmap.avain_nmap]
-// add_nmap_params = "--max-rtt-timeout 100ms --max-retries 1"  // additional Nmap params
-scan_type = "S"  // SYN scan and UDP scan require root privileges
-fast_scan = False  // whether Nmap should use T5 and F option as speedup
-add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use
-timing_template = "3"
+// add_nmap_params = --max-rtt-timeout 100ms --max-retries 1     // additional Nmap params
+scan_type = S                                                    // SYN scan and UDP scan require root privileges
+fast_scan = False                                                // whether Nmap should use T5 and F option as speedup
+add_scripts = default, http-headers, smb-os-discovery, banner    // additional scripts Nmap should use
+timing_template = 3                                              // the timing (or aggressiveness) template to use
 
 [cve_correlation.avain_cve_correlation]
-DB_expire = 10080  // in minutes, i.e. every week
-skip_os = False  // whether to skip OS CVE analysis --> {True, False}
-max_cve_count = -1  // the maximum number of CVEs to retrieve; -1 for unlimited
-squash_cpes = True  // whether to squash every discovered CPE in case of invalid CPE
-allow_versionless_search = True  // whether to fully search for CVEs when CPE has no version
+DB_expire = 10080                                                // in minutes, i.e. every week
+skip_os = False                                                  // whether to skip OS CVE analysis --> {True, False}
+max_cve_count = -1                                               // the maximum number of CVEs to retrieve; -1 for unlimited
+squash_cpes = True                                               // whether to squash every discovered CPE in case of invalid CPE
+allow_versionless_search = True                                  // whether to fully search for CVEs when CPE has no version
 
 [login_bruteforce.hydra_ssh.avain]
-wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
-tasks = 16
+wordlists = ../wordlists/mirai_user_pass.txt                     // Mirai wordlist relative to module dir
+tasks = 16                                                       // the number of parallel Hydra tasks
 
 [login_bruteforce.hydra_telnet.avain]
-wordlists = ../wordlists/mirai_user_pass.txt  // Mirai wordlist relative to module dir
-timeout = 300  // Hydra timeout in seconds (if Telnet bruteforce does not work)
-tasks = 16
+wordlists = ../wordlists/mirai_user_pass.txt                     // Mirai wordlist relative to module dir
+timeout = 300                                                    // Hydra timeout in seconds (if Telnet bruteforce does not work)
+tasks = 16                                                       // the number of parallel Hydra tasks
 
 [web.gobuster.avain]
-wordlist = ../wordlists/dirbuster/directory-list-2.3-small.txt  // wordlist to use
-extensions = php, html  // file extensions to search for
-depth = 3  // the search depth
-threads = 10  // how many threads to use for gobuster
-do_reverse_dns = True  // whether the domain name(s) of the IP should be used if it has one
-allow_file_depth_search = False  // whether to search for directories if the url ends with a file
-exclude_dirs = js, css  // what directories not to search in
-per_directory_timeout = 300  // timeout for searching a directory in seconds
-per_host_timeout = 1800  // timeout for mapping a web server in seconds
+wordlist = ../wordlists/dirbuster/directory-list-2.3-small.txt   // wordlist to use relative to module dir
+extensions = php, html                                           // file extensions to search for
+depth = 3                                                        // the search depth
+threads = 10                                                     // how many threads to use for gobuster
+do_reverse_dns = True                                            // whether the domain name(s) of the IP should be used if it has one
+allow_file_depth_search = False                                  // whether to search for directories if the url ends with a file
+exclude_dirs = js, css                                           // what directories not to search in
+per_directory_timeout = 300                                      // timeout for searching a directory in seconds
+per_host_timeout = 1800                                          // timeout for mapping a web server in seconds
