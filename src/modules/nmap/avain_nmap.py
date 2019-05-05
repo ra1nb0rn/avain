@@ -163,7 +163,7 @@ def call_nmap(nmap_call: list, redr_filepath: str):
 
     LOGGER.info("Executing Nmap call '%s'", " ".join(nmap_call))
 
-    # open file handle to redirect nmap's stderr
+    # open file handle to redirect nmap's output
     redr_file = open(redr_filepath, "w")
 
     # call nmap with the created command
