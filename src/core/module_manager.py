@@ -179,7 +179,7 @@ class ModuleManager():
             while module_thread.is_alive():
                 module_thread.join(timeout=self.join_timeout)
 
-                if not util.PRINT_MUTEX.acquire(timeout=PRINT_LOCK_ACQUIRE_TIMEOUT):
+                if not util.acquire_print(timeout=PRINT_LOCK_ACQUIRE_TIMEOUT):
                     continue
 
                 print(util.GREEN + "Running module %d of %d - " % (i+1, len(modules)), end="")
@@ -187,8 +187,7 @@ class ModuleManager():
                 print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
                 print(util.SANE, end="")  # cleanup colors
                 util.clear_previous_line()
-
-                util.PRINT_MUTEX.release()
+                util.release_print()
 
                 if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
                     show_progress_state = 0

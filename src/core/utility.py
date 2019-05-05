@@ -279,12 +279,29 @@ def parse_config(filepath: str, base_config: dict = {}):
 def printit(text: str = "", end: str = "\n", color=SANE):
     """A function allowing for thread safe printing in AVAIN."""
 
-    PRINT_MUTEX.acquire()
+    acquire_print()
     print(color, end="")
     print(text, end=end)
     if color != SANE:
         print(SANE, end="")
     sys.stdout.flush()
+    release_print()
+
+
+def acquire_print(timeout = None):
+    """ Acquire the PRINT_MUTEX mutex for printing """
+
+    if not timeout:
+        success = PRINT_MUTEX.acquire()
+    else:
+        success = PRINT_MUTEX.acquire(timeout=timeout)
+
+    return success
+
+
+def release_print():
+    """ Release the PRINT_MUTEX mutex for printing """
+
     PRINT_MUTEX.release()
 
 
