@@ -182,6 +182,7 @@ class Controller():
             outfile = os.path.join(self.output_dir, "network_vulnerability_ratings.json")
             outfile_orig = os.path.join(self.orig_out_dir, "network_vulnerability_ratings.json")
 
-            visualizer.visualize_dict_results(network_vuln_scores, outfile)
+            title = util.BRIGHT_BLUE + "Final network vulnerability scores:" + util.SANE
+            visualizer.visualize_dict_results(title, network_vuln_scores, outfile)
             self.logger.info("The main output file is called '%s'", outfile)
             print("The main output file is called: %s" % outfile_orig)
