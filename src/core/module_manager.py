@@ -174,17 +174,15 @@ class ModuleManager():
 
             module_thread = threading.Thread(target=module_func, args=(module_results,))
 
+            # print section header for current module
             if self.verbose:
                 columns = shutil.get_terminal_size((80, 20)).columns
                 count = columns - (len(module_name_no_prefix) + 2)
                 if i > 0:
-                    print("\n")
+                    print()
                 util.printit(math.floor(count / 2) * "=", end="", color=util.BRIGHT_BLUE)
                 util.printit(" %s " % module_name_no_prefix, end="", color=util.SANE)
                 util.printit(math.ceil(count / 2) * "=" + "\n", color=util.BRIGHT_BLUE)
-
-                # util.printit(math.floor(count / 2) * "=" + " %s " % module_name_no_prefix +
-                #              math.ceil(count / 2) * "=" + "\n", color=util.BRIGHT_BLUE)
 
             # run module
             module_thread.start()
@@ -230,7 +228,7 @@ class ModuleManager():
             self.logger.info("Module %d of %d completed", i+1, len(modules))
 
         if self.verbose:
-            util.printit(shutil.get_terminal_size((80, 20)).columns * "=" + "\n", color=util.BRIGHT_BLUE)
+            util.printit("\n" + shutil.get_terminal_size((80, 20)).columns * "=" + "\n", color=util.BRIGHT_BLUE)
 
         if len(modules) == 1:
             print(util.GREEN + "The one module has completed.")
