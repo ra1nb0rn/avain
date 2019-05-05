@@ -189,22 +189,23 @@ INTERMEDIATE_RESULTS = {"SCAN": None}  # get the current SCAN result
 ## Configuration Files <a id="config_expl"></a>
 AVAIN can also accept a separate configuration file as program argument. A configuration file can act as a profile for AVAIN that specifies many different arguments at once. The default configuration file is called ``default_config.txt`` and can be found in AVAIN's ``config`` directory. Note that this file has to be present for AVAIN to work correctly. An excerpt of its content looks like the following:
 ```
-// here defined are default configuration settings
+/* here defined are default configuration settings */
 [core]
 // the list of modules to use (in order)
-modules = nmap.avain_nmap, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
-default_trust = 3
-scan_trust_aggr_scheme = TRUST_AGGR  // possible values --> {TRUST_MAX, TRUST_AGGR}
-scan_result_aggr_scheme = FILTER  // possible value --> {SINGLE, MULTIPLE, FILTER}
-DB_expire = 20160  // in minutes, i.e. every other week
-print_result_types = SCAN
+modules = nmap.avain_nmap, web.gobuster.avain, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
+default_trust = 3                                                // the default quality of data / trust level for scan modules
+scan_trust_aggr_scheme = TRUST_AGGR                              // possible values --> {TRUST_MAX, TRUST_AGGR}
+scan_result_aggr_scheme = MULTIPLE                               // possible value --> {SINGLE, MULTIPLE, FILTER}
+DB_expire = 20160                                                // in minutes, i.e. every other week
+print_result_types = SCAN, WEBSERVER_MAP                         // the intermediate result types to output
 
 // here defined are module specific configuration settings
 [nmap.avain_nmap]
-// add_nmap_params = "--max-rtt-timeout 100ms --max-retries 1"  // additional Nmap params
-scan_type = "SU"  // SYN scan and UDP scan require root privileges
-fast_scan = False  // whether Nmap should use T5 and F option as speedup
-add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use
+// add_nmap_params = --max-rtt-timeout 100ms --max-retries 1     // additional Nmap params
+scan_type = S                                                    // SYN scan and UDP scan require root privileges
+fast_scan = False                                                // whether Nmap should use T5 and F option as speedup
+add_scripts = default, http-headers, smb-os-discovery, banner    // additional scripts Nmap should use
+timing_template = 3   
 ```
 Like in many programming languages, comments can be made with ``//`` and ``/* */``. The strings surrounded by ``[`` and ``]`` specify the module the following configuration settings apply to. Every setting has to be placed on a separate line. Settings are specified using a ``key = value`` structure. The keys and values can be custom for every module; mostly AVAIN does not have any restrictions on keys or values. The only thing AVAIN does for every module regarding the config file is parse its section into a dictionary whose keys and values are the same as the config's. *Every module itself is responsible for parsing its config values.*
 In case the user specifies a separate config file to use, AVAIN overwrites its default configuration settings with the ones specified in the user's config file. Therefore, the user's config file is not required to contain all settings available but only the ones the user wants changed. It is advised that the user supplies their own configuration file instead of manually overwriting the default configuration file.
