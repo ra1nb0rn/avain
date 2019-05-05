@@ -52,7 +52,7 @@ class WebserverMapProcessor(ResultProcessor):
                             if "PATH" not in page:
                                 return False
 
-                            if not path.startswith("/"):
+                            if not page["PATH"].startswith("/"):
                                 return False
 
                             for key in ("GET", "POST", "COOKIES"):
