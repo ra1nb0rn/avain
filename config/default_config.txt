@@ -17,7 +17,7 @@ print_result_types = SCAN, WEBSERVER_MAP
 // here defined are module specific configuration settings
 [nmap.avain_nmap]
 // add_nmap_params = "--max-rtt-timeout 100ms --max-retries 1"  // additional Nmap params
-scan_type = "SU"  // SYN scan and UDP scan require root privileges
+scan_type = "S"  // SYN scan and UDP scan require root privileges
 fast_scan = False  // whether Nmap should use T5 and F option as speedup
 add_scripts = "default, http-headers, smb-os-discovery, banner"  // additional scripts Nmap should use
 timing_template = "3"

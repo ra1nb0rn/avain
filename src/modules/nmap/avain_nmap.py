@@ -112,7 +112,7 @@ def create_nmap_call():
                      "-F", "-oX", XML_NMAP_OUTPUT_PATH, "-iL", NETWORKS_PATH]
 
     # use configuration setting to specify scan type
-    scan_type = CONFIG.get("scan_type", "SU")
+    scan_type = CONFIG.get("scan_type", "S")
     nmap_call.append("-s" + scan_type)
     # check if privileges are sufficient for scan type
     check_sufficient_privs()
