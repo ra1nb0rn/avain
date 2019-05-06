@@ -75,7 +75,7 @@ def run_gobuster(url, redr_file):
 
     start_host = datetime.datetime.now()
     for dir_ in dirs:
-        if depth <= 0:
+        if dir_.count("/") > depth:
             break
         elif (datetime.datetime.now() - start_host).total_seconds() > int(CONFIG["per_host_timeout"]):
             redr_file.write("\nWARNING: HOST SEARCH TIMEOUT ('%s', >%ss)\n" % (url, CONFIG["per_host_timeout"]))
@@ -182,8 +182,6 @@ def run_gobuster(url, redr_file):
                     dirs.append(path)
                 elif CONFIG["allow_file_depth_search"].lower() == "true":
                     dirs.append(path + "/")
-
-        depth -= 1
 
     return webserver_map
 
