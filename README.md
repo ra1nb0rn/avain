@@ -2,7 +2,7 @@
 A framework for the automated vulnerability analysis in IP-based networks that enables its modules to work collaboratively by sharing results.
 
 ## About
-AVAIN can automatically *assess* and *quantify* the security level of an IP-based network. Its final output is a *score* between 0 and 10, where the higher the score, the more vulnerable / insecure the network. Additionally, AVAIN keeps all of the intermediate result files to empower the user in *investigating* the network's security state *in more detail*. As IT and IoT security is a continuously evolving field, AVAIN was designed to be *modular* and thereby *easily extensible*. Therefore AVAIN is comprised of a core and several modules. During a vulnerability analysis, AVAIN's core invokes all (specified) modules which return a result at the end of their execution. Currently, there are two results types: *scan* results, i.e. reconnaissance information, and *vulnerability score* results representing the outcome of a vulnerability analysis. By sharing their results, modules can work *collaboratively* to help AVAIN achieve a *more sophisticated* vulnerability assessment. As of now, AVAIN only supports the assessment of IPv4 and IPv6 enabled devices. Note that IPv6 zone IDs are not guaranteed to work with AVAIN. Also, the two *Hydra brute force modules* do currently *not* work with IPv6 addresses.
+AVAIN can automatically assess and quantify the security level of an IP-based network. Its final output is a score between 0 and 10, where the higher the score, the more vulnerable / insecure the network. Additionally, AVAIN keeps all of the intermediate result files to empower the user in investigating the network's security state in more detail. As IT and IoT security is a continuously evolving field, AVAIN was designed to be modular and thereby easily extensible. Therefore AVAIN is comprised of a core and several modules. During a vulnerability analysis, AVAIN's core invokes all (specified) modules which return a result at the end of their execution. Currently, there are three results types: scan results, i.e. reconnaissance information, vulnerability score results representing the outcome of a concrete vulnerability analysis and the mapping of a web server containing discovered sites and their parameters. By sharing their results, modules can work collaboratively to help AVAIN achieve a more sophisticated vulnerability assessment. As of now, AVAIN only supports the assessment of IPv4 and IPv6 enabled devices. Note that IPv6 zone IDs are not guaranteed to work with AVAIN. Also, the two Hydra brute force modules do currently not work with IPv6 addresses.
 
 While AVAIN can only be used in IP-based networks as of now, it is possible to extend AVAIN to make it capable of working in different kinds of networks such as specialized IoT networks.
 
@@ -19,8 +19,9 @@ While AVAIN can only be used in IP-based networks as of now, it is possible to e
 * Current modules:
     * (Post-processed) **Nmap reconnaissance**
     * **Correlation** of discovered [**CPEs**](https://csrc.nist.gov/projects/security-content-automation-protocol/specifications/cpe/ "About CPE") with **[CVE](https://cve.mitre.org "About CVE") / [NVD](https://nvd.nist.gov "About NVD")** entries
-    * Brute Force Credential Check for **SSH** services
-    * Brute Force Credential Check for **Telnet** services
+    * **Directory brute forcing** of a web server with [**gobuster**](https://github.com/OJ/gobuster) and a customizable wordlist and search depth
+    * Credential check for **SSH** services by using [**Hydra**](https://github.com/vanhauser-thc/thc-hydra/) and a cutomizable wordlist
+    * Credential check for **Telnet** services by using [**Hydra**](https://github.com/vanhauser-thc/thc-hydra/) and a customizable wordlist
 
 
 ## Installation
@@ -205,7 +206,7 @@ print_result_types = SCAN, WEBSERVER_MAP                         // the intermed
 scan_type = S                                                    // SYN scan and UDP scan require root privileges
 fast_scan = False                                                // whether Nmap should use T5 and F option as speedup
 add_scripts = default, http-headers, smb-os-discovery, banner    // additional scripts Nmap should use
-timing_template = 3   
+timing_template = 3
 ```
 Like in many programming languages, comments can be made with ``//`` and ``/* */``. The strings surrounded by ``[`` and ``]`` specify the module the following configuration settings apply to. Every setting has to be placed on a separate line. Settings are specified using a ``key = value`` structure. The keys and values can be custom for every module; mostly AVAIN does not have any restrictions on keys or values. The only thing AVAIN does for every module regarding the config file is parse its section into a dictionary whose keys and values are the same as the config's. *Every module itself is responsible for parsing its config values.*
 In case the user specifies a separate config file to use, AVAIN overwrites its default configuration settings with the ones specified in the user's config file. Therefore, the user's config file is not required to contain all settings available but only the ones the user wants changed. It is advised that the user supplies their own configuration file instead of manually overwriting the default configuration file.
