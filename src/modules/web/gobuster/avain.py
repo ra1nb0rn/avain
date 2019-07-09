@@ -224,7 +224,7 @@ def get_hosts(ip):
                 entries = f.read().split("\n")
                 for entry in entries:
                     entry = entry.strip()
-                    if entry.startswith(ip):
+                    if entry.startswith(ip + " "):
                         hosts.append(entry[entry.rfind(" ")+1:])
         except FileNotFoundError:
             pass
