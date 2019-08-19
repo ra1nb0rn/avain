@@ -85,7 +85,7 @@ def run_gobuster(url, redr_file):
 
 
         cur_url = url + dir_
-        gobuster_call = ["gobuster", "-t", CONFIG["threads"], "-w", CONFIG["wordlist"], "-u", cur_url, "-x", CONFIG["extensions"], "-k"]
+        gobuster_call = ["gobuster", "dir", "-t", CONFIG["threads"], "-w", CONFIG["wordlist"], "-u", cur_url, "-x", CONFIG["extensions"], "-k"]
         findings = []
         printed_starting, printing_results = False, False
         prev_line_is_progress = False
