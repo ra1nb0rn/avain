@@ -1,16 +1,16 @@
 import datetime
 import logging
 import os
-import requests
 import socket
 import subprocess
+import requests
 
 
 from core.result_types import ResultType
 import core.utility as util
 
-INTERMEDIATE_RESULTS = {ResultType.SCAN: None}  # get the current scan result
-CONFIG = None
+INTERMEDIATE_RESULTS = {ResultType.SCAN: {}}  # get the current scan result
+CONFIG = {}
 LOGGER = None
 VERBOSE = False
 CREATED_FILES = ["gobuster_out.txt"]
@@ -19,6 +19,10 @@ TARGETS = []  # list targets as (ip, host, port, service)
 EXCLUDE_DIRS = set()
 
 def run(results: list):
+    """
+    Entry point for this module.
+    """
+
     global LOGGER, EXCLUDE_DIRS
 
     # setup logger
@@ -33,9 +37,10 @@ def run(results: list):
     redr_file = open(CREATED_FILES[0], "w+")
 
     for (ip, host, port, protocol) in TARGETS:
+        # for every new IP create a new webserver_map entry and print a seperator
         if ip not in webserver_map:
             webserver_map[ip] = {}
-            LOGGER.info("Initiating scan for %s" % ip)
+            LOGGER.info("Initiating scan for %s", ip)
             if VERBOSE:
                 util.printit("*" * 30)
                 redr_file.write("*" * 30 + "\n")
@@ -57,6 +62,7 @@ def run(results: list):
         else:
             url = protocol + "://" + host + ":" + port
 
+        # run gobuster on target URL and save the results
         host_web_map = run_gobuster(url, redr_file)
         webserver_map[ip][port][host] = host_web_map
 
@@ -68,40 +74,61 @@ def run(results: list):
 
 
 def run_gobuster(url, redr_file):
+    """
+    Run gobuster on the target URL and process its results.
+
+    :param url: the URL to run gobuster on
+    :param redr_file: the file to redirect the output of gobuster to
+    :return: a webserver_map that contains the formated results of the gobuster scan
+    """
     depth = int(CONFIG["depth"])
-    dirs = ["/"]
+    dirs = ["/"]  # keeps track of all dirs to brute force
 
     webserver_map = {}
-
     start_host = datetime.datetime.now()
+
+    # run gobuster once for every discovered directory
     for dir_ in dirs:
+        # stop if the maximum depth was reached ...
         if dir_.count("/") > depth:
             break
-        elif (datetime.datetime.now() - start_host).total_seconds() > int(CONFIG["per_host_timeout"]):
-            redr_file.write("\nWARNING: HOST SEARCH TIMEOUT ('%s', >%ss)\n" % (url, CONFIG["per_host_timeout"]))
+        # ... or too much time was spent bruteforcing this host
+        elif ((datetime.datetime.now() - start_host).total_seconds() >
+              int(CONFIG["per_host_timeout"])):
+            redr_file.write("\nWARNING: HOST SEARCH TIMEOUT ('%s', >%ss)\n" %
+                            (url, CONFIG["per_host_timeout"]))
             if VERBOSE:
-                util.printit("\nWARNING: HOST SEARCH TIMEOUT ('%s', >%ss)\n" % (url, CONFIG["per_host_timeout"]), color=util.RED)
+                util.printit("\nWARNING: HOST SEARCH TIMEOUT ('%s', >%ss)\n" %
+                             (url, CONFIG["per_host_timeout"]), color=util.RED)
             break
 
-
+        # setup gobuster parameters
         cur_url = url + dir_
-        gobuster_call = ["gobuster", "dir", "-t", CONFIG["threads"], "-w", CONFIG["wordlist"], "-u", cur_url, "-x", CONFIG["extensions"], "-k"]
+        gobuster_call = ["gobuster", "dir", "-t", CONFIG["threads"], "-w", CONFIG["wordlist"],
+                         "-u", cur_url, "-x", CONFIG["extensions"], "-k"]
         findings = []
         printed_starting, printing_results = False, False
         prev_line_is_progress = False
         start_dir = datetime.datetime.now()
-        killed = False
+
+        # start gobuster and in parallel handle the printing,
+        # check for timeouts and append the results
         with subprocess.Popen(gobuster_call, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               bufsize=1, universal_newlines=True) as proc:
 
             for line in proc.stdout:
-                if (datetime.datetime.now() - start_dir).total_seconds() > int(CONFIG["per_directory_timeout"]):
-                    redr_file.write("\nWARNING: DIRECTORY SEARCH TIMEOUT ('%s', >%ss)\n" % (dir_, CONFIG["per_directory_timeout"]))
+                # check for timeouts on every new printed line
+                if ((datetime.datetime.now() - start_dir).total_seconds() >
+                        int(CONFIG["per_directory_timeout"])):
+                    redr_file.write("\nWARNING: DIRECTORY SEARCH TIMEOUT ('%s', >%ss)\n" %
+                                    (dir_, CONFIG["per_directory_timeout"]))
                     if VERBOSE:
-                        util.printit("\nWARNING: DIRECTORY SEARCH TIMEOUT ('%s', >%ss)\n" % (dir_, CONFIG["per_directory_timeout"]), color=util.RED)
+                        util.printit("\nWARNING: DIRECTORY SEARCH TIMEOUT ('%s', >%ss)\n" %
+                                     (dir_, CONFIG["per_directory_timeout"]), color=util.RED)
                     proc.kill()
                     break
-                elif (datetime.datetime.now() - start_host).total_seconds() > int(CONFIG["per_host_timeout"]):
+                elif ((datetime.datetime.now() - start_host).total_seconds() >
+                      int(CONFIG["per_host_timeout"])):
                     proc.kill()
                     break
 
@@ -111,6 +138,8 @@ def run_gobuster(url, redr_file):
                 if printing_results and line.strip() == "":
                     continue
 
+                # if the previous line was a progress indicator, remove it to make
+                # it possible to orderly print in verbose mode
                 if VERBOSE:
                     if prev_line_is_progress:
                         util.acquire_print()
@@ -120,8 +149,9 @@ def run_gobuster(url, redr_file):
 
                     prev_line_is_progress = line.startswith("Progress: ")
                     util.printit(line, end="")
-
                 redr_file.write(line)
+
+                # skip the front matter of gobuster when handling results
                 if "Starting gobuster" in line:
                     printed_starting = True
                 elif "================" in line and printed_starting and (not printing_results):
@@ -136,60 +166,106 @@ def run_gobuster(url, redr_file):
                         code = line[code_start:code_start+3]
                         findings.append((entry, code))
 
-        for finding in findings:
-            try:
-                code_str = finding[1]
-                code = int(code_str)
-            except:
-                continue
-
-            if finding[0].startswith("/"):
-                path = dir_ + finding[0][1:]
-            else:
-                path = dir_ + finding[0]
-
-            # get location of redirect
-            if code == 301 or code == 302:
-                resp = requests.get(url + path, allow_redirects=False)
-                redirect_to = resp.headers["Location"]
-                if redirect_to.startswith("http"):
-                    if redirect_to == url + path + "/":
-                        resp = requests.get(redirect_to, allow_redirects=False)
-                        path = path + "/"
-                        code_str = str(resp.status_code)
-                    else:
-                        if not code_str in webserver_map:
-                            webserver_map[code_str] = []
-                        webserver_map[code_str].append({"PATH": path, "INFO": "redirect to %s" % redirect_to})
-                        continue
-                else:
-                    if (redirect_to == path + "/") or ("/" + redirect_to == path + "/"):
-                        resp = requests.get(redirect_to, allow_redirects=False)
-                        path = path + "/"
-                        code_str = str(resp.status_code)
-                    else:
-                        if not code_str in webserver_map:
-                            webserver_map[code_str] = []
-                        webserver_map[code_str].append({"PATH": path, "INFO": "redirect to %s" % redirect_to})
-                        continue
-
-            if not code_str in webserver_map:
-                webserver_map[code_str] = []
-            webserver_map[code_str].append({"PATH": path})
-
-            if finding[0][finding[0].find("/")+1:] not in EXCLUDE_DIRS:
-                if path.endswith("/"):
-                    dirs.append(path)
-                elif CONFIG["allow_file_depth_search"].lower() == "true":
-                    dirs.append(path + "/")
+        # extract new dirs and process findings
+        new_dirs = process_gobuster_findings(url, dir_, findings, webserver_map)
+        dirs += new_dirs
 
     return webserver_map
 
 
+def process_gobuster_findings(base_url, cur_dir, findings, webserver_map):
+    """
+    Process findings to retrieve new directories and handle redirects.
+    A finding is a tuple (path, HTTP code).
+
+    :param orig_url: the URL that gobuster was run on first
+    :param cur_dir: the current directory that was just bruteforced
+    :param findings: the list of findings
+    :param webserver_map: the current webserver map
+    :return: the new relative directories to bruteforce
+    """
+
+    def circumvent_redirect():
+        nonlocal resp, path, code_str
+
+        resp = requests.get(redirect_to, allow_redirects=False)
+        path = path + "/"
+        code_str = str(resp.status_code)
+
+    def store_redirect():
+        nonlocal code_str, path, redirect_to
+
+        if not code_str in webserver_map:
+            webserver_map[code_str] = []
+            webserver_map[code_str].append({"PATH": path, "INFO": "redirect to %s" % redirect_to})
+
+
+    new_dirs = []
+    for finding in findings:
+        # Get HTTP code of the response of the finding
+        try:
+            code_str = finding[1]
+            code = int(code_str)
+        except:
+            continue
+
+        # build absolute path from relative directory of finding
+        if finding[0].startswith("/"):
+            path = cur_dir + finding[0][1:]
+        else:
+            path = cur_dir + finding[0]
+
+        # get location of redirect
+        if code == 301 or code == 302:
+            resp = requests.get(base_url + path, allow_redirects=False)
+            redirect_to = resp.headers["Location"]
+            # handle redirect to a complete URL
+            if redirect_to.startswith("http"):
+                # if the redirect just adds '/' to the directory, do not store the redirect ...
+                if redirect_to == base_url + path + "/":
+                    circumvent_redirect()
+                # ... otherwise store the redirect in the webserver_map
+                else:
+                    store_redirect()
+                    continue
+            # handle redirect to another path
+            else:
+                # try to fix / understand different representations of the redirect path
+                if (redirect_to == path + "/") or ("/" + redirect_to == path + "/"):
+                    circumvent_redirect()
+                # if can't handle, just store the redirect
+                else:
+                    store_redirect()
+                    continue
+
+        # add new path to webserver_map
+        if not code_str in webserver_map:
+            webserver_map[code_str] = []
+        webserver_map[code_str].append({"PATH": path})
+
+        # add new directory to be bruteforced
+        if finding[0][finding[0].find("/")+1:] not in EXCLUDE_DIRS:
+            if path.endswith("/"):
+                new_dirs.append(path)
+            elif CONFIG["allow_file_depth_search"].lower() == "true":
+                new_dirs.append(path + "/")
+
+    return new_dirs
+
+
 def set_targets():
+    """
+    Determine the targets to run gobuster against. Targets are determined
+    by looking at port numbers, service infos and service names.
+    """
+
     global TARGETS
 
     def add_targets(ip, port, protocol):
+        """
+        Add as targets this (ip, port, protocol) combination together with every
+        available domain name for that IP to deal with virtual hosts.
+        """
         nonlocal hosts
 
         for host in hosts:
@@ -217,6 +293,12 @@ def set_targets():
 
 
 def get_hosts(ip):
+    """
+    Return a list containing either only the given IP or a list of all
+    availabledomain names that are bound to this IP. Names are first
+    looked up in the local /etc/hosts file and then by actual reverse DNS.
+    """
+
     hosts = []
     if CONFIG["do_reverse_dns"].lower() == "true":
         try:
