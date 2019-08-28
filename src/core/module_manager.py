@@ -185,25 +185,28 @@ class ModuleManager():
                 util.printit(math.ceil(count / 2) * "=" + "\n", color=util.BRIGHT_BLUE)
 
             # run module
-            module_thread.start()
-            show_progress_state = 0
-            while module_thread.is_alive():
-                module_thread.join(timeout=self.join_timeout)
+            try:
+                module_thread.start()
+                show_progress_state = 0
+                while module_thread.is_alive():
+                    module_thread.join(timeout=self.join_timeout)
 
-                if not util.acquire_print(timeout=PRINT_LOCK_ACQUIRE_TIMEOUT):
-                    continue
+                    if not util.acquire_print(timeout=PRINT_LOCK_ACQUIRE_TIMEOUT):
+                        continue
 
-                print(util.GREEN + "Running module %d of %d - " % (i+1, len(modules)), end="")
-                print(util.SANE + module_name_no_prefix + "  ", end="")
-                print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
-                print(util.SANE, end="")  # cleanup colors
-                util.clear_previous_line()
-                util.release_print()
+                    print(util.GREEN + "Running module %d of %d - " % (i+1, len(modules)), end="")
+                    print(util.SANE + module_name_no_prefix + "  ", end="")
+                    print(util.YELLOW + SHOW_PROGRESS_SYMBOLS[show_progress_state])
+                    print(util.SANE, end="")  # cleanup colors
+                    util.clear_previous_line()
+                    util.release_print()
 
-                if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
-                    show_progress_state = 0
-                else:
-                    show_progress_state += 1
+                    if (show_progress_state + 1) % len(SHOW_PROGRESS_SYMBOLS) == 0:
+                        show_progress_state = 0
+                    else:
+                        show_progress_state += 1
+            except KeyboardInterrupt:
+                util.printit("Module '%s' was manually killed." % module_name_no_prefix, color=util.RED)
 
             # change back into the main directory
             os.chdir(main_cwd)
