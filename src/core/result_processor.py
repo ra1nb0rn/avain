@@ -54,7 +54,7 @@ class ResultProcessor(metaclass=ABCMeta):
 
     @abstractmethod
     def parse_result_file(self, filepath: str):
-        """Return the type of results the processor class handles"""
+        """Parse the result file at the given location and append its result"""
 
         raise NotImplementedError
 
@@ -67,15 +67,15 @@ class ResultProcessor(metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def store_result(filepath: str):
-        """Return the type of results the processor class handles"""
+    def store_result(result: dict, filepath: str):
+        """Store the given result at the given location"""
 
         raise NotImplementedError
 
     @staticmethod
     @abstractmethod
-    def store_aggregated_result(filepath: str):
-        """Return the type of results the processor class handles"""
+    def store_aggregated_result(aggr_result, filepath: str):
+        """Store the given aggregated result at the given location"""
 
         raise NotImplementedError
 
