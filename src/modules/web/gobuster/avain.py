@@ -151,6 +151,10 @@ def run_gobuster(url, redr_file):
                     util.printit(line, end="")
                 redr_file.write(line)
 
+                # skip errors
+                if line.startswith("[ERROR]"):
+                    continue
+
                 # skip the front matter of gobuster when handling results
                 if "Starting gobuster" in line:
                     printed_starting = True
