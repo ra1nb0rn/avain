@@ -19,6 +19,7 @@ class Cli():
         Create a Cli object.
         """
         self.args = None
+        self.user_results = {}
 
     def parse_arguments(self):
         """

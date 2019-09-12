@@ -213,12 +213,12 @@ class ModuleManager():
 
             created_files = get_created_files(module)
             if mtype != "update" and module_results:
-                for i, res in enumerate(module_results):
+                for j, res in enumerate(module_results):
                     if not isinstance(res, tuple):
                         self.logger.warning("Warning - module '%s' returned a non-tuple result: %s", module_name, type(res))
                         util.printit("Warning - module '%s' returned a non-tuple result: %s\n" %
                                      (module_name, type(res)), color=util.RED)
-                        del module_results[i]
+                        del module_results[j]
                 self._process_module_results(module_path, module_results, created_files)
             elif mtype == "update":
                 update_output_dir = os.path.join(self.output_dir, UPDATE_OUT_DIR)
@@ -412,7 +412,7 @@ class ModuleManager():
                 if rtype in ResultType:
                     intermediate_results[rtype] = copy.deepcopy(self.result_processors[rtype].aggregate_results())
                 else:
-                    rtype_keys = list(filter(lambda item: item.value==rtype, ResultType))
+                    rtype_keys = list(filter(lambda item: item.value == rtype, ResultType))
                     if rtype_keys:
                         rtype_key = rtype_keys[0]
                         intermediate_results[rtype] = copy.deepcopy(self.result_processors[rtype_key].aggregate_results())

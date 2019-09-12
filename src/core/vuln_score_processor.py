@@ -22,7 +22,7 @@ class VulnScoreProcessor(ResultProcessor):
                 return False
 
             if ((not isinstance(value, float)) and (not isinstance(value, int))
-                and (not isinstance(value, str))):
+                    and (not isinstance(value, str))):
                 return False
         return True
 

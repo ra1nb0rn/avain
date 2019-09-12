@@ -577,6 +577,7 @@ class ScanResultProcessor(ResultProcessor):
         return most_specific_entry
 
 
+    @staticmethod
     def is_valid_result(result):
         def check_name(node: dict):
             if "name" in node and (not isinstance(node["name"], str)):
@@ -627,30 +628,30 @@ class ScanResultProcessor(ResultProcessor):
                 return False
 
             if (key == "trust" and (not isinstance(value, float)) and (not isinstance(value, float))
-                and (not isinstance(value, str))):
+                    and (not isinstance(value, str))):
                 return False
-            else:
-                if not isinstance(value, dict):
-                    return False
 
-                if "os" in value:
-                    if isinstance(value["os"], list):
-                        items = value["os"]
-                    else:
-                        items = [value["os"]]
+            if not isinstance(value, dict):
+                return False
 
-                    for item in items:
-                        if not isinstance(item, dict):
-                            return False
-                        if not check_name(item):
-                            return False
-                        if not check_cpes(item):
-                            return False
+            if "os" in value:
+                if isinstance(value["os"], list):
+                    items = value["os"]
+                else:
+                    items = [value["os"]]
 
-                if not check_protocol("tcp"):
-                    return False
+                for item in items:
+                    if not isinstance(item, dict):
+                        return False
+                    if not check_name(item):
+                        return False
+                    if not check_cpes(item):
+                        return False
 
-                if not check_protocol("udp"):
-                    return False
+            if not check_protocol("tcp"):
+                return False
+
+            if not check_protocol("udp"):
+                return False
 
         return True
