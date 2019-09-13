@@ -162,7 +162,7 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
     json impact_entry;
     std::string cve_id, description, published, last_modified, vector_string, severity, cvss_version;
     std::string cpe, cpe23, descr_line, cpe_version, affected_versions, vendor_name, product_name, version_value;
-    bool vulnerable, no_cvss;
+    bool vulnerable;
     double base_score;
 
     // iterate the array
@@ -177,7 +177,6 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
         if (description != "")
             description.pop_back();
 
-        no_cvss = false;
         impact_entry = cve_entry["impact"];
         if (impact_entry.find("baseMetricV3") != impact_entry.end()) {
             base_score = (impact_entry["baseMetricV3"]["cvssV3"]["baseScore"]);
@@ -192,7 +191,10 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
             severity = impact_entry["baseMetricV2"]["severity"];
         }
         else {
-            no_cvss = true;
+            base_score = -1;
+            vector_string = "";
+            cvss_version = "";
+            severity = "";
         }
         published = cve_entry["publishedDate"];
         std::replace(published.begin(), published.end(), 'T', ' ');
@@ -362,7 +364,7 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
         }
 
         std::string cpe_part_str, cpe_str;
-        if (vague_cpe_infos.size() > 0) {
+        if (vague_cpe_infos.size() > 0 && cve_entry["cve"].find("affects") != cve_entry["cve"].end()) {
             for (auto &vendor_data_entry : cve_entry["cve"]["affects"]["vendor"]["vendor_data"]) {
                 auto &vendor_name_ref = vendor_data_entry["vendor_name"];  // field must exist afaik
                 if (vendor_data_entry.find("product") != vendor_data_entry.end()) {
