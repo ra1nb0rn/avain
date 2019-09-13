@@ -25,7 +25,7 @@ install_brew_packages() {
         exit 1
     fi
 
-    eval sudo -u $REAL_USER_NAME brew install hydra --with-libssh
+    eval sudo -u $REAL_USER_NAME brew install hydra
     if [ $? != 0 ]; then
         printf "Installation of hydra with libssh using brew was not successful."
         exit 1
