@@ -199,9 +199,9 @@ def process_gobuster_findings(base_url, cur_dir, findings, webserver_map):
     def store_redirect():
         nonlocal code_str, path, redirect_to
 
-        if not code_str in webserver_map:
-            webserver_map[code_str] = []
-            webserver_map[code_str].append({"PATH": path, "INFO": "redirect to %s" % redirect_to})
+        if code_str not in webserver_map:
+            webserver_map[code_str] = {}
+        webserver_map[code_str][path] = {"misc_info": "redirect to %s" % redirect_to}
 
 
     new_dirs = []
@@ -243,9 +243,9 @@ def process_gobuster_findings(base_url, cur_dir, findings, webserver_map):
                     continue
 
         # add new path to webserver_map
-        if not code_str in webserver_map:
-            webserver_map[code_str] = []
-        webserver_map[code_str].append({"PATH": path})
+        if code_str not in webserver_map:
+            webserver_map[code_str] = {}
+        webserver_map[code_str][path] = {}
 
         # add new directory to be bruteforced
         if finding[0][finding[0].find("/")+1:] not in EXCLUDE_DIRS:
@@ -299,7 +299,7 @@ def set_targets():
 def get_hosts(ip):
     """
     Return a list containing either only the given IP or a list of all
-    availabledomain names that are bound to this IP. Names are first
+    available domain names that are bound to this IP. Names are first
     looked up in the local /etc/hosts file and then by actual reverse DNS.
     """
 
