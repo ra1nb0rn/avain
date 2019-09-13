@@ -33,19 +33,41 @@ install_brew_packages() {
 
 install_apt_packages() {
     # Use apt to install Linux software packages
-    APT_PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev cmake gcc gobuster"
+    APT_PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev cmake gcc"
     which apt-get &> /dev/null
     if [ $? != 0 ]; then
         printf "Could not find apt-get command.\\nPlease check your apt installation first."
         exit 1
     fi
 
+    eval sudo apt-get update
     eval sudo apt-get -y install "${APT_PACKAGES}"
     if [ $? != 0 ]; then
         printf "Installation of apt packages was not successful."
         exit 1
     fi
     echo "Done."
+}
+
+install_linux_gobuster() {
+    KERNEL_VERSION=$(uname -v)
+    IS_DEBIAN=$(grep -q "Debian" <<< "${KERNEL_VERSION}"; echo $?)
+
+    if [ ${IS_DEBIAN} -eq 0 ]; then
+        sudo apt-get install -y gobuster
+    else
+        # check that gobuster is not already installed
+        which gobuster &> /dev/null
+        if [ $? == 0 ]; then
+            return
+        fi
+
+        # otherwise install it
+        sudo apt-get install -y golang-go
+        sudo go get github.com/OJ/gobuster
+        GOBUSTER_BIN="${HOME}/go/bin/gobuster"
+        sudo ln -s $GOBUSTER_BIN /usr/bin/gobuster
+    fi
 }
 
 # cd into AVAIN directory
@@ -62,6 +84,7 @@ elif [ "${KERNEL}" == "Linux" ]; then
     echo "Identified OS as: Linux"
     echo "Using packet manager: apt"
     install_apt_packages
+    install_linux_gobuster
 else
     printf "Could not identify running OS.\\nPlease install AVAIN manually."
     exit 1
