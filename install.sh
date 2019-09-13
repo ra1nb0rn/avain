@@ -11,19 +11,21 @@ install_brew_packages() {
     fi
 
     echo "Updating Homebrew and upgrading installed packages to latest version."
-    eval brew update && brew upgrade && brew cleanup
+    # as brew cannot be run with root privileges, we need to run it as the real user
+    REAL_USER_NAME=$(who am i | cut -d" " -f1)
+    eval sudo -u $REAL_USER_NAME brew update && sudo -u $REAL_USER_NAME brew upgrade && sudo -u $REAL_USER_NAME brew cleanup
     if [ $? != 0 ]; then
         printf "Installation of basic brew packages was not successful."
         exit 1
     fi
 
-    eval brew install "${BREW_PACKAGES}"
+    eval sudo -u $REAL_USER_NAME brew install "${BREW_PACKAGES}"
     if [ $? != 0 ]; then
         printf "Installation of basic brew packages was not successful."
         exit 1
     fi
 
-    eval brew install hydra --with-libssh
+    eval sudo -u $REAL_USER_NAME brew install hydra --with-libssh
     if [ $? != 0 ]; then
         printf "Installation of hydra with libssh using brew was not successful."
         exit 1
