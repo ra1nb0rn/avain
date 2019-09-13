@@ -49,7 +49,7 @@ def run(results: list):
 
     # match the data feed URLs
     nvd_nist_datafeed_html = nvd_response.text
-    jfeed_expr = re.compile(r"https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-\d\d\d\d.json.zip")
+    jfeed_expr = re.compile(r"https://nvd\.nist\.gov/feeds/json/cve/1\.1/nvdcve-1\.1-\d\d\d\d.json\.zip")
     nvd_feed_urls = re.findall(jfeed_expr, nvd_nist_datafeed_html)
 
     if not nvd_feed_urls:

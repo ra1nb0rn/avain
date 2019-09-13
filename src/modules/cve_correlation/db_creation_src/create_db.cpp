@@ -208,7 +208,7 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
         cve_query.bind(3, published);
         cve_query.bind(4, last_modified);
         
-        // Assumption: every entry has at least a cvssV3 score
+        // Assumption: every entry has at least a cvssV2 score
         cve_query.bind(5, cvss_version);
         cve_query.bind(6, base_score);
         cve_query.bind(7, vector_string);

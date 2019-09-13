@@ -715,14 +715,14 @@ def get_cve_details(found_cves: dict):
             cve_details[cve_id] = {"id": cve_id, "description": descr, "published": publ, "modified": last_mod,
                                    "href": "https://nvd.nist.gov/vuln/detail/%s" % cve_id}
 
-            if int(float(cvss_ver)) == 2:
+            if float(cvss_ver) == 2:
                 cve_details[cve_id]["cvssv2"] = float(score)
                 cve_details[cve_id]["vector_short"] = vector
                 transform_cvssv2_to_cvssv3(cve_details[cve_id])
                 add_detailed_vector(cve_details[cve_id])
                 add_extra_info(cve_details[cve_id], "extrainfo", ("Specified CVSSv3 score was converted from CVSSv2 " +
                                                                   "score because there was no CVSSv3 score available."))
-            elif int(float(cvss_ver)) == 3:
+            elif float(cvss_ver) == 3 or float(cvss_ver) == 3.1:
                 cve_details[cve_id]["cvssv3"] = float(score)
                 cve_details[cve_id]["vector_short"] = vector
                 add_detailed_vector(cve_details[cve_id])
@@ -796,6 +796,8 @@ def add_detailed_vector(cve: dict):
 
     if vector_short.startswith("CVSS:3.0/"):
         vector_short = vector_short[len("CVSS:3.0/"):]
+    elif vector_short.startswith("CVSS:3.1/"):
+        vector_short = vector_short[len("CVSS:3.1/"):]
 
     vector_detail = {}
     fields = vector_short.split("/")
