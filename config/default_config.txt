@@ -48,3 +48,17 @@ allow_file_depth_search = False                                  // whether to s
 exclude_dirs = js, css                                           // what directories not to search in
 per_directory_timeout = 300                                      // timeout for searching a directory in seconds
 per_host_timeout = 1800                                          // timeout for mapping a web server in seconds
+
+[web.crawler.avain]
+do_reverse_dns = True                                            // whether to use the domain of a server if it is available
+max_depth = 3                                                    // max directory depth for crawling (-1 for unlimited)
+user_agent = Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)  // the user agent to use
+cookies = {}                                                     // the cookies to use when crawling, specified as JSON object with (key, value) pairs
+use_linkfinder = False                                           // whether to use Linkfinder to statically find pages in JS code (false positives likely)
+use_selenium = True                                              // whether Selenium should be used to run javascript and trigger events
+extract_info_from_forms = True                                   // whether to analyze forms and try to extract GET / POST params or URLs from them
+extract_comments = True                                          // if True, try to extract comments from crawled HTML, JS, etc. documents
+check_linkfinder = True                                          // whether a URL discovered by linkfinder should be checked for existence via HEAD request
+linkfinder_check_timeout = 2                                     // timeout for a checking HEAD request; can significantly impact crawling speed
+crawl_parameter_links = True                                     // if True, URLs are uniquely identified by path & GET parameters and crawled accordingly
+max_path_visits = 25                                             // how many times a path can be crawled with different GET parameters

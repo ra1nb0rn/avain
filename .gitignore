@@ -6,3 +6,4 @@ resources/official-cpe-dictionary_v2.2.xml
 src/modules/cve_correlation/create_db
 src/modules/cve_correlation/db_creation_src/build/
 src/modules/cve_correlation/nvd_db.db3
+src/modules/web/crawler/LinkFinder/
