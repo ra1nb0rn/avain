@@ -12,7 +12,6 @@ install_brew_packages() {
 
     echo "Updating Homebrew and upgrading installed packages to latest version."
     # as brew cannot be run with root privileges, we need to run it as the real user
-    REAL_USER_NAME=$(who am i | cut -d" " -f1)
     eval sudo -u $REAL_USER_NAME brew update && sudo -u $REAL_USER_NAME brew upgrade && sudo -u $REAL_USER_NAME brew cleanup
     if [ $? != 0 ]; then
         printf "Installation of basic brew packages was not successful."
@@ -75,6 +74,8 @@ install_linux_gobuster() {
 # cd into AVAIN directory
 PREV_CWD=$(pwd)
 cd "$(dirname "${BASH_SOURCE[0]}")"
+# store real user name if sudo was used
+REAL_USER_NAME=$(who am i | cut -d" " -f1)
 
 echo "Installing software packages ..."
 KERNEL=$(uname)
@@ -136,7 +137,8 @@ echo ""
 CWD=$(pwd)
 find src/modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
     cd "$(dirname ${file})"
-    ./avain_build.sh
+
+    source avain_build.sh
     if [ $? != 0 ]; then
         printf "Could not successfully build module in %s\\n\\n" "$(dirname "${file}")"
         exit 1
