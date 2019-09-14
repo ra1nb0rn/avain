@@ -7,7 +7,7 @@ AVAIN can automatically assess and quantify the security level of an IP-based ne
 While AVAIN can only be used in IP-based networks as of now, it is possible to extend AVAIN to make it capable of working in different kinds of networks such as specialized IoT networks.
 
 ## Features
-* **Highly modular** framework for vulnerability analysis in computer networks. Entirely new modules or wrappers for other programs can easily be written using **Pyhon**.
+* **Highly modular** framework for vulnerability analysis in computer networks. Entirely new modules or wrappers for other programs can easily be written using **Python**.
 * Modules can work **collaboratively** by sharing their results. This **simplifies the implementation** of modules and enables AVAIN to achieve a **more sophisticated** vulnerability assessment.
 * **Various levels of detail** for output:
     * Highly detailed output: All intermediate files are kept, even the ones from modules
