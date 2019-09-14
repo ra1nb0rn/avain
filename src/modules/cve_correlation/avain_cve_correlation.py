@@ -661,12 +661,14 @@ def process_general_cve_cpe_data(found_cves: dict, general_cve_cpe_data: dict):
 
         for entry in general_cve_cpe_data:
             entry_cpe = entry[1]
+            entry_cpe_split = entry_cpe[7:].split(":")
             version_start, version_start_type = entry[2], entry[3]
             version_end, version_end_type = entry[4], entry[5]
             with_cpes = entry[6]
 
             # check if current CPE's version is within a range of vulnerable versions
             cpe_in = False
+
             if version_start and version_end:
                 if version_start_type == "Including" and version_end_type == "Including":
                     cpe_in = version.parse(version_start) <= cpe_iter_version <= version.parse(version_end)
@@ -686,11 +688,19 @@ def process_general_cve_cpe_data(found_cves: dict, general_cve_cpe_data: dict):
                     cpe_in = cpe_iter_version <= version.parse(version_end)
                 elif version_end_type == "Excluding":
                     cpe_in = cpe_iter_version < version.parse(version_end)
+            elif len(entry_cpe_split) > 1:  # make sure that at least product information is available
+                cpe_in = True
+                for i in range(min(len(entry_cpe_split), len(cpe_iter_split))):
+                    if entry_cpe_split[i] == "" or entry_cpe_split[i] == "-":  # '-' as symbol for 'any'
+                        continue
+                    if entry_cpe_split[i] != cpe_iter_split[i]:
+                        cpe_in = False
+                        break
 
             if cpe_in:
-                if len(cpe_iter_split) > 2:
-                    entry_cpe_split = entry_cpe[7:].split(":")
-                    if len(entry_cpe_split) > 2 and entry_cpe_split[2] == "":
+                if len(cpe_iter_split) > 2 and len(entry_cpe_split) > 2:
+                    # check that everything after the version entry matches
+                    if len(entry_cpe_split) > 2 and entry_cpe_split[2] == "" or entry_cpe_split[2] == "-":
                         cpe_in = ":".join(cpe_iter_split[3:]) == ":".join(entry_cpe_split[3:])
 
             if cpe_in:
