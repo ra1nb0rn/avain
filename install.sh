@@ -51,9 +51,6 @@ install_apt_packages() {
 }
 
 install_linux_gobuster() {
-    KERNEL_VERSION=$(uname -v)
-    IS_DEBIAN=$(grep -q "Debian" <<< "${KERNEL_VERSION}"; echo $?)
-
     if [ ${IS_DEBIAN} -eq 0 ]; then
         sudo apt-get install -y gobuster
     else
@@ -76,6 +73,9 @@ PREV_CWD=$(pwd)
 cd "$(dirname "${BASH_SOURCE[0]}")"
 # store real user name if sudo was used
 REAL_USER_NAME=$(who am i | cut -d" " -f1)
+# store version info
+KERNEL_VERSION=$(uname -v)
+IS_DEBIAN=$(grep -q "Debian" <<< "${KERNEL_VERSION}"; echo $?)
 
 echo "Installing software packages ..."
 KERNEL=$(uname)

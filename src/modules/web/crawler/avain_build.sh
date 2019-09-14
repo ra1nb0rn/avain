@@ -25,7 +25,6 @@ if [ "${KERNEL}" == "Darwin" ]; then
     sed -i "" -e "1s/python$/python3/" LinkFinder/linkfinder.py
 elif [ "${KERNEL}" == "Linux" ]; then
     # chromedriver is installed differently on Debian and e.g. Ubuntu
-    IS_DEBIAN=$(grep -q "Debian" <<< "${KERNEL_VERSION}"; echo $?)
     if [ ${IS_DEBIAN} -eq 0 ]; then
         sudo apt-get install -y chromium-driver && sudo apt-get --only-upgrade -y install chromium-driver
     else
