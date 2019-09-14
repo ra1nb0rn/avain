@@ -22,11 +22,11 @@ if [ "${KERNEL}" == "Darwin" ]; then
     fi
     sudo -u $REAL_USER_NAME brew cask install chromedriver && sudo -u $REAL_USER_NAME brew cask upgrade chromedriver
     # edit the first line to have linkfinder run with Python 3 by default
-    sed -i "" -e "1s/python/python3/" LinkFinder/linkfinder.py
+    sed -i "" -e "1s/python$/python3/" LinkFinder/linkfinder.py
 elif [ "${KERNEL}" == "Linux" ]; then
     sudo apt-get install -y chromium-chromedriver && sudo apt-get --only-upgrade -y install chromium-chromedriver
     # edit the first line to have linkfinder run with Python 3 by default
-    sed -i "1s/python/python3/" LinkFinder/linkfinder.py
+    sed -i "1s/python$/python3/" LinkFinder/linkfinder.py
 else
     printf "Could not identify running OS.\\nPlease install AVAIN manually."
     exit 1
