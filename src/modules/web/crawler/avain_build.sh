@@ -1,5 +1,25 @@
 #!/bin/bash
 
+install_chromedriver_linux() {
+    POSSIBLE_PKGS="chromium-driver chromium-chromedriver"
+    SUCCESS=0
+
+    for pkg in $POSSIBLE_PKGS; do
+        sudo apt-get install -y $pkg
+        if [ $? -eq 0 ]; then
+            SUCCESS=1
+            sudo apt-get --only-upgrade -y install $pkg
+            break
+        fi
+    done
+
+    if [ $SUCCESS != 1 ]; then
+        echo "Could not install chromedriver. Please install manually."
+        exit 1
+    fi
+}
+
+
 echo "Installing required software for 'web/crawler' module ..."
 
 # install PIP packages
@@ -24,12 +44,8 @@ if [ "${KERNEL}" == "Darwin" ]; then
     # edit the first line to have linkfinder run with Python 3 by default
     sed -i "" -e "1s/python$/python3/" LinkFinder/linkfinder.py
 elif [ "${KERNEL}" == "Linux" ]; then
-    # chromedriver is installed differently on Debian and e.g. Ubuntu
-    if [ ${IS_DEBIAN} -eq 0 ]; then
-        sudo apt-get install -y chromium-driver && sudo apt-get --only-upgrade -y install chromium-driver
-    else
-        sudo apt-get install -y chromium-chromedriver && sudo apt-get --only-upgrade -y install chromium-chromedriver
-    fi
+    # chromedriver is installed differently on different Linux distros
+    install_chromedriver_linux
 
     # edit the first line to have linkfinder run with Python 3 by default
     sed -i "1s/python$/python3/" LinkFinder/linkfinder.py
