@@ -41,7 +41,7 @@ tasks = 16                                                       // the number o
 [web.gobuster.avain]
 wordlist = ../wordlists/dirbuster/directory-list-2.3-small.txt   // wordlist to use relative to module dir
 extensions = php, html                                           // file extensions to search for
-depth = 3                                                        // the search depth
+depth = 2                                                        // the search depth
 threads = 10                                                     // how many threads to use for gobuster
 do_reverse_dns = True                                            // whether the domain name(s) of the IP should be used if it has one
 allow_file_depth_search = False                                  // whether to search for directories if the url ends with a file
