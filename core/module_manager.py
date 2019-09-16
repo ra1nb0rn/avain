@@ -315,10 +315,7 @@ class ModuleManager():
             if os.path.isabs(module_output_dir):
                 file_out_dir = module_output_dir
             else:
-                rel_dir = os.path.dirname(file)
-                if os.path.isabs(rel_dir):
-                    rel_dir = os.path.relpath(rel_dir, os.path.abspath(module_dir))
-                file_out_dir = os.path.join(module_output_dir, rel_dir)
+                util.printit("[WARNING] Filepath '%s' should have been absolute", color=util.RED)
             os.makedirs(file_out_dir, exist_ok=True)
             file_out_path = os.path.join(file_out_dir, os.path.basename(file))
             if os.path.isabs(file) and (os.path.isfile(file) or os.path.isdir(file)):
