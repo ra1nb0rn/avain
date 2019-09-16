@@ -14,7 +14,6 @@ from comment_parser import comment_parser
 from comment_parser.parsers.common import UnterminatedCommentError
 from scrapy.linkextractors import LinkExtractor
 
-
 from core import utility as util
 from . import ipc_operations
 
@@ -74,6 +73,8 @@ class Crawler():
 
         # setup selenium if it is configured to be used
         if config["use_selenium"].lower() == "true":
+            import logging
+            logging.getLogger("seleniumwire").setLevel(logging.ERROR)
             from seleniumwire import webdriver
             from selenium.webdriver.chrome.options import Options
             chrome_options = Options()
