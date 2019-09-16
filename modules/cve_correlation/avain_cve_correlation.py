@@ -915,12 +915,10 @@ def check_database():
         LOGGER.info("Done.")
         os.makedirs("db_update", exist_ok=True)
         update_files = module_updater.CREATED_FILES
-        update_files_renamed = []
         for file in update_files:
             new_file = os.path.join("db_update", file)
             os.rename(os.path.abspath(file), new_file)
-            update_files_renamed.append(new_file)
-        CREATED_FILES += update_files_renamed
+        CREATED_FILES.append("db_update")
 
     if os.path.isfile(DATABASE_FILE):
         db_date = get_creation_date(DATABASE_FILE)

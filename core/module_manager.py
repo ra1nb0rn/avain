@@ -211,14 +211,22 @@ class ModuleManager():
             # change back into the main directory
             os.chdir(main_cwd)
 
+            # process module results and misc created files
             created_files = get_created_files(module)
-            if mtype != "update" and module_results:
+            if mtype != "update":
                 for j, res in enumerate(module_results):
                     if not isinstance(res, tuple):
                         self.logger.warning("Warning - module '%s' returned a non-tuple result: %s", module_name, type(res))
                         util.printit("Warning - module '%s' returned a non-tuple result: %s\n" %
                                      (module_name, type(res)), color=util.RED)
                         del module_results[j]
+
+                # warn if no results are available
+                if not module_results and created_files:
+                    self.logger.info("Module %s did not return any final results" % module_name)
+                elif not created_files:
+                    self.logger.info("Module %s did not return any results" % module_name)
+
                 self._process_module_results(module_path, module_results, created_files)
             elif mtype == "update":
                 update_output_dir = os.path.join(self.output_dir, UPDATE_OUT_DIR)
@@ -313,11 +321,11 @@ class ModuleManager():
                 file_out_dir = os.path.join(module_output_dir, rel_dir)
             os.makedirs(file_out_dir, exist_ok=True)
             file_out_path = os.path.join(file_out_dir, os.path.basename(file))
-            if os.path.isabs(file) and os.path.isfile(file):
+            if os.path.isabs(file) and (os.path.isfile(file) or os.path.isdir(file)):
                 shutil.move(file, file_out_path)
             else:
                 abs_file = os.path.join(module_dir, file)
-                if os.path.isfile(abs_file):
+                if os.path.isfile(abs_file) or os.path.isdir(abs_file):
                     shutil.move(abs_file, file_out_path)
 
     @staticmethod
