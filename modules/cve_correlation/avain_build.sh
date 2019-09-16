@@ -9,7 +9,7 @@ cd ".."
 # get C++ JSON parser from https://github.com/nlohmann/json
 mkdir -p "json/single_include/nlohmann"
 cd json/single_include/nlohmann
-wget https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+wget https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp -O json.hpp
 cd "../../../"
 
 rm -rf build
