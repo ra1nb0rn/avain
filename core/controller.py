@@ -9,7 +9,7 @@ import core.visualizer as visualizer
 
 LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOGFILE = "avain.log"
-DEFAULT_CONFIG_PATH = "%s%sconfig/default_config.txt" % (os.environ["AVAIN_DIR"], os.sep)
+DEFAULT_CONFIG_PATH = "config/default_config.txt"
 NET_DIR_MAP_FILE = "net_dir_map.json"
 
 class Controller():

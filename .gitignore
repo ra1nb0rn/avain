@@ -1,9 +1,8 @@
 __pycache__
 .DS_Store
 avain_output-*
-avain
 resources/official-cpe-dictionary_v2.2.xml
-src/modules/cve_correlation/create_db
-src/modules/cve_correlation/db_creation_src/build/
-src/modules/cve_correlation/nvd_db.db3
-src/modules/web/crawler/LinkFinder/
+modules/cve_correlation/create_db
+modules/cve_correlation/db_creation_src/build/
+modules/cve_correlation/nvd_db.db3
+modules/web/crawler/LinkFinder/

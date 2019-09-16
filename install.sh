@@ -135,7 +135,7 @@ echo ""
 echo "Building modules ..."
 echo ""
 CWD=$(pwd)
-find src/modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
+find modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
     cd "$(dirname ${file})"
 
     source avain_build.sh
@@ -148,33 +148,18 @@ find src/modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; d
 done
 echo "Done"
 
-# Install AVAIN script and link it
-echo "Creating avain executable ..."
-if [ "${KERNEL}" == "Darwin" ]; then
-    AVAIN_DIR=$(dirname "$(greadlink -f src)")
-else
-    AVAIN_DIR=$(dirname "$(readlink -f src)")
-fi
-
-cat << EOF > avain
-#!/bin/sh
-AVAIN_DIR="${AVAIN_DIR}"
-export AVAIN_DIR
-exec "\${AVAIN_DIR}/src/cli.py" "\$@"
-EOF
-
-chmod +x avain
+# Create executable AVAIN script and link it
+chmod +x avain.py
 AVAIN_DIR=$(pwd -P)
-ln -sf "${AVAIN_DIR}/avain" /usr/local/bin/avain
+ln -sf "${AVAIN_DIR}/avain.py" /usr/local/bin/avain
 
-echo "Done"
 echo ""
 
-# Change AVAIN directory and file ownership to actual user if installation is run with sudo
+# Change AVAIN directory and file ownership to actual user if installation is run as root via sudo
 EUID_=$(id -u)
 UID_=$(who | awk '{print $1; exit}' | xargs id -u)
 
-if [ "${EUID_}" != "${UID_}" ]; then
+if [ "${EUID_}" = 0 ] && [ "${EUID_}" != "${UID_}" ]; then
     GID_=$(id -g ${UID_})
     chown -R "${UID_}:${GID_}" .
 fi
