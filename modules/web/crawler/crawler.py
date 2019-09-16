@@ -56,6 +56,7 @@ class Crawler():
         self.found_cookies = []
         self.comments = {}
         self.redirects = {}
+        self.driver = None
 
         # figure out domain
         parsed_url = urllib.parse.urlparse(base_url)
@@ -103,7 +104,7 @@ class Crawler():
             pass
 
         # quit selenium driver
-        if self.config["use_selenium"].lower() == "true":
+        if self.driver:
             self.driver.quit()
 
         # make sure to delete linkfinder temporary files
