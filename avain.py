@@ -20,6 +20,7 @@ class Cli():
         """
         self.args = None
         self.user_results = {}
+        self.verbose = True  # make AVAIN verbose by default
 
     def parse_arguments(self):
         """
@@ -53,8 +54,14 @@ class Cli():
                                    "in single network mode meaning that all specified networks " +
                                    "are considered to be a subnet of one common supernet")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
+        optional_args.add_argument("-nV", "--non-verbose", action="store_true", help="disable verbose output")
 
         self.args = parser.parse_args()
+
+        # set verbosity (AVAIN is verbose by default)
+        if self.args.non_verbose:
+            self.verbose = False
+
         self.parse_user_results(parser)
         if (not self.args.networks) and (not self.args.network_list) and (not self.user_results) \
                 and (not self.args.update_modules):
@@ -121,7 +128,7 @@ class Cli():
                 else:
                     check_port(port_expr)
 
-    def process_arguments(self):
+    def start(self):
         """
         Parse the program arguments and initiate the vulnerability analysis.
         """
@@ -129,7 +136,7 @@ class Cli():
         controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks,
                                 self.args.update_modules, self.args.config, self.args.ports,
                                 self.args.output, self.user_results, self.args.single_network,
-                                self.args.verbose)
+                                self.verbose)
         controller.run()
 
     def parse_network_list(self, parser: argparse.ArgumentParser):
@@ -199,4 +206,4 @@ if __name__ == "__main__":
     # Start program
     CLI = Cli()
     CLI.parse_arguments()
-    CLI.process_arguments()
+    CLI.start()
