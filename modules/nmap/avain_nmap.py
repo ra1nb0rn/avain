@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
+import re
 
 from core import utility as util
 from core.result_types import ResultType
@@ -309,7 +310,7 @@ def parse_nmap_xml(filepath: str):
                     continue
 
                 new_os_si_added = False  # save if the current service revealed any OS information
-                service_elem = port_elem.find("service")
+                service_elem, service_version = port_elem.find("service"), ""
                 if service_elem is not None:
                     for key, value in service_elem.attrib.items():
                         # if current attribute is useful and unrelated to OS, store it as port info
@@ -356,7 +357,7 @@ def parse_nmap_xml(filepath: str):
         """
 
         nonlocal host, smb_elem
-        os_name, cpe = "", ""
+        os_name, cpe, samba_version = "", "", ""
 
         # find and parse CPE strings
         cpe_elem = smb_elem.find(".//elem[@key='cpe']")
@@ -371,6 +372,10 @@ def parse_nmap_xml(filepath: str):
             key, value = stmt.split(":", 1)
             if key == "OS":
                 os_name = value.split("(", 1)[0].strip()
+                # try to extract Samba version
+                match = re.match(r".*\(Samba (\d+\.\d+\.\d+)\)", value.strip())
+                if match:
+                    samba_version = match.group(1)
 
         # only add OS info to host if OS name was found
         if os_name:
@@ -378,6 +383,14 @@ def parse_nmap_xml(filepath: str):
             if cpe:
                 host["os_smb_discv"][0]["cpe"] = cpe
 
+        # add Samba version to every Samba CPE (assumption: only one version is in use)
+        if samba_version:
+            for proto in ("tcp", "udp"):
+                for portid, port_node in host.get(proto, {}).items():
+                    for i, cpe in enumerate(port_node.get("cpes", [])):
+                        if cpe == "cpe:/a:samba:samba":
+                            cpe += ":" + samba_version
+                            port_node["cpes"][i] = cpe
 
     ################################################
     #### Main code of Nmap XML parsing function ####
@@ -557,6 +570,7 @@ def create_sim_matching_string(parsed_host: dict):
                 matching_string += os_smb_discv["cpe"].lower() + " "
             add_if_exists(os_smb_discv, "name")
 
+
     # add select port infos to matching string
     add_ports_to_matching_string("tcp")
     add_ports_to_matching_string("udp")
@@ -727,7 +741,15 @@ def adjust_port_info_keys(host: dict):
 
             new_name = product
             if version:
+                version = version.strip()
                 new_name += " " + version
+
+                # make sure "version" is a good version number / ID
+                if re.match(r"^(\d+\.)*\d+:?\w*$", version):
+                    # add version to CPE if not already there
+                    cpes = port.get("cpes", [])
+                    if len(cpes) == 1 and len(cpes[0].split(":")) < 5:
+                        port["cpes"] = [cpes[0] + ":" + version]
 
             port["name"] = new_name
             port["service"] = name
