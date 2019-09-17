@@ -346,6 +346,20 @@ def is_neq_prefix(text_1: str, text_2: str):
     """Return True if text_1 is a non-equal prefix of text_2, otherwise return False"""
     return text_1 != text_2 and text_2.startswith(text_1)
 
+
 def neq_in(text_1: str, text_2: str):
     """Return True if text_1 is a non-equal part of text_2, otherwise return False"""
     return text_1 != text_2 and text_1 in text_2
+
+
+def get_creation_date(filepath):
+        """
+        Get the creation date of a file on a Unix based system.
+        If creation date is not available, return last-modified date.
+        Taken and adapted from https://stackoverflow.com/a/39501288 .
+        """
+        filestat = os.stat(filepath)
+        try:
+            return datetime.datetime.fromtimestamp(filestat.st_birthtime)
+        except AttributeError:
+            return datetime.datetime.fromtimestamp(filestat.st_mtime)

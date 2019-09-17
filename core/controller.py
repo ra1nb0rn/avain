@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import os
@@ -90,7 +91,16 @@ class Controller():
         self.single_network = single_network
         self.verbose = verbose
         self.ports = ports
-        self.update_modules = update_modules
+        if update_modules:
+            self.update_modules = update_modules
+        else:
+            self.update_modules = False
+            # retrieve last update timestamp based on last CPE dict download time
+            last_update = util.get_creation_date("modules/resources/official-cpe-dictionary_v2.2.xml")
+            passed_time = datetime.datetime.now() - last_update
+            update_interval = int(self.config["core"]["module_update_interval"])
+            if passed_time.total_seconds() > update_interval:
+                self.update_modules = True
 
         # setup module_manager
         self.module_manager = ModuleManager(self.networks, self.output_dir, self.omit_networks, self.ports,

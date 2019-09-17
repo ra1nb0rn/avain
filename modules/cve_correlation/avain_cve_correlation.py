@@ -939,18 +939,6 @@ def check_database():
     the expire time stored in the used config file.
     """
 
-    def get_creation_date(filepath):
-        """
-        Get the creation date of a file on a Unix based system.
-        If creation date is not available, return last-modified date.
-        Taken and adapted from https://stackoverflow.com/a/39501288 .
-        """
-        filestat = os.stat(filepath)
-        try:
-            return datetime.datetime.fromtimestamp(filestat.st_birthtime)
-        except AttributeError:
-            return datetime.datetime.fromtimestamp(filestat.st_mtime)
-
     def do_db_update(log_msg: str):
         """
         Conduct a database update after logging the given message.
@@ -968,7 +956,7 @@ def check_database():
         CREATED_FILES.append("db_update")
 
     if os.path.isfile(DATABASE_FILE):
-        db_date = get_creation_date(DATABASE_FILE)
+        db_date = util.get_creation_date(DATABASE_FILE)
         db_age = datetime.datetime.now() - db_date
         try:
             db_age_limit = datetime.timedelta(minutes=int(CONFIG["DB_expire"]))
