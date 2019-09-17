@@ -8,6 +8,7 @@ import os
 import sqlite3
 import sys
 import xml.etree.ElementTree as ET
+import shutil
 
 from cvsslib import cvss3, calculate_vector
 from packaging import version
@@ -21,7 +22,7 @@ if __name__ != "__main__":
 if __name__ != "__main__":
     INTERMEDIATE_RESULTS = {ResultType.SCAN: None}  # get the current scan result
 
-VERBOSE = False  # specifies whether to provide verbose output or not
+VERBOSE = True  # specifies whether to provide verbose output or not
 CONFIG = {}
 
 CREATED_FILES = []
@@ -91,15 +92,22 @@ def run(results: list):
     LOGGER.info("Starting with CVE discovery of all hosts")
     CREATED_FILES += [HOST_CVE_FILE, SUMMARY_FILE]
     for ip, host in hosts.items():
+
+        if VERBOSE:
+            header = "******** %s ********" % ip
+            full_header = ("*" * len(header) + "\n" + header + "\n" + "*" * len(header) + "\n")
+            util.printit(full_header)
+
+        # get TCP and UDP CVEs
+        process_port_cves("tcp")
+        process_port_cves("udp")
+
+        # get OS CVEs
         if CONFIG.get("skip_os", "false").lower() == "true":
             LOGGER.info("Skipping OS CVE analysis as stated in config file")
         else:
             for os_info in host["os"]:
                 add_cves_to_node(os_info, ip)
-
-        # get TCP and UDP cves
-        process_port_cves("tcp")
-        process_port_cves("udp")
 
     # compute scores and create summary
     LOGGER.info("Done")
@@ -122,14 +130,54 @@ def add_cves_to_node(node: dict, ip: str):
     Search and store all CVEs the given node's CPEs are affected by.
     Print the given string if a CPE with its CVEs would be added twice to the node.
     """
+
+    def print_cves():
+        nonlocal all_cves
+
+        all_cve_nodes_list = list(all_cves.values())
+        all_cve_nodes = {}
+        for list_entry in all_cve_nodes_list:
+            for cve_id, cve_node in list_entry.items():
+                all_cve_nodes[cve_id] = cve_node
+
+        all_cve_nodes = sorted(all_cve_nodes.values(), key=lambda entry: entry["cvssv3"], reverse=True)
+        count = int(CONFIG.get("max_print_count", -1))
+        if count == -1:
+            count = len(all_cve_nodes)
+        for print_node in all_cve_nodes[:count]:
+            description = print_node["description"].replace("\r\n\r\n", "\n").replace("\n\n", "\n").strip()
+            print_str = util.GREEN + print_node["id"] + util.SANE
+            print_str += " (" + util.MAGENTA + str(print_node["cvssv3"]) + util.SANE + "): "
+            print_str +=  description + "\n" + "Reference: " + print_node["href"]
+            print_str += ", " + print_node["published"].split(" ")[0]
+            util.printit(print_str)
+
+
     if "cpes" in node:
         node_cpes = node["cpes"]
         node["original_cpes"] = node_cpes
         node["cpes"] = {}
         broad_cpes = set()
         for cpe in node_cpes:
+            # take care of printing
+            if VERBOSE:
+                protocol = "base"
+                if "service" in node:
+                    protocol = node["service"].upper()
+                elif "protocol" in node:
+                    protocol = node["protocol"].upper()
+                port = ":" + node["portid"] if protocol != "base" else ""
+                print_str = util.BRIGHT_CYAN + "[+] %s%s (%s)" % (ip, port, protocol) + util.SANE
+                print_str += " - " + util.YELLOW + cpe + util.SANE + "\n"
+                util.printit(print_str)
+
             # get CPE's CVEs
             all_cves, broad_search = get_cves_to_cpe(cpe)
+
+            if VERBOSE:
+                print_cves()
+                columns = shutil.get_terminal_size((80, 20)).columns
+                util.printit("-" * columns + "\n")
 
             # save all CPEs with their CVEs to the node
             for cur_cpe, cves in all_cves.items():
@@ -940,6 +988,7 @@ def check_database():
 if __name__ == "__main__":
     # Provide CPE CVE lookup functionality if this file is called on its own
     if len(sys.argv) > 2:
+        VERBOSE = False  # disable AVAIN's verbose printing
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
         LOGGER = logging.getLogger(__name__)
         LOGGER.info("Searching CVEs for %s", sys.argv[1])
