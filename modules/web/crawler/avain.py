@@ -63,6 +63,7 @@ def run(results: list):
             header = "**** %s:%s - %s ****" % (ip, str(port), host)
             full_header = "*" * len(header) + "\n" + header + "\n" + "*" * len(header) + "\n"
             util.printit(full_header)
+
         # set up a new crawler for the current target and start it
         crawler_obj = crawler.Crawler(base_url, start_urls, CONFIG, helper_outfile, VERBOSE)
         wmap, new_netlocs_host, comments_host = crawler_obj.crawl()
