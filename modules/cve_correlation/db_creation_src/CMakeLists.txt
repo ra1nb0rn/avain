@@ -3,9 +3,6 @@ project(cve-database-creation)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Define CMake settings
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-
 # Include SQLiteCpp library and build it
 option(SQLITECPP_RUN_CPPLINT OFF)
 include_directories(SQLiteCpp/include)

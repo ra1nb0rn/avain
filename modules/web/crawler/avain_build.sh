@@ -4,32 +4,40 @@ install_chromedriver_linux() {
     POSSIBLE_PKGS="chromium-driver chromium-chromedriver"
     SUCCESS=0
 
+    QPRINT="-qq"
+    if [ $QUIET != 1 ]; then
+        QPRINT=""
+    fi
+
     for pkg in $POSSIBLE_PKGS; do
-        sudo apt-get install -y $pkg
+        sudo apt-get install -y ${QPRINT} $pkg
         if [ $? -eq 0 ]; then
             SUCCESS=1
-            sudo apt-get --only-upgrade -y install $pkg
+            sudo apt-get --only-upgrade -y ${QPRINT} install $pkg
             break
         fi
     done
 
     if [ $SUCCESS != 1 ]; then
-        echo "Could not install chromedriver. Please install manually."
+        printf "${RED}Could not install chromedriver. Please install it manually."
         exit 1
     fi
 }
 
 
-echo "Installing required software for 'web/crawler' module ..."
+QPRINT="--quiet"
+if [ $QUIET != 1 ]; then
+    QPRINT=""
+fi
 
 # install PIP packages
-pip3 install -r requirements.txt
+pip3 install ${QPRINT} -r requirements.txt
 
 # install linkfinder
 if [ ! -d LinkFinder ]; then
-    git clone https://github.com/GerbenJavado/LinkFinder.git
+    git clone ${QPRINT} https://github.com/GerbenJavado/LinkFinder.git
     cd LinkFinder
-    pip3 install -r requirements.txt
+    pip3 install ${QPRINT} -r requirements.txt
     cd ..
 fi
 
@@ -40,7 +48,15 @@ if [ "${KERNEL}" == "Darwin" ]; then
     if [ -z $REAL_USER_NAME ]; then
         REAL_USER_NAME=$(who am i | cut -d" " -f1)
     fi
-    sudo -u $REAL_USER_NAME brew cask install chromedriver && sudo -u $REAL_USER_NAME brew cask upgrade chromedriver
+
+    if [ $QUIET != 1 ]; then
+        sudo -u $REAL_USER_NAME brew cask install chromedriver
+        sudo -u $REAL_USER_NAME brew cask upgrade chromedriver
+    else
+        sudo -u $REAL_USER_NAME brew cask install chromedriver >/dev/null
+        sudo -u $REAL_USER_NAME brew cask upgrade chromedriver >/dev/null
+    fi
+
     # edit the first line to have linkfinder run with Python 3 by default
     sed -i "" -e "1s/python$/python3/" LinkFinder/linkfinder.py
 elif [ "${KERNEL}" == "Linux" ]; then
@@ -50,8 +66,6 @@ elif [ "${KERNEL}" == "Linux" ]; then
     # edit the first line to have linkfinder run with Python 3 by default
     sed -i "1s/python$/python3/" LinkFinder/linkfinder.py
 else
-    printf "Could not identify running OS.\\nPlease install AVAIN manually."
+    printf "${RED}Could not identify running OS.\\nPlease install AVAIN manually."
     exit 1
 fi
-
-echo "Done"
