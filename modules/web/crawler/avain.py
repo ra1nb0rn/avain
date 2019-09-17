@@ -67,6 +67,7 @@ def run(results: list):
         # set up a new crawler for the current target and start it
         crawler_obj = crawler.Crawler(base_url, start_urls, CONFIG, helper_outfile, VERBOSE)
         wmap, new_netlocs_host, comments_host = crawler_obj.crawl()
+        del crawler_obj  # explicitly delete object to prevent hang ups
 
         # store the discovered network locations
         if new_netlocs_host:
