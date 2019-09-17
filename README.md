@@ -24,6 +24,17 @@ While AVAIN can only be used in IP-based networks as of now, it is possible to e
     * Credential check for **Telnet** services by using [**Hydra**](https://github.com/vanhauser-thc/thc-hydra/) and a customizable wordlist
 
 
+## Docker
+For a simple setup of AVAIN, there is a Dockerfile available. You can build the avain container, e.g. like so:
+```
+docker build -t avain .
+```
+And then run it like this:
+```
+docker run -it avain
+```
+When running the container, you are given a bash shell and are placed into AVAIN's working directory. From there, since everything is installed, you can go ahead an run AVAIN. Note that the container building process may take some time. Alternatively you can install AVAIN directly, see below.
+
 ## Installation
 As of now, this tool only works on macOS and Linux (Ubuntu / Kali). Before installing, make sure to read the OS specific requirements below. To install AVAIN and all of its required software automatically, run ``./install.sh``. The software packages are installed with a platform specific package manager and ``pip3``. For more detailed information have a look at the ``install.sh`` script directly or the list of all required / installed software packages further down [below](#used_software). After installation, AVAIN may only be fully useable by the original user that installed it (and root).
 
