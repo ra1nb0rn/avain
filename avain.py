@@ -8,6 +8,12 @@ from core.controller import Controller
 from core.result_types import ResultType
 import core.utility as util
 
+# The following metadata applies to all source code files of AVAIN
+__author__ = "Dustin Born"
+__version__ = "0.1.0"
+__license__ = "MIT"
+
+
 USER_RESULT_ARGS = {ResultType.SCAN: ("-sR", "--scan-results"),
                     ResultType.VULN_SCORE: ("-vS", "--vulnerability-scores"),
                     ResultType.WEBSERVER_MAP: ("-wM", "--webserver-map")}
