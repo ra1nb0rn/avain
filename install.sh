@@ -124,12 +124,11 @@ fi
 echo "Done."
 echo ""
 
+# Download CPE 2.2 dictionary
 echo "Downloading CPE 2.2 dictionary ..."
-mkdir -p resources
-wget https://nvd.nist.gov/feeds/xml/cpe/dictionary/official-cpe-dictionary_v2.2.xml.zip
-unzip -o -d resources official-cpe-dictionary_v2.2.xml.zip
-rm official-cpe-dictionary_v2.2.xml.zip
-echo "Done."
+cd modules
+./module_updater.py
+cd ..
 
 echo ""
 echo "Building modules ..."

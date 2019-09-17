@@ -468,5 +468,5 @@ class ModuleManager():
                 if "__pycache__" in root:
                     continue
                 if file.startswith(prefix) and file.endswith(".py"):
-                    all_prefixed_files.append(root + os.sep + file)
+                    all_prefixed_files.append(os.path.join(root, file))
         return all_prefixed_files

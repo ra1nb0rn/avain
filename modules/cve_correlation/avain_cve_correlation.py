@@ -30,8 +30,7 @@ HOST_CVE_FILE = "found_cves.json"
 DATABASE_FILE = "nvd_db.db3"
 SUMMARY_FILE = "cve_summary.json"
 
-CPE_DICT_FILEPATH = ("..{0}..{0}resources{0}" +
-                     "official-cpe-dictionary_v2.2.xml").format(os.sep)
+CPE_DICT_FILEPATH = ("..{0}resources{0}official-cpe-dictionary_v2.2.xml").format(os.sep)
 CPE_DICT_ET_CPE_ITEMS = None
 MAX_LOG_CPES = 30
 
