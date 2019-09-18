@@ -52,17 +52,21 @@ install_apt_packages() {
         exit 1
     fi
 
-    QPRINT="-qq"
     if [ $QUIET != 1 ]; then
-        QPRINT=""
+        sudo apt-get update
+    else
+        sudo apt-get update >/dev/null
     fi
-
-    eval sudo apt-get update ${QPRINT}
     if [ $? != 0 ]; then
         printf "${RED}Installation of apt packages was not successful."
         exit 1
     fi
-    eval sudo apt-get -y ${QPRINT} install "${APT_PACKAGES}"
+
+    if [ ${QUIET} != 1 ]; then
+        eval sudo apt-get -y install "${APT_PACKAGES}"
+    else
+        eval sudo apt-get -y install "${APT_PACKAGES}" >/dev/null
+    fi
     if [ $? != 0 ]; then
         printf "${RED}Installation of apt packages was not successful."
         exit 1
@@ -70,12 +74,12 @@ install_apt_packages() {
 }
 
 install_linux_gobuster() {
-    QPRINT="-qq"
     if [ $QUIET != 1 ]; then
-        QPRINT=""
+        sudo apt-get install -y gobuster
+    else
+        sudo apt-get install -y gobuster 1>/dev/null
     fi
-
-    sudo apt-get install -y ${QPRINT} gobuster
+   
     if [ $? != 0 ]; then
         # check that gobuster is not already installed
         which gobuster &> /dev/null
@@ -84,7 +88,15 @@ install_linux_gobuster() {
         fi
 
         # otherwise install it
-        sudo apt-get install -y ${QPRINT} golang-go
+        if [ $QUIET != 1 ]; then
+            sudo apt-get install -y golang-go
+        else
+            sudo apt-get install -y golang-go 1>/dev/null
+        fi
+        if [ $? != 0 ]; then
+            printf "${RED}Installation of gobuster was not successfull."
+            exit 1
+        fi
         sudo go get github.com/OJ/gobuster
         if [ $? != 0 ]; then
             printf "${RED}Installation of gobuster was not successfull."

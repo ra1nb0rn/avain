@@ -4,16 +4,19 @@ install_chromedriver_linux() {
     POSSIBLE_PKGS="chromium-driver chromium-chromedriver"
     SUCCESS=0
 
-    QPRINT="-qq"
-    if [ $QUIET != 1 ]; then
-        QPRINT=""
-    fi
-
     for pkg in $POSSIBLE_PKGS; do
-        sudo apt-get install -y ${QPRINT} $pkg
+        if [ $QUIET != 1 ]; then
+            eval sudo apt-get install -y $pkg
+        else
+            eval sudo apt-get install -y $pkg &>/dev/null
+        fi
         if [ $? -eq 0 ]; then
             SUCCESS=1
-            sudo apt-get --only-upgrade -y ${QPRINT} install $pkg
+            if [ $QUIET != 1 ]; then
+                eval sudo apt-get install --only-upgrade -y $pkg
+            else
+                eval sudo apt-get install --only-upgrade -y $pkg &>/dev/null
+            fi
             break
         fi
     done
