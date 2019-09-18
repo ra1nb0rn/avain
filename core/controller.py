@@ -98,8 +98,8 @@ class Controller():
             # retrieve last update timestamp based on last CPE dict download time
             last_update = util.get_creation_date("modules/resources/official-cpe-dictionary_v2.2.xml")
             passed_time = datetime.datetime.now() - last_update
-            update_interval = int(self.config["core"]["module_update_interval"])
-            if passed_time.total_seconds() > update_interval:
+            update_interval = datetime.timedelta(minutes=int(self.config["core"]["module_update_interval"]))
+            if passed_time > update_interval:
                 self.update_modules = True
 
         # setup module_manager
