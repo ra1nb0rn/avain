@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# the package manager on Linux to use
+LINUX_PACKAGE_MANAGER="apt-get"
+
 # some function definitions
 install_brew_packages() {
     # Use brew to install macOS software packages
@@ -43,41 +46,41 @@ brew_fail_check() {
     fi
 }
 
-install_apt_packages() {
-    # Use apt to install Linux software packages
-    APT_PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev cmake gcc"
-    which apt-get &> /dev/null
+install_linux_packages() {
+    # Use ${LINUX_PACKAGE_MANAGER} to install Linux software packages
+    PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev cmake gcc"
+    which ${LINUX_PACKAGE_MANAGER} &> /dev/null
     if [ $? != 0 ]; then
-        printf "${RED}Could not find apt-get command.\\nPlease check your apt installation first."
+        printf "${RED}Could not find ${LINUX_PACKAGE_MANAGER} command.\\nPlease check your package mannager installation first."
         exit 1
     fi
 
     if [ $QUIET != 1 ]; then
-        sudo apt-get update
+        eval sudo ${LINUX_PACKAGE_MANAGER} update
     else
-        sudo apt-get update >/dev/null
+        eval sudo ${LINUX_PACKAGE_MANAGER} update >/dev/null
     fi
     if [ $? != 0 ]; then
-        printf "${RED}Installation of apt packages was not successful."
+        printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful."
         exit 1
     fi
 
     if [ ${QUIET} != 1 ]; then
-        eval sudo apt-get -y install "${APT_PACKAGES}"
+        eval sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}"
     else
-        eval sudo apt-get -y install "${APT_PACKAGES}" >/dev/null
+        eval sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}" >/dev/null
     fi
     if [ $? != 0 ]; then
-        printf "${RED}Installation of apt packages was not successful."
+        printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful."
         exit 1
     fi
 }
 
 install_linux_gobuster() {
     if [ $QUIET != 1 ]; then
-        sudo apt-get install -y gobuster
+        sudo ${LINUX_PACKAGE_MANAGER} install -y gobuster
     else
-        sudo apt-get install -y gobuster 1>/dev/null
+        sudo ${LINUX_PACKAGE_MANAGER} install -y gobuster 1>/dev/null
     fi
    
     if [ $? != 0 ]; then
@@ -89,9 +92,9 @@ install_linux_gobuster() {
 
         # otherwise install it
         if [ $QUIET != 1 ]; then
-            sudo apt-get install -y golang-go
+            sudo ${LINUX_PACKAGE_MANAGER} install -y golang-go
         else
-            sudo apt-get install -y golang-go 1>/dev/null
+            sudo ${LINUX_PACKAGE_MANAGER} install -y golang-go 1>/dev/null
         fi
         if [ $? != 0 ]; then
             printf "${RED}Installation of gobuster was not successfull."
@@ -144,8 +147,8 @@ if [ "${KERNEL}" == "Darwin" ]; then
     echo -e "${GREEN}[+] Identified OS as: macOS --> using packet manager: brew${SANE}"
     install_brew_packages
 elif [ "${KERNEL}" == "Linux" ]; then
-    echo -e "${GREEN}[+] Identified OS as: Linux --> using packet manager: apt${SANE}"
-    install_apt_packages
+    echo -e "${GREEN}[+] Identified OS as: Linux --> using packet manager: ${LINUX_PACKAGE_MANAGER}${SANE}"
+    install_linux_packages
     install_linux_gobuster
 else
     printf "${RED}Could not identify running OS.\\nPlease install AVAIN manually."

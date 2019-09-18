@@ -6,16 +6,16 @@ install_chromedriver_linux() {
 
     for pkg in $POSSIBLE_PKGS; do
         if [ $QUIET != 1 ]; then
-            eval sudo apt-get install -y $pkg
+            eval sudo ${LINUX_PACKAGE_MANAGER} install -y $pkg
         else
-            eval sudo apt-get install -y $pkg &>/dev/null
+            eval sudo ${LINUX_PACKAGE_MANAGER} install -y $pkg &>/dev/null
         fi
         if [ $? -eq 0 ]; then
             SUCCESS=1
             if [ $QUIET != 1 ]; then
-                eval sudo apt-get install --only-upgrade -y $pkg
+                eval sudo ${LINUX_PACKAGE_MANAGER} install --only-upgrade -y $pkg
             else
-                eval sudo apt-get install --only-upgrade -y $pkg &>/dev/null
+                eval sudo ${LINUX_PACKAGE_MANAGER} install --only-upgrade -y $pkg &>/dev/null
             fi
             break
         fi
