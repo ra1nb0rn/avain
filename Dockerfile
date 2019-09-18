@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM ubuntu
 
 WORKDIR /home/avain
 RUN apt-get update >/dev/null && \
