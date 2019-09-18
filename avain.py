@@ -71,7 +71,7 @@ class Cli():
         self.parse_user_results(parser)
         if (not self.args.networks) and (not self.args.network_list) and (not self.user_results) \
                 and (not self.args.update_modules):
-            parser.error("at least one of the following arguments is required: -n/--network," +
+            parser.error("at least one of the following arguments is required: -n/--network, " +
                          "-nL/--network-list, -uD/--update-modules or any one of [%s]" %
                          ", ".join("%s/%s" % rarg for rarg in USER_RESULT_ARGS.values()))
 
