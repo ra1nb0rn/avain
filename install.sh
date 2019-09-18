@@ -75,9 +75,8 @@ install_linux_gobuster() {
         QPRINT=""
     fi
 
-    if [ ${IS_DEBIAN} -eq 0 ]; then
-        sudo apt-get install -y ${QPRINT} gobuster
-    else
+    sudo apt-get install -y ${QPRINT} gobuster
+    if [ $? != 0 ]; then
         # check that gobuster is not already installed
         which gobuster &> /dev/null
         if [ $? == 0 ]; then
