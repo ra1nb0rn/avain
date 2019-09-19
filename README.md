@@ -273,7 +273,7 @@ The following list provides an overview of the software used by AVAIN for both m
 * [DirBuster](https://sourceforge.net/projects/dirbuster/)'s wordlists.
 
 ## License
-AVAIN is licensed under the MIT license, see [here](https://github.com/DustinBorn/avain/blob/master/LICENSE.mit).
+AVAIN is licensed under the MIT license, see [here](https://github.com/DustinBorn/avain/blob/master/LICENSE).
 
 ## Contribution & Bugs
 If you want to contribute, or have any questions or suggestions, use GitHub or directly contact me via Email <a href="mailto:dustin.born@stud.tu-darmstadt.de">here</a>. If you found a bug, feel free to open an issue.
