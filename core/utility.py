@@ -17,6 +17,7 @@ from threading import Lock
 # and: http://www.topmudsites.com/forums/showthread.php?t=413
 SANE = "\u001b[0m"
 GREEN = "\u001b[32m"
+BRIGHT_GREEN = "\u001b[32;1m"
 RED = "\u001b[31m"
 YELLOW = "\u001b[33m"
 BRIGHT_BLUE = "\u001b[34;1m"
@@ -363,3 +364,20 @@ def get_creation_date(filepath):
             return datetime.datetime.fromtimestamp(filestat.st_birthtime)
         except AttributeError:
             return datetime.datetime.fromtimestamp(filestat.st_mtime)
+
+
+def color_elements_in_string(line, regex, color):
+    """
+    Color the groups that the given regex produces when matching the given line.
+    """
+
+    match = re.match(regex, line)
+    colored_line = line
+    if match:
+        replaced = set()
+        for i in range (1, 6):
+            group = match.group(i)
+            if group not in replaced:
+                replaced.add(group)
+                colored_line = colored_line.replace(group, color + group + SANE)
+    return colored_line

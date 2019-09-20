@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 
@@ -79,20 +80,32 @@ def run(results: list):
                 json_out = os.path.join(HYDRA_OUTPUT_DIR, json_out)
                 to_file = os.path.join(HYDRA_OUTPUT_DIR, to_file)
 
-            # Preparse Hydra call and run it
+            # Preparse Hydra call
             tasks = CONFIG.get("tasks", "16")
             hydra_call = ["hydra", "-C", wlist, "-I", "-t", tasks, "-M", HYDRA_TARGETS_FILE,
                           "-b", "json", "-o", json_out, "telnet"]
             LOGGER.info("Beginning Hydra Telnet Brute Force with command: %s", " ".join(hydra_call))
             redr_file = open(text_out, "w")
             CREATED_FILES += [text_out, json_out]
+            found_credential_regex = re.compile(r"^\[(\d+)\]\[(\w+)\]\s*host:\s*(\S+)\s*login:\s*(\S+)\s*password:\s*(\S+)\s*$")
 
             # Sometimes, Hydra and other cracking tools do not seem to work properly
             # with Telnet services. Therefore, Hydra is run with a timeout.
             hydra_timeout = int(CONFIG.get("timeout", 300))  # in seconds
             try:
-                subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT,
-                                timeout=hydra_timeout)
+                # Execute Hydra call
+                if VERBOSE:
+                    with subprocess.Popen(hydra_call, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                          bufsize=1, universal_newlines=True, timeout=hydra_timeout) as proc:
+                        for line in proc.stdout:
+                            # color found credentials like Hydra does when run in TTY
+                            colored_line = util.color_elements_in_string(line, found_credential_regex, util.BRIGHT_GREEN)
+                            # print modified line to stdout and store original in redirect file
+                            util.printit(line, end="")
+                            redr_file.write(line)
+                else:
+                    subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT, timeout=hydra_timeout)
+                redr_file.close()
             except subprocess.TimeoutExpired:
                 with open(to_file, "w") as file:
                     if len(wordlists) > 1:

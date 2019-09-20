@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 
@@ -76,14 +77,27 @@ def run(results: list):
                 text_out = os.path.join(HYDRA_OUTPUT_DIR, text_out)
                 json_out = os.path.join(HYDRA_OUTPUT_DIR, json_out)
 
-            # Preparse Hydra call and run it
+            # Preparse Hydra call
             tasks = CONFIG.get("tasks", "4")
             hydra_call = ["hydra", "-C", wlist, "-I", "-t", tasks, "-M", HYDRA_TARGETS_FILE,
                           "-b", "json", "-o", json_out, "ssh"]
             LOGGER.info("Beginning Hydra SSH Brute Force with command: %s", " ".join(hydra_call))
             redr_file = open(text_out, "w")
             CREATED_FILES += [text_out, json_out]
-            subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
+            found_credential_regex = re.compile(r"^\[(\d+)\]\[(\w+)\]\s*host:\s*(\S+)\s*login:\s*(\S+)\s*password:\s*(\S+)\s*$")
+
+            # Execute Hydra call
+            if VERBOSE:
+                with subprocess.Popen(hydra_call, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                      bufsize=1, universal_newlines=True) as proc:
+                    for line in proc.stdout:
+                        # color found credentials like Hydra does when run in TTY
+                        colored_line = util.color_elements_in_string(line, found_credential_regex, util.BRIGHT_GREEN)
+                        # print modified line to stdout and store original in redirect file
+                        util.printit(colored_line, end="")
+                        redr_file.write(line)
+            else:
+                subprocess.call(hydra_call, stdout=redr_file, stderr=subprocess.STDOUT)
             redr_file.close()
             LOGGER.info("Done")
 
