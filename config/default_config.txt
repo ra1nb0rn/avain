@@ -32,7 +32,7 @@ max_print_count = 20                                             // with verbose
 
 [login_bruteforce.hydra_ssh.avain]
 wordlists = ../wordlists/mirai_user_pass.txt                     // Mirai wordlist relative to module dir
-tasks = 16                                                       // the number of parallel Hydra tasks
+tasks = 4                                                        // the number of parallel Hydra tasks
 
 [login_bruteforce.hydra_telnet.avain]
 wordlists = ../wordlists/mirai_user_pass.txt                     // Mirai wordlist relative to module dir
