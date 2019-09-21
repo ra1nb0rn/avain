@@ -9,27 +9,13 @@ Primarly AVAIN is an extensible framework that uses modules to do vulnerability 
 
 ## Current Features of Modules
 An overview of all currently available modules, everything they can do and more is available in the [wiki](wiki/Module-Overview). The modules are highly configurable, see the [separate wiki page](wiki/Configuration). In addition, while being fairly verbose during the scan, all of result files that contain even more information are stored in AVAIN's output directory. While the file structure should be simple to understand, it is further explained in the [wiki](wiki/Output-Structure). As a brief overview of what the current modules can do:
-<style>
-#feature-list {
-	position: relative;
-	list-style: none;
-	margin-left: 1.5em;
-}
-#feature-list li:before {
-	content: "✅";
-	position: absolute;
-	left: 0em;
-}
-</style>
 
-<!-- ul { position: relative; list-style: none; margin-left: 1.5em;} ul li:before {content: "✅"; position: absolute; left: 0em;} -->
-<ul id="feature-list">
-    <li> Faciliate an Nmap scan &amp; somewhat preprocess it</li>
-    <li> Do an analysis based on the scan results to discover CVE / NVD entries that affect the discovered software</li>
-    <li>Brute force credentials for SSH &amp; Telnet services via Hydra and a configurable wordlist</li>
-    <li>Brute force directories and files on a webserver via a configurable wordlist</li>
-    <li>Completely scrape a webserver, i.e. crawl paths, find GET / POST parameters and cookies, find source code comments and find new network locations. On top of that, the module can use Selenium to discover content that only becomes visible when opening websites via a browser, so dynamic content.
-</ul>
+- [x] Faciliate an Nmap scan &amp; somewhat preprocess it
+- [x] Do an analysis based on the scan results to discover CVE / NVD entries that affect the discovered software
+- [x] Brute force credentials for SSH &amp; Telnet services via Hydra and a configurable wordlist
+- [x] Brute force directories and files on a webserver via a configurable wordlist
+- [x] Completely scrape a webserver, i.e. crawl paths, find GET / POST parameters and cookies, find source code comments and find new network locations. Moreover, use Selenium to discover content that only becomes visible when opening websites via a browser, so dynamic content.
+
 In addition, most of these modules are highly configurable. As a small example, you can configure authentication cookies to be used while scraping a website. For a full list of configuration parameters on how to use the properly, have look at the [wiki page](wiki/Configuration).
 
 ## Installation
