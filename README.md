@@ -2,7 +2,7 @@
 A framework for the automated vulnerability analysis in IP-based networks that enables its modules to work collaboratively by sharing results.
 
 ## About
-AVAIN is a modular vulnerability analysis / penetration testing framework for computer networks and individual machines in which its modules can work collaboratively to achieve more sophisticated results. AVAIN can automatically assess the security level of an IP-based network or host. Its final output is a score between 0 and 10, where the higher the score, the more vulnerable / insecure the assessed object.
+AVAIN is a modular vulnerability analysis / penetration testing framework for computer networks and individual machines in which its modules can work collaboratively to achieve more sophisticated results. AVAIN can automatically assess the security level of an IP-based network or host. Its final output is a score between 0 and 10, where the higher the score, the more vulnerable / insecure the assessed object. In addition, AVAIN saves all the detailed results from its modules for the user to look at after the assessment. During the assessment, the most relevant parts of every module's output are shown right away.
 
 
 Primarly AVAIN is an extensible framework that uses modules to do vulnerability assessment. As such it offers several features that make it easier to develop new modules and make use of existing ones. For more information, look at the [separate wiki page](wiki/Framework-Features). To see how to develop new modules with Python, look at [this](wiki/Creating-a-New-Module) wiki page.
@@ -50,5 +50,5 @@ If you want to contribute, or have any questions or suggestions, use GitHub or d
 ## License
 AVAIN is licensed under the MIT license, see [here](https://github.com/DustinBorn/avain/blob/master/LICENSE).
 
-## About the Creation of AVAIN
+## Miscellaneous
 I created AVAIN as part of my Bachelor Thesis at TU Darmstadt (located in Germany) under the guidance of my advisor Rolf Egert. We have presented a paper about AVAIN at NetSys&nbsp;'19. In addition, another paper based on AVAIN has been accepted at the IEEE GLOBECOM 2019 Workshop on Security and Privacy in Smart, Cooperative IoT and CPS. For more info see the [Publications](wiki/Publications) wiki page.
