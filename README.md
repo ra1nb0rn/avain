@@ -3,6 +3,8 @@ A framework for the automated vulnerability analysis in IP-based networks that e
 
 ## About
 AVAIN is a modular vulnerability analysis / penetration testing framework for computer networks and individual machines in which its modules can work collaboratively to achieve more sophisticated results. AVAIN can automatically assess the security level of an IP-based network or host. Its final output is a score between 0 and 10, where the higher the score, the more vulnerable / insecure the assessed object.
+
+
 Primarly AVAIN is an extensible framework that uses modules to do vulnerability assessment. As such it offers several features that make it easier to develop new modules and make use of existing ones. For more information, look at the [separate wiki page](wiki/Framework-Features). To see how to develop new modules with Python, look at [this](wiki/Creating-a-New-Module) wiki page.
 
 ## Current Features of Modules
@@ -19,6 +21,8 @@ An overview of all currently available modules, everything they can do and more 
 	left: 0em;
 }
 </style>
+
+<!-- ul { position: relative; list-style: none; margin-left: 1.5em;} ul li:before {content: "✅"; position: absolute; left: 0em;} -->
 <ul id="feature-list">
     <li> Faciliate an Nmap scan &amp; somewhat preprocess it</li>
     <li> Do an analysis based on the scan results to discover CVE / NVD entries that affect the discovered software</li>
@@ -40,7 +44,7 @@ usage: avain [-h] [-n NETWORKS [NETWORKS ...]] [-nL NETWORK_LIST] [-uM]
              [-vS VULNERABILITY_SCORES [VULNERABILITY_SCORES ...]]
 avain: error: at least one of the following arguments is required: -n/--network,-nL/--network-list, -uD/--update-modules or any one of [-sR/--scan-results, -vS/--vulnerability-scores]
 ```
-To simply run AVAIN on a target like ``192.168.42.1``, run:
+To simply run AVAIN on some target ``192.168.42.1``, call it like so:
 ```
 avain -n 192.168.42.1
 ```
