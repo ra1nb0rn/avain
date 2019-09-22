@@ -10,7 +10,7 @@ import core.utility as util
 
 # The following metadata applies to all source code files of AVAIN
 __author__ = "Dustin Born"
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 __license__ = "MIT"
 
 
