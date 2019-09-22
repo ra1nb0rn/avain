@@ -1,6 +1,15 @@
 # AVAIN - Automated Vulnerability Analysis (in) IP-based Networks
 A framework for the automated vulnerability analysis in IP-based networks that enables its modules to work collaboratively by sharing results.
 
+<p>
+<a href="#"><img src="https://img.shields.io/badge/python-3.6%2B-red" alt="Python 3.6+"></a>
+<a href="#"><img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS-%23557ef6" alt="Platform: linux, macOS"></a>
+<a href="#"><img src="https://img.shields.io/github/v/release/dustinborn/avain?include_prereleases" alt="<release>"></a>
+<a href="https://github.com/DustinBorn/avain/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT"></a>
+<a href="https://github.com/DustinBorn/avain/wiki"><img src="https://img.shields.io/badge/documentation-wiki-yellow" alt="Wiki"></a>
+<a href="#"><img src="https://img.shields.io/github/languages/code-size/dustinborn/avain?color=lightgray"></a>
+</p>
+
 ## About
 AVAIN is a modular vulnerability analysis / penetration testing framework for computer networks and individual machines in which its modules can work collaboratively to achieve more sophisticated results. AVAIN can automatically assess the security level of an IP-based network or host. Its final output is a score between 0 and 10, where the higher the score, the more vulnerable / insecure the assessed object. In addition, AVAIN saves all the detailed results from its modules for the user to look at after the assessment. During the assessment, the most relevant parts of every module's output are shown right away.
 
