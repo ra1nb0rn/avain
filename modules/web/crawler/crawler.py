@@ -76,8 +76,6 @@ class Crawler():
                 key, val = key_val_pair.strip().split("=")
                 self.cookies[key.strip()] = val.strip()
 
-        util.printit(self.cookies, color=util.RED)
-
         # create unix socket for IPC with crawler helper
         if os.path.exists(UNIX_SOCK_ADDR):
             os.remove(UNIX_SOCK_ADDR)
