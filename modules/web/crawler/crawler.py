@@ -337,6 +337,10 @@ class Crawler():
             if url == response.url:
                 continue
 
+            # try to avoid going to a logout page if custom cookies are were supplied
+            if self.cookies and "logout" in parsed_url.path.split("/")[-1].lower():
+                continue
+
             # check whether to add this URL to the to-be-crawled URLs
             if url not in yield_urls:
                 # limit the crawling depth
