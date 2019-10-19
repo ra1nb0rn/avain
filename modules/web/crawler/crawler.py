@@ -688,13 +688,16 @@ class Crawler():
                     webhost_map[code] = {}
                 if path not in webhost_map[code]:
                     webhost_map[code][path] = {}
+
+                redirect_info = "redirect to %s" % redirect_to
                 if "misc_info" not in webhost_map[code][path]:
-                    webhost_map[code][path]["misc_info"] = "redirect to %s" % redirect_to
-                else:
+                    webhost_map[code][path]["misc_info"] = redirect_info
+                elif not any(val == redirect_info for val in webhost_map[code][path].values()):
                     for i in range(10):
                         alt_key = "misc_info_%d" % i
                         if alt_key not in webhost_map[code][path]:
-                            webhost_map[code][path][alt_key] = "redirect to %s" % redirect_to
+                            webhost_map[code][path][alt_key] = redirect_info
+                            break
 
         return webhost_map, new_netlocs, self.comments
 
