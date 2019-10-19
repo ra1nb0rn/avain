@@ -54,7 +54,7 @@ per_host_timeout = 1800                                          // timeout for 
 do_reverse_dns = True                                            // whether to use the domain of a server if it is available
 max_depth = 3                                                    // max directory depth for crawling (-1 for unlimited)
 user_agent = Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0  // the user agent to use
-cookies = {}                                                     // the cookies to use when crawling, specified as JSON object with (key, value) pairs
+cookie_str = ""                                                  // the cookies to use when crawling, specified as key=value pairs separated by a semicolon
 use_linkfinder = False                                           // whether to use Linkfinder to statically find pages in JS code (false positives likely)
 use_selenium = True                                              // whether Selenium should be used to run javascript and trigger events
 extract_info_from_forms = True                                   // whether to analyze forms and try to extract GET / POST params or URLs from them

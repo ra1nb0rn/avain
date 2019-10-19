@@ -47,7 +47,6 @@ class Crawler():
         self.config = config
         self.helper_outfile = helper_outfile
         self.verbose = verbose
-        self.cookies = json.loads(self.config["cookies"])
         self.found_urls = set()
         self.crawled_urls = {}
         self.crawled_paths = {}
@@ -65,6 +64,19 @@ class Crawler():
         if not self.port:
             self.port = 80 if parsed_url.scheme == "http" else 443
         self.protocol_prefix = "%s://" % parsed_url.scheme
+
+        # parse cookies from config
+        self.cookies = {}
+        for key_val_pair in self.config["cookie_str"].split(";"):
+            if not key_val_pair:
+                continue
+            if "=" not in key_val_pair:
+                self.cookies[key_val_pair.strip()] = ""
+            else:
+                key, val = key_val_pair.strip().split("=")
+                self.cookies[key.strip()] = val.strip()
+
+        util.printit(self.cookies, color=util.RED)
 
         # create unix socket for IPC with crawler helper
         if os.path.exists(UNIX_SOCK_ADDR):
