@@ -198,18 +198,20 @@ def show_cursor():
 def add_to_config(config: dict, statement: str):
     """Add the information from the statement to the given config"""
 
-    key, val = statement.split("=")
+    key, val = statement.split("=", maxsplit=1)
 
     # replace quotes in key
     key = key.replace("\"", "")
     key = key.replace("'", "")
 
-    # remove surrounding quotes from config value
-    if val.startswith("\"") and val.endswith("\"") or val.startswith("'") and val.endswith("'"):
-        val = val[1:-1]
-
+    # strip surrounding whitespace
     key = key.strip()
     val = val.strip()
+
+    # remove surrounding quotes from config value
+    if (val.startswith("\"") and val.endswith("\"")) or (val.startswith("'") and val.endswith("'")):
+        val = val[1:-1]
+
     config[key] = val
 
 
