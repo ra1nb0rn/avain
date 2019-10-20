@@ -23,7 +23,7 @@ In short, the currently available modules can:
 - [x] Do an analysis based on the scan results to discover CVE / NVD entries that affect the discovered software
 - [x] Brute force credentials for SSH &amp; Telnet services via Hydra and a configurable wordlist
 - [x] Brute force directories and files on a webserver via a configurable wordlist
-- [x] Completely scrape a webserver, i.e. crawl paths, find GET / POST parameters and cookies, find source code comments and find new network locations. Moreover, use Selenium to discover content that only becomes visible when opening websites via a browser, so dynamic content.
+- [x] Completely scrape a webserver, i.e. crawl paths, find GET / POST parameters and cookies, find source code comments and find new network locations. Moreover, Selenium is used to discover content that only becomes visible when opening websites within a web browser.
 
 A more detailed overview of the current modules, what they can do and how they work is available in the [wiki](https://github.com/DustinBorn/avain/wiki/Module-Overview). All of AVAIN's modules are highly configurable. As a small example, you can configure authentication cookies to be used while scraping a website. For a full list of configuration parameters and how to use them properly, have look at the separate [wiki page](https://github.com/DustinBorn/avain/wiki/Configuration). In addition, while being fairly verbose during the scan, all of result files that contain even more information are stored in AVAIN's output directory. While the file structure should be simple to understand, it is further explained in the [wiki](https://github.com/DustinBorn/avain/wiki/Output-Structure).
 
@@ -33,15 +33,16 @@ AVAIN was made to work on Unix based systems. It was tested to work on macOS, Ub
 
 
 ## Usage
-To use AVAIN, simply call it by typing ``avain`` without any arguments in a terminal and you will get presented with the following usage information.
+To use AVAIN, simply call it by typing ``avain`` without any arguments in a terminal and you will see the following usage information.
 ```
 usage: avain [-h] [-n NETWORKS [NETWORKS ...]] [-nL NETWORK_LIST] [-uM]
-             [-c CONFIG] [-o OUTPUT] [-p PORTS] [-sN] [-v]
              [-sR SCAN_RESULTS [SCAN_RESULTS ...]]
              [-vS VULNERABILITY_SCORES [VULNERABILITY_SCORES ...]]
-avain: error: at least one of the following arguments is required: -n/--network,-nL/--network-list, -uD/--update-modules or any one of [-sR/--scan-results, -vS/--vulnerability-scores]
+             [-wM WEBSERVER_MAP [WEBSERVER_MAP ...]] [-c CONFIG] [-o OUTPUT]
+             [-p PORTS] [-sN] [-v] [-nV]
+avain: error: at least one of the following arguments is required: -n/--network, -nL/--network-list, -uD/--update-modules or any one of [-sR/--scan-results, -vS/--vulnerability-scores, -wM/--webserver-map]
 ```
-To simply run AVAIN on some target ``192.168.42.1``, call it like so:
+For running AVAIN on some target like ``192.168.42.1``, the corresponding call is:
 ```
 avain -n 192.168.42.1
 ```
