@@ -43,7 +43,6 @@ class Crawler():
 
         # setup class variables
         self.base_url = base_url
-        self.start_urls = list(set([base_url] + start_urls))
         self.config = config
         self.helper_outfile = helper_outfile
         self.verbose = verbose
@@ -75,6 +74,24 @@ class Crawler():
             else:
                 key, val = key_val_pair.strip().split("=")
                 self.cookies[key.strip()] = val.strip()
+
+        # setup start urls
+        self.start_urls = set([base_url])
+        for url in start_urls:
+            parsed_url = urllib.parse.urlparse(url)
+            # try to avoid going to a logout / login page if custom cookies were supplied
+            if self.cookies:
+                if "logout" in parsed_url.path.split("/")[-1].lower():
+                    continue
+                elif "logout" in parsed_url.query.lower():
+                    continue
+
+                if "login" in parsed_url.path.split("/")[-1].lower():
+                    continue
+                elif "login" in parsed_url.query.lower():
+                    continue
+            self.start_urls.add(url)
+        self.start_urls = list(self.start_urls)
 
         # create unix socket for IPC with crawler helper
         if os.path.exists(UNIX_SOCK_ADDR):
@@ -347,9 +364,17 @@ class Crawler():
             if url == response.url:
                 continue
 
-            # try to avoid going to a logout page if custom cookies are were supplied
-            if self.cookies and "logout" in parsed_url.path.split("/")[-1].lower():
-                continue
+            # try to avoid going to a logout / login page if custom cookies were supplied
+            if self.cookies:
+                if "logout" in parsed_url.path.split("/")[-1].lower():
+                    continue
+                elif "logout" in parsed_url.query.lower():
+                    continue
+
+                if "login" in parsed_url.path.split("/")[-1].lower():
+                    continue
+                elif "login" in parsed_url.query.lower():
+                    continue
 
             # check whether to add this URL to the to-be-crawled URLs
             if url not in yield_urls:
