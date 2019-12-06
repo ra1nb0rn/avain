@@ -91,6 +91,7 @@ install_linux_gobuster() {
         fi
 
         # otherwise install it
+        echo -e "${CYAN}Info: Installing gobuster directly via go${SANE}"
         if [ $QUIET != 1 ]; then
             sudo ${LINUX_PACKAGE_MANAGER} install -y golang-go
         else
