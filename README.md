@@ -19,7 +19,7 @@ At its core, AVAIN is an extensible framework that uses modules to do vulnerabil
 
 ## Current Features of Modules
 In short, the currently available modules can:
-- [x] Faciliate an Nmap scan &amp; somewhat postprocess it
+- [x] Facilitate an Nmap scan &amp; somewhat postprocess it
 - [x] Do an analysis based on the scan results to discover CVE / NVD entries that affect the discovered software
 - [x] Brute force credentials for SSH &amp; Telnet services via Hydra and a configurable wordlist
 - [x] Brute force directories and files on a webserver via a configurable wordlist
