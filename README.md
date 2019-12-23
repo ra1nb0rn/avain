@@ -59,7 +59,7 @@ In case you have more question about AVAIN, the [wiki](https://github.com/Dustin
 
 
 ## Contribution & Bugs
-If you want to contribute, or have any questions or suggestions, use GitHub or directly contact me via Email <a href="mailto:dustin.born@stud.tu-darmstadt.de">here</a>. If you found a bug or have other troubles, feel free to open an issue.
+If you want to contribute, or have any questions or suggestions, use GitHub or directly contact me via Email <a href="mailto:dustin.born@gmx.de">here</a>. If you found a bug or have other troubles, feel free to open an issue.
 
 
 ## License
@@ -67,4 +67,4 @@ AVAIN is licensed under the MIT license, see [here](https://github.com/DustinBor
 
 
 ## Miscellaneous
-I created AVAIN as part of my Bachelor Thesis at TU Darmstadt (located in Germany) under the guidance of my advisor Rolf Egert. We have presented a paper about AVAIN at NetSys&nbsp;'19. In addition, another paper based on AVAIN has been accepted at the IEEE GLOBECOM 2019 Workshop on Security and Privacy in Smart, Cooperative IoT and CPS. For more info see the [Publications](https://github.com/DustinBorn/avain/wiki/Publications) wiki page.
+I created AVAIN as part of my Bachelor Thesis at TU Darmstadt (located in Germany) under the guidance of my advisor Rolf Egert. We presented a demo paper about AVAIN at NetSys&nbsp;'19. In addition, we presented a full paper based on AVAIN at the IEEE GLOBECOM 2019 Workshop on Security and Privacy in Smart, Cooperative IoT and CPS. For more info see the [Publications](https://github.com/DustinBorn/avain/wiki/Publications) wiki page.
