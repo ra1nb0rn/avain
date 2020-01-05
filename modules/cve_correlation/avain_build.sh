@@ -40,3 +40,19 @@ if [ $? != 0 ]; then
     echo -e "${RED}Could not update database"
     exit 1
 fi
+
+# create simple standalone wrapper for module
+cat <<EOF > avain-cve_correlation.sh
+#!/bin/bash
+
+CVE_CORRELATION_DIR="$(pwd -P)"
+CUR_DIR=\$(pwd -P)
+export CUR_DIR
+cd "\${CVE_CORRELATION_DIR}"
+./avain_cve_correlation.py \$@
+cd "\${CUR_DIR}"
+
+EOF
+
+chmod +x avain-cve_correlation.sh
+ln -sf "$(pwd -P)/avain-cve_correlation.sh" /usr/local/bin/avain-cve_correlation

@@ -17,6 +17,9 @@ if __name__ != "__main__":
     from . import module_updater
     from core.result_types import ResultType
     import core.utility as util
+else:
+    sys.path.append("../../core")
+    import utility as util
 
 # Parameter definition
 if __name__ != "__main__":
@@ -125,33 +128,37 @@ def run(results: list):
     results.append((ResultType.VULN_SCORE, scores))
 
 
+def print_cves(all_cves: dict):
+    """
+    Print all CVEs contained in the given dictionary.
+
+    :param all_cves: a dictionary of {cpe: cves} pairs
+    """
+
+    all_cve_nodes_list = list(all_cves.values())
+    all_cve_nodes = {}
+    for list_entry in all_cve_nodes_list:
+        for cve_id, cve_node in list_entry.items():
+            all_cve_nodes[cve_id] = cve_node
+
+    all_cve_nodes = sorted(all_cve_nodes.values(), key=lambda entry: entry["cvssv3"], reverse=True)
+    count = int(CONFIG.get("max_print_count", -1))
+    if count == -1:
+        count = len(all_cve_nodes)
+    for print_node in all_cve_nodes[:count]:
+        description = print_node["description"].replace("\r\n\r\n", "\n").replace("\n\n", "\n").strip()
+        print_str = util.GREEN + print_node["id"] + util.SANE
+        print_str += " (" + util.MAGENTA + str(print_node["cvssv3"]) + util.SANE + "): "
+        print_str +=  description + "\n" + "Reference: " + print_node["href"]
+        print_str += ", " + print_node["published"].split(" ")[0]
+        util.printit(print_str)
+
+
 def add_cves_to_node(node: dict, ip: str):
     """
     Search and store all CVEs the given node's CPEs are affected by.
     Print the given string if a CPE with its CVEs would be added twice to the node.
     """
-
-    def print_cves():
-        nonlocal all_cves
-
-        all_cve_nodes_list = list(all_cves.values())
-        all_cve_nodes = {}
-        for list_entry in all_cve_nodes_list:
-            for cve_id, cve_node in list_entry.items():
-                all_cve_nodes[cve_id] = cve_node
-
-        all_cve_nodes = sorted(all_cve_nodes.values(), key=lambda entry: entry["cvssv3"], reverse=True)
-        count = int(CONFIG.get("max_print_count", -1))
-        if count == -1:
-            count = len(all_cve_nodes)
-        for print_node in all_cve_nodes[:count]:
-            description = print_node["description"].replace("\r\n\r\n", "\n").replace("\n\n", "\n").strip()
-            print_str = util.GREEN + print_node["id"] + util.SANE
-            print_str += " (" + util.MAGENTA + str(print_node["cvssv3"]) + util.SANE + "): "
-            print_str +=  description + "\n" + "Reference: " + print_node["href"]
-            print_str += ", " + print_node["published"].split(" ")[0]
-            util.printit(print_str)
-
 
     if "cpes" in node:
         node_cpes = node["cpes"]
@@ -175,7 +182,7 @@ def add_cves_to_node(node: dict, ip: str):
             all_cves, broad_search = get_cves_to_cpe(cpe)
 
             if VERBOSE:
-                print_cves()
+                print_cves(all_cves)
                 columns = shutil.get_terminal_size((80, 20)).columns
                 util.printit("-" * columns + "\n")
 
@@ -980,22 +987,33 @@ def check_database():
 
 if __name__ == "__main__":
     # Provide CPE CVE lookup functionality if this file is called on its own
-    if len(sys.argv) > 2:
+    if 2 <= len(sys.argv) <= 3:
+        cpe = sys.argv[1]
+        util.printit("\n" + "[+] " + cpe, color=util.BRIGHT_CYAN)
+        util.printit("-" * 80, color=util.BRIGHT_CYAN)
+
+        # setup
         VERBOSE = False  # disable AVAIN's verbose printing
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+        logging.basicConfig(stream=sys.stdout, level=logging.CRITICAL)
         LOGGER = logging.getLogger(__name__)
-        LOGGER.info("Searching CVEs for %s", sys.argv[1])
         db_conn = sqlite3.connect(DATABASE_FILE)
         DB_CURSOR = db_conn.cursor()
-        retrieved_cves = get_cves_to_cpe(sys.argv[1])[0]
 
-        result = {"count": 0}
-        for key_g, value_g in retrieved_cves.items():
-            result["count"] += len(value_g)
-            result[key_g] = value_g
-        with open(sys.argv[2], "w") as file:
-            file.write(json.dumps(result, ensure_ascii=False, indent=3))
-        LOGGER.info("Done")
+        retrieved_cves = get_cves_to_cpe(cpe)[0]
+        print_cves(retrieved_cves)
+
+        if len(sys.argv) > 2:
+            outfile = sys.argv[2]
+            if not os.path.isabs(outfile):
+                outfile = os.path.join(os.environ.get("CUR_DIR", "."), outfile)
+
+            result = {"count": 0}
+            for key_g, value_g in retrieved_cves.items():
+                result["count"] += len(value_g)
+                result[key_g] = value_g
+            with open(outfile, "w") as file:
+                file.write(json.dumps(result, ensure_ascii=False, indent=3))
+            LOGGER.info("Done")
     else:
         print("Error: wrong number of arguments.")
-        print("usage: ./analyzer_cve_correlation.py [cpe] [outfile]")
+        print("usage: %s cpe [outfile]" % sys.argv[0])
