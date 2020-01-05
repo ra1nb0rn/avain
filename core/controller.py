@@ -91,15 +91,14 @@ class Controller():
         self.single_network = single_network
         self.verbose = verbose
         self.ports = ports
-        if update_modules:
-            self.update_modules = update_modules
-        else:
-            self.update_modules = False
+        self.update_modules = update_modules
+        if (not self.update_modules) and self.config["core"]["automatic_module_updates"].lower() == "true":
             # retrieve last update timestamp based on last CPE dict download time
             last_update = util.get_creation_date("modules/resources/official-cpe-dictionary_v2.2.xml")
             passed_time = datetime.datetime.now() - last_update
             update_interval = datetime.timedelta(minutes=int(self.config["core"]["module_update_interval"]))
             if passed_time > update_interval:
+                util.printit("[INFO] Module data is out-of-date and will be updated\n", color=util.MAGENTA)
                 self.update_modules = True
 
         # setup module_manager
@@ -111,10 +110,10 @@ class Controller():
         self.logger.info("Starting the AVAIN program")
         self.logger.info("Executed call: avain %s", " ".join(sys.argv[1:]))
 
-        # inform user about not being root
-        if networks and os.getuid() != 0:
-            print(util.MAGENTA + "Warning: not running this program as root user leads"
-                  " to a less effective assessment (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
+        # inform user about not being root (skip for now)
+        # if networks and os.getuid() != 0:
+        #     print(util.MAGENTA + "Warning: not running this program as root user leads"
+        #           " to a less effective assessment (e.g. with nmap)\n" + util.SANE, file=sys.stderr)
 
     def setup_logging(self):
         """

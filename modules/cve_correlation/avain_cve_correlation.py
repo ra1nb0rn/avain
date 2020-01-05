@@ -24,6 +24,7 @@ if __name__ != "__main__":
 
 VERBOSE = True  # specifies whether to provide verbose output or not
 CONFIG = {}
+CORE_CONFIG = {}
 
 CREATED_FILES = []
 HOST_CVE_FILE = "found_cves.json"
@@ -956,6 +957,11 @@ def check_database():
         CREATED_FILES.append("db_update")
 
     if os.path.isfile(DATABASE_FILE):
+        # do not update DB if automatic updates are disabled
+        if CORE_CONFIG["automatic_module_updates"].lower() != "true":
+            return
+
+        # otherwise check DB creation date and update if outdaded
         db_date = util.get_creation_date(DATABASE_FILE)
         db_age = datetime.datetime.now() - db_date
         try:

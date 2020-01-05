@@ -10,8 +10,9 @@ modules = nmap.avain_nmap, web.gobuster.avain, web.crawler.avain, cve_correlatio
 default_trust = 3                                                // the default quality of data / trust level for scan modules
 scan_trust_aggr_scheme = TRUST_AGGR                              // possible values --> {TRUST_MAX, TRUST_AGGR}
 scan_result_aggr_scheme = MULTIPLE                               // possible value --> {SINGLE, MULTIPLE, FILTER}
-module_update_interval = 20160                                   // in minutes, i.e. every other week
 print_result_types = SCAN, WEBSERVER_MAP                         // the intermediate result types to output
+module_update_interval = 20160                                   // in minutes, i.e. every other week
+automatic_module_updates = True                                  // whether modules should be updated automatically after 'module_update_interval' minutes
 
 
 // here defined are module specific configuration settings

@@ -318,6 +318,12 @@ class ModuleManager():
                 util.printit("[WARNING] Filepath '%s' should have been absolute", color=util.RED)
             os.makedirs(file_out_dir, exist_ok=True)
             file_out_path = os.path.join(file_out_dir, os.path.basename(file))
+
+            # in case of existing output directory, remove it
+            if os.path.isdir(file_out_path):
+                shutil.rmtree(file_out_path)
+
+            # move file / directory
             if os.path.isabs(file) and (os.path.isfile(file) or os.path.isdir(file)):
                 shutil.move(file, file_out_path)
             else:
@@ -395,7 +401,7 @@ class ModuleManager():
             module.CONFIG = self.config.get(module_name, {})
 
         if "CORE_CONFIG" in all_module_attributes:
-            module.CONFIG = copy.deepcopy(self.config.get("core", {}))
+            module.CORE_CONFIG = copy.deepcopy(self.config.get("core", {}))
 
         if "NETWORKS" in all_module_attributes:
             module.NETWORKS = copy.deepcopy(self.networks)

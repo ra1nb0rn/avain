@@ -25,7 +25,7 @@ MAGENTA = "\u001b[35m"
 BRIGHT_CYAN = "\u001b[36;1m"
 
 # other ANSI escape sequences
-CURSOR_PREV_LINE = "\033[F"
+CURSOR_PREV_LINE = "\033[1A\r"
 CLEAR_UNTIL_EOL = "\033[K"
 
 # mutex to prevent concurrent printing
@@ -383,3 +383,13 @@ def color_elements_in_string(line, regex, color):
                 replaced.add(group)
                 colored_line = colored_line.replace(group, color + group + SANE)
     return colored_line
+
+
+def strip_ansi_escape_seq(text: str):
+    """
+    Strip all ansi escape sequences from the given string.
+    From: https://stackoverflow.com/a/14693789
+    """
+
+    ansi_escape = re.compile(r"\x1B[@-_][0-?]*[ -/]*[@-~]")
+    return ansi_escape.sub("", text)
