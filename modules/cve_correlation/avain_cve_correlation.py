@@ -173,7 +173,7 @@ def add_cves_to_node(node: dict, ip: str):
                     protocol = node["service"].upper()
                 elif "protocol" in node:
                     protocol = node["protocol"].upper()
-                port = ":" + node["portid"] if protocol != "base" else ""
+                port = ":" + str(node["portid"]) if (protocol != "base" and "portid" in node) else ""
                 print_str = util.BRIGHT_CYAN + "[+] %s%s (%s)" % (ip, port, protocol) + util.SANE
                 print_str += " - " + util.YELLOW + cpe + util.SANE + "\n"
                 util.printit(print_str)
