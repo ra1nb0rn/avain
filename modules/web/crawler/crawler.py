@@ -9,6 +9,7 @@ import glob
 import time
 import json
 import requests
+import re
 import selenium
 from comment_parser import comment_parser
 from comment_parser.parsers.common import UnterminatedCommentError
@@ -276,9 +277,8 @@ class Crawler():
                 color = util.MAGENTA
             else:
                 color = util.SANE
-            util.printit("  [", end="")
-            util.printit(str(response.status), color=color, end="")
-            util.printit("]  " + response.url + extra_print)
+            print_str = "  [" + color + str(response.status) + util.SANE + "]  " + response.url + extra_print
+            util.printit(print_str)
 
         # extract cookies from HTTP header response
         self.extract_cookies(response.headers.getlist("Set-Cookie"), response.url)
@@ -339,6 +339,10 @@ class Crawler():
             url = url.replace("&amp;", "&")
             url = url.replace("&#038;", "&")
             parsed_url = urllib.parse.urlparse(url)
+
+            # disregard information about directory listing sorting
+            if parsed_url.path.endswith("/") and re.match("C=[A-Z];O=[A-Z]", parsed_url.query):
+                continue
 
             # extract GET parameters and cut URL if option is configured
             params = {}
@@ -647,6 +651,10 @@ class Crawler():
         parameters to the list of instances for that path. If the parameter names within
         the given parameters are unknown, store them as well.
         """
+
+        # disregard instances for sorting of directory listings
+        if path.endswith("/") and set(get_params.keys()) == {"C", "O"}:
+            return
 
         # first, store any unknown parameter names
         if get_params:

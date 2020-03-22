@@ -63,4 +63,4 @@ extract_comments = True                                          // if True, try
 check_linkfinder = True                                          // whether a URL discovered by linkfinder should be checked for existence via HEAD request
 linkfinder_check_timeout = 2                                     // timeout for a checking HEAD request; can significantly impact crawling speed
 crawl_parameter_links = True                                     // if True, URLs are uniquely identified by path & GET parameters and crawled accordingly
-max_path_visits = 25                                             // how many times a path can be crawled with different GET parameters
+max_path_visits = 250                                            // how many times a path can be crawled with different GET parameters
