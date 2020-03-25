@@ -19,11 +19,12 @@ At its core, AVAIN is an extensible framework that uses modules to do vulnerabil
 
 ## Current Features of Modules
 In short, the currently available modules can:
-- [x] Facilitate an Nmap scan &amp; somewhat postprocess it
-- [x] Do an analysis based on the scan results to discover CVE / NVD entries that affect the discovered software
-- [x] Brute force credentials for SSH &amp; Telnet services via Hydra and a configurable wordlist
-- [x] Brute force directories and files on a webserver via a configurable wordlist
-- [x] Completely scrape a webserver, i.e. crawl paths, find GET / POST parameters and cookies, find source code comments and find new network locations. Moreover, Selenium can be used to discover content that only becomes visible when interactively opening websites within a web browser.
+- [x] Facilitate an [Nmap](https://nmap.org/) scan &amp; postprocess it
+- [x] Do an analysis based on the scan results to discover [CVE](https://cve.mitre.org/) / [NVD](https://nvd.nist.gov/) entries that affect the discovered software
+- [x] Brute force credentials for SSH &amp; Telnet services via [Hydra](https://github.com/vanhauser-thc/thc-hydra) and a configurable wordlist
+- [x] Brute force directories and files on a webserver via a configurable wordlist using [Gobuster](https://github.com/OJ/gobuster)
+- [x] Completely scrape a webserver, i.e. crawl paths via [Scrapy](https://github.com/scrapy/scrapy), find GET / POST parameters and cookies, find source code comments and find new network locations. Moreover, [Selenium](https://www.selenium.dev/) can be used to discover content that only becomes visible when interactively opening websites within a web browser.
+- [x] Dynamically detect SQL Injection vulnerabilities via [sqlmap](https://github.com/sqlmapproject/sqlmap) by utilizing the previously scraped website data
 
 A more detailed overview of the current modules, what they can do and how they work is available in the [wiki](https://github.com/DustinBorn/avain/wiki/Module-Overview). All of AVAIN's modules are highly configurable. As a small example, you can configure authentication cookies to be used while scraping a website. For a full list of configuration parameters and how to use them properly, have look at the separate [wiki page](https://github.com/DustinBorn/avain/wiki/Configuration). In addition, while being fairly verbose during the scan, all of result files that contain even more information are stored in AVAIN's output directory. While the file structure should be simple to understand, it is further explained in the [wiki](https://github.com/DustinBorn/avain/wiki/Output-Structure).
 
