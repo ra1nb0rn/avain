@@ -206,7 +206,8 @@ def create_sqlmap_calls(base_url, path, path_node):
         nonlocal get_query, post_query, cookie_str
 
         # build base call and append queries, cookies and config values
-        sqlmap_call = ["sqlmap", "-u", base_url + path + get_query, "--batch", "-o", "--answers=is vulnerable. Do you want to keep testing the others=Y,crack=N,want to update=N"]
+        refresh_intent_answer = "N" if CONFIG.get("follow_refresh_intent", "false").lower() == "false" else "Y"
+        sqlmap_call = ["sqlmap", "-u", base_url + path + get_query, "--batch", "-o", "--answers=is vulnerable. Do you want to keep testing the others=Y,crack=N,want to update=N,got a refresh intent=%s" % refresh_intent_answer]
         sqlmap_call.append("--output-dir=" + SQLMAP_OUTPUT_DIR)
         if post_query:
             sqlmap_call += ["--data=" + post_query, "--method=POST"]
