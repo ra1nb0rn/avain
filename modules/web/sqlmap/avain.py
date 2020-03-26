@@ -500,7 +500,7 @@ def dump_data(vuln_dict):
     def dump_data_for_host():
         """
         Invoke sqlmap to dump all available database data except for system DBs.
-        Only non-time-based and non-blind SQLis are used to save time.
+        Only non-time-based, non-blind and non-error-based SQLis are used to save time.
         """
         for path, path_node in host_node.items():
             for method in ("GET", "POST"):
@@ -508,7 +508,8 @@ def dump_data(vuln_dict):
                     for sqli_node in pnode["sqlis"]:
                         if "type" in sqli_node and (
                                 ("time-based" not in sqli_node["type"].lower()) and
-                                ("blind" not in sqli_node["type"].lower())):
+                                ("blind" not in sqli_node["type"].lower()) and
+                                ("error-based" not in sqli_node["type"].lower())):
                             sqlmap_call = pnode["sqlmap_call"]
                             sqlmap_call += ["-p", param, "--dump-all", "--exclude-sysdbs"]
                             dump_out = subprocess.check_output(sqlmap_call, stderr=subprocess.STDOUT).decode()
