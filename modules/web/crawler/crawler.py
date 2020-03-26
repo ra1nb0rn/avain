@@ -65,6 +65,13 @@ class Crawler():
             self.port = 80 if parsed_url.scheme == "http" else 443
         self.protocol_prefix = "%s://" % parsed_url.scheme
 
+        # compile exclude path regexes from config
+        self.exclude_paths = []
+        if self.config.get("exclude_paths", ""):
+            exclude_paths_str = util.parse_as_csv(self.config.get("exclude_paths", ""))
+            for path_str in exclude_paths_str:
+                self.exclude_paths.append(re.compile(path_str))
+
         # parse cookies from config
         self.cookies = {}
         for key_val_pair in self.config["cookie_str"].split(";"):
@@ -79,17 +86,10 @@ class Crawler():
         # setup start urls
         self.start_urls = set([base_url])
         for url in start_urls:
-            parsed_url = urllib.parse.urlparse(url)
-            # try to avoid going to a logout / login page if custom cookies were supplied
-            if self.cookies:
-                if "logout" in parsed_url.path.split("/")[-1].lower():
-                    continue
-                elif "logout" in parsed_url.query.lower():
-                    continue
-
-                if "login" in parsed_url.path.split("/")[-1].lower():
-                    continue
-                elif "login" in parsed_url.query.lower():
+            # skip paths that are excluded from crawling
+            if self.exclude_paths and url.count("/") > 2:
+                check_str = "/" + "/".join(url.split("/")[3:])
+                if any(re_path.match(check_str) for re_path in self.exclude_paths):
                     continue
             self.start_urls.add(url)
         self.start_urls = list(self.start_urls)
@@ -292,7 +292,7 @@ class Crawler():
 
         # use scrapy's lxml linkextractor to extract links / URLs
         try:
-            scrapy_links = LinkExtractor(allow_domains=[self.domain],
+            scrapy_links = LinkExtractor(allow_domains=[self.domain, "%s:%s" % (self.domain, self.port)],
                                          tags=("a", "area", "script", "link", "source", "img"),
                                          attrs=("src", "href"),
                                          deny_extensions=set()).extract_links(response)
@@ -375,16 +375,10 @@ class Crawler():
             if url == response.url:
                 continue
 
-            # try to avoid going to a logout / login page if custom cookies were supplied
-            if self.cookies:
-                if "logout" in parsed_url.path.split("/")[-1].lower():
-                    continue
-                elif "logout" in parsed_url.query.lower():
-                    continue
-
-                if "login" in parsed_url.path.split("/")[-1].lower():
-                    continue
-                elif "login" in parsed_url.query.lower():
+            # skip paths that are excluded from crawling
+            if self.exclude_paths and url.count("/") > 2:
+                check_str = "/" + "/".join(url.split("/")[3:])
+                if any(re_path.match(check_str) for re_path in self.exclude_paths):
                     continue
 
             # check whether to add this URL to the to-be-crawled URLs

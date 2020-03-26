@@ -56,6 +56,7 @@ do_reverse_dns = True                                            // whether to u
 max_depth = 3                                                    // max directory depth for crawling (-1 for unlimited)
 user_agent = Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0  // the user agent to use
 cookie_str = ""                                                  // the cookies to use when crawling, specified as key=value pairs separated by a semicolon
+exclude_paths = "^.*[Ll][Oo][Gg][Oo][Uu][Tt].*$"                 // list of regexes that specify paths (incl. query) to exclude from crawling
 use_linkfinder = False                                           // whether to use Linkfinder to statically find pages in JS code (false positives likely)
 use_selenium = True                                              // whether Selenium should be used to run JavaScript and trigger events (disable if crawler gets stuck)
 extract_info_from_forms = True                                   // whether to analyze forms and try to extract GET / POST params or URLs from them
