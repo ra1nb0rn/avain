@@ -109,10 +109,17 @@ class Crawler():
             chrome_options = Options()
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--user-agent=%s" % self.config["user_agent"])
+
             # on Linux running Selenium as root requires '--no-sandbox' option
             if os.geteuid() == 0 and sys.platform.startswith("linux"):
                 chrome_options.add_argument("--no-sandbox")
             self.driver = webdriver.Chrome(options=chrome_options)
+
+            # disallow downloads via Selenium (see https://stackoverflow.com/a/47366981)
+            self.driver.command_executor._commands["send_command"] = ("POST", "/session/$sessionId/chromium/send_command")
+            params = {"cmd": "Page.setDownloadBehavior", "params": {"behavior": "disallow", "downloadPath": ""}}
+            command_result = self.driver.execute("send_command", params)
+
             # add cookies
             self.driver.get(self.base_url)  # initial request required to add cookies
             self.driver.delete_all_cookies()
