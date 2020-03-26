@@ -1,5 +1,6 @@
 from collections import Counter
 import copy
+import csv
 import ipaddress
 import math
 import os
@@ -195,6 +196,13 @@ def show_cursor():
     print("\033[?25h", end="")
 
 
+
+def parse_as_csv(text: str):
+    parser = csv.reader([text], skipinitialspace=True)
+    val = next(parser)
+    return val
+
+
 def add_to_config(config: dict, statement: str):
     """Add the information from the statement to the given config"""
 
@@ -209,7 +217,8 @@ def add_to_config(config: dict, statement: str):
     val = val.strip()
 
     # remove surrounding quotes from config value
-    if (val.startswith("\"") and val.endswith("\"")) or (val.startswith("'") and val.endswith("'")):
+    if ((val.startswith("\"") and val.endswith("\"") and val.count("\"") == 2) or 
+        (val.startswith("'") and val.endswith("'") and val.count("'") == 2)):
         val = val[1:-1]
 
     config[key] = val
