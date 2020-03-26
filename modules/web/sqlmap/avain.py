@@ -246,6 +246,7 @@ def create_sqlmap_calls(base_url, path, path_node):
     # create sqlmap calls
     sqlmap_calls = []
     max_per_param_tests = int(CONFIG.get("max_per_param_tests", 3))
+    default_param_value = CONFIG.get("default_fill_value", "helloworld")
     prev_inj_params = {"GET": {p: [] for p in test_params["GET"]},
                        "POST": {p: [] for p in test_params["POST"]}}
 
@@ -263,6 +264,8 @@ def create_sqlmap_calls(base_url, path, path_node):
         # build GET/POST query from the instance's GET/POST parameters
         for ptype in ("GET", "POST"):
             for key, val in inst_params[ptype].items():
+                if not val:
+                    val = default_param_value
                 if ptype == "GET":
                     get_query += "%s=%s&" % (key, val)
                 else:
@@ -272,6 +275,8 @@ def create_sqlmap_calls(base_url, path, path_node):
 
         # build cookie string from instance's cookie info and configured cookies
         for key, val in inst_cookies.items():
+            if not val:
+                val = default_param_value
             # prioritize preconfigured cookies
             if (key + "=" in cookie_str) or (key + " =" in cookie_str):
                 continue
@@ -308,6 +313,8 @@ def create_sqlmap_calls(base_url, path, path_node):
         for key, prev_params in prev_inj_params[ptype].items():
             if not prev_params:
                 inject_params[ptype].append(key)
+            if not val:
+                val = default_param_value
             if ptype == "GET":
                 get_query += key + "=&"
             else:
