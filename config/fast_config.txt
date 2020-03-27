@@ -1,0 +1,88 @@
+////////////////////////////////////////////////
+//////// An example configuration file ////////
+//////////////////////////////////////////////
+
+
+/* here defined are default configuration settings */
+[core]
+// the list of modules to use (in order)
+modules = nmap.avain_nmap, web.gobuster.avain, web.crawler.avain, web.sqlmap.avain, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
+default_trust = 3                                                // the default quality of data / trust level for scan modules
+scan_trust_aggr_scheme = TRUST_AGGR                              // possible values --> {TRUST_MAX, TRUST_AGGR}
+scan_result_aggr_scheme = MULTIPLE                               // possible value --> {SINGLE, MULTIPLE, FILTER}
+print_result_types = SCAN, WEBSERVER_MAP                         // the intermediate result types to output
+module_update_interval = 20160                                   // in minutes, i.e. every other week
+automatic_module_updates = False                                  // whether modules should be updated automatically after 'module_update_interval' minutes
+
+
+// here defined are module specific configuration settings
+[nmap.avain_nmap]
+// add_nmap_params = --max-rtt-timeout 100ms --max-retries 1     // additional Nmap params
+scan_type = S                                                    // SYN scan and UDP scan require root privileges
+fast_scan = True                                                // whether Nmap should use T5 and F option as speedup
+add_scripts = default, http-headers, smb-os-discovery, banner    // additional scripts Nmap should use
+timing_template = 4                                              // the timing (or aggressiveness) template to use
+
+[cve_correlation.avain_cve_correlation]
+DB_expire = 1000000000                                                // in minutes, i.e. every week
+skip_os = True                                                   // whether to skip OS CVE analysis --> {True, False}
+max_cve_count = -1                                               // the maximum number of CVEs to retrieve; -1 for unlimited
+squash_cpes = True                                               // whether to squash every discovered CPE in case of invalid CPE
+allow_versionless_search = False                                  // whether to fully search for CVEs when CPE has no version
+max_print_count = 20                                             // with verbose: how many NVD entries to print to stdout for one CPE, -1 for all
+allow_general_with_cpes = False                                  // if True, allow retrieval of CVEs having a versionless CPE and non-empty with_cpes
+
+[login_bruteforce.hydra_ssh.avain]
+wordlists = ../wordlists/mirai_user_pass.txt                     // Mirai wordlist relative to module dir
+tasks = 4                                                        // the number of parallel Hydra tasks
+
+[login_bruteforce.hydra_telnet.avain]
+wordlists = ../wordlists/mirai_user_pass.txt                     // Mirai wordlist relative to module dir
+timeout = 300                                                    // Hydra timeout in seconds (if Telnet bruteforce does not work)
+tasks = 16                                                       // the number of parallel Hydra tasks
+
+[web.gobuster.avain]
+wordlist = ../wordlists/dirbuster/directory-list-2.3-small.txt   // wordlist to use relative to module dir
+extensions = php, html                                           // file extensions to search for
+depth = 1                                                        // the search depth
+threads = 10                                                     // how many threads to use for gobuster
+do_reverse_dns = True                                            // whether the domain name(s) of the IP should be used if it has one
+allow_file_depth_search = False                                  // whether to search for directories if the url ends with a file
+exclude_dirs = js, css                                           // what directories not to search in
+per_directory_timeout = 200                                      // timeout for searching a directory in seconds
+per_host_timeout = 1200                                          // timeout for mapping a web server in seconds
+
+[web.crawler.avain]
+do_reverse_dns = True                                            // whether to use the domain of a server if it is available
+max_depth = 2                                                    // max directory depth for crawling (-1 for unlimited)
+user_agent = Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0  // the user agent to use
+cookie_str = ""                                                  // the cookies to use when crawling, specified as key=value pairs separated by a semicolon
+exclude_paths = "^.*[Ll][Oo][Gg][Oo][Uu][Tt].*$"                 // list of regexes that specify paths (incl. query) to exclude from crawling
+use_linkfinder = False                                           // whether to use Linkfinder to statically find pages in JS code (false positives likely)
+use_selenium = False                                              // whether Selenium should be used to run JavaScript and trigger events (disable if crawler gets stuck)
+extract_info_from_forms = True                                   // whether to analyze forms and try to extract GET / POST params or URLs from them
+extract_comments = True                                          // if True, try to extract comments from crawled HTML, JS, etc. documents
+check_linkfinder = True                                          // whether a URL discovered by linkfinder should be checked for existence via HEAD request
+linkfinder_check_timeout = 2                                     // timeout for a checking HEAD request; can significantly impact crawling speed
+crawl_parameter_links = True                                     // if True, URLs are uniquely identified by path & GET parameters and crawled accordingly
+max_path_visits = 100                                            // how many times a path can be crawled with different GET parameters
+
+[web.sqlmap.avain]
+cookie_str = ""                                                  // the cookies to use for injection, specified as key=value pairs separated by a semicolon
+user_agent = Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0  // the user agent to use
+exclude_paths = "^.*[Ll][Oo][Gg][Oo][Uu][Tt].*$"                 // list of regexes that specify paths (incl. query) to exclude from testing
+default_fill_value = "avain"                                     // if an HTTP parameter has no value, fill with this value for injection tests
+threads = 4                                                      // max number of concurrent HTTP requests sqlmap makes
+level = 1                                                        // sqlmap test level (see: https://github.com/sqlmapproject/sqlmap/wiki/Usage#level)
+risk = 1                                                         // risk of tests to perform (see: https://github.com/sqlmapproject/sqlmap/wiki/Usage#risk)
+num_common_params = 0                                            // number of HTTP parameters that should change for different tests of another HTTP parameter
+max_per_param_tests = 1                                          // maximum number of tests per HTTP parameter (multiple tests only if the param's usage differs)
+param_test_rate = 0.5                                           // the rate of HTTP parameters to test per URI path; GET / POST are handled separately
+min_params_test_count = 5                                        // minimum number of  HTTP parameters to test per URI path, independent of param_test_rate
+ignore_code = 404                                                // ignore codes (see https://github.com/sqlmapproject/sqlmap/wiki/Usage#ignore-problematic-http-error-code)
+follow_refresh_intent = False                                    // Whether to follow a refresh intent (inside HTML: <meta http-equiv="refresh" content="...">)
+show_sqlmap_output = False                                       // print the full output of every sqlmap call made
+dump_data = False                                                // if SQLis are found, exploit these to dump DB data & tables
+var_optimal = 0.8                                                // optimal variance of a HTTP parameter (used for computing commonality scores of HTTP params)
+weight_frequency = 0.75                                          // importance of frequency of HTTP parameters (used for computing commonality scores of HTTP params)
+weight_variance = 0.25                                           // importance of variance of HTTP parameters (used for computing commonality scores of HTTP params)
