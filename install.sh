@@ -10,7 +10,7 @@ install_brew_packages() {
 
     which brew &> /dev/null
     if [ $? != 0 ]; then
-        printf "${RED}Could not find brew command.\\nPlease install Homebrew first."
+        printf "${RED}Could not find brew command.\\nPlease install Homebrew first.\\n"
         exit 1
     fi
 
@@ -41,7 +41,7 @@ install_brew_packages() {
 
 brew_fail_check() {
     if [ $? != 0 ]; then
-        printf "${RED}Installation of basic brew packages was not successful."
+        printf "${RED}Installation of basic brew packages was not successful.\\n"
         exit 1
     fi
 }
@@ -51,7 +51,7 @@ install_linux_packages() {
     PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev cmake gcc"
     which ${LINUX_PACKAGE_MANAGER} &> /dev/null
     if [ $? != 0 ]; then
-        printf "${RED}Could not find ${LINUX_PACKAGE_MANAGER} command.\\nPlease check your package mannager installation first."
+        printf "${RED}Could not find ${LINUX_PACKAGE_MANAGER} command.\\nPlease check your package mannager installation first.\\n"
         exit 1
     fi
 
@@ -61,7 +61,7 @@ install_linux_packages() {
         eval sudo ${LINUX_PACKAGE_MANAGER} update >/dev/null
     fi
     if [ $? != 0 ]; then
-        printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful."
+        printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful.\\n"
         exit 1
     fi
 
@@ -71,7 +71,7 @@ install_linux_packages() {
         eval sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}" >/dev/null
     fi
     if [ $? != 0 ]; then
-        printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful."
+        printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful.\\n"
         exit 1
     fi
 }
@@ -98,12 +98,12 @@ install_linux_gobuster() {
             sudo ${LINUX_PACKAGE_MANAGER} install -y golang-go 1>/dev/null
         fi
         if [ $? != 0 ]; then
-            printf "${RED}Installation of gobuster was not successfull."
+            printf "${RED}Installation of gobuster was not successfull.\\n"
             exit 1
         fi
         sudo go get github.com/OJ/gobuster
         if [ $? != 0 ]; then
-            printf "${RED}Installation of gobuster was not successfull."
+            printf "${RED}Installation of gobuster was not successfull.\\n"
             exit 1
         fi
         GOBUSTER_BIN="${HOME}/go/bin/gobuster"
@@ -142,6 +142,7 @@ REAL_USER_NAME=$(who am i | cut -d" " -f1)
 KERNEL_VERSION=$(uname -v)
 IS_DEBIAN=$(grep -q "Debian" <<< "${KERNEL_VERSION}"; echo $?)
 
+echo -e "${GREEN}[+] Started installation of AVAIN (this may take some time)${SANE}"
 echo -e "${GREEN}[+] Installing basic software packages${SANE}"
 KERNEL=$(uname)
 if [ "${KERNEL}" == "Darwin" ]; then
@@ -152,7 +153,7 @@ elif [ "${KERNEL}" == "Linux" ]; then
     install_linux_packages
     install_linux_gobuster
 else
-    printf "${RED}Could not identify running OS.\\nPlease install AVAIN manually."
+    printf "${RED}Could not identify running OS.\\nPlease install AVAIN manually.\\n"
     exit 1
 fi
 
@@ -167,13 +168,13 @@ echo -e "${GREEN}[+] Installing basic python packages${SANE}"
 which pip3 &> /dev/null
 
 if [ $? != 0 ]; then
-    printf "${RED}Could not find pip3.\\nPlease install it first or install python packages manually"
+    printf "${RED}Could not find pip3.\\nPlease install it first or install python packages manually\\n"
     exit 1
 fi
 
 eval pip3 install ${QPRINT} -r requirements.txt
 if [ $? != 0 ]; then
-    printf "${RED}Could not install python packages with pip3."
+    printf "${RED}Could not install python packages with pip3.\\n"
     exit 1
 fi
 
@@ -184,12 +185,12 @@ fi
 echo -e "${GREEN}[+] Setting up git submodules${SANE}"
 git submodule ${QPRINT} init
 if [ $? != 0 ]; then
-    printf "${RED}Could not initialize git submodules."
+    printf "${RED}Could not initialize git submodules.\\n"
     exit 1
 fi
 git submodule ${QPRINT} update
 if [ $? != 0 ]; then
-    printf "${RED}Could not update git submodules."
+    printf "${RED}Could not update git submodules.\\n"
     exit 1
 fi
 
@@ -225,7 +226,7 @@ find modules -name avain_build.sh -print0 | while IFS= read -r -d "" file; do
     fi
 
     if [ $? != 0 ]; then
-        printf "${RED}Could not successfully build module in %s\\n\\n" "$(dirname "${file}")"
+        printf "${RED}Could not successfully build module in %s\\n\\n" "$(dirname "${file}")\\n"
         exit 1
     fi
 
