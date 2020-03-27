@@ -23,6 +23,9 @@ DATA_DUMP_FILE = "data_dump.txt"
 SQLMAP_OUTPUT_DIR = "sqlmap_out_dir"
 CREATED_FILES = [SQLMAP_OUTFILE, SQLMAP_OUTFILE_COLOR, FOUND_SQLI_JSON, DATA_DUMP_FILE, SQLMAP_OUTPUT_DIR]
 
+# stop module execution
+STOP = False
+
 
 def run(results: list):
     """ Entry point for module """
@@ -45,6 +48,9 @@ def run(results: list):
         ip_vulnerable = False
         for portid in webserver_map[ip]:
             for host, host_node in webserver_map[ip][portid].items():
+                if STOP:    # module was killed
+                    break
+
                 # determine protocol from scan results if available
                 protocol = "http"
                 if (ip in INTERMEDIATE_RESULTS[ResultType.SCAN] and
@@ -83,6 +89,13 @@ def run(results: list):
     results.append((ResultType.VULN_SCORE, result))
 
 
+def kill():
+    """ Kill / stop module execution """
+    global STOP
+    STOP = True
+    util.printit("\n\n\n\n\n\n\n")
+
+
 def check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd, exclude_paths):
     """
     Check the host identified by given paramters for SQL Injections.
@@ -115,6 +128,9 @@ def check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd, exclude_
                 continue
 
             for path, path_node in pages_node.items():
+                if STOP:    # module was killed
+                    break
+
                 # skip HTTP methods that are not GET or POST
                 if ("GET" not in path_node) and ("POST" not in path_node):
                     continue
@@ -132,6 +148,8 @@ def check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd, exclude_
                 # execute created sqlmap calls one by one
                 sqlmap_output = ""
                 for call_nr, call in enumerate(sqlmap_calls):
+                    if STOP:    # module was killed
+                        break
                     if VERBOSE:
                         print_progress(call_nr, len(sqlmap_calls))
 
@@ -145,7 +163,7 @@ def check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd, exclude_
                     # run sqlmap call in separate PTY to capture colored ouput
                     # adapted from: https://stackoverflow.com/a/28925318
                     master, slave = pty.openpty()
-                    with subprocess.Popen(call, stdout=slave, stderr=subprocess.STDOUT,
+                    with subprocess.Popen(call, stdout=slave, stderr=subprocess.STDOUT, stdin=subprocess.PIPE,
                                           bufsize=1, universal_newlines=True) as proc:
                         os.close(slave)
                         for line in reader(master):
