@@ -33,6 +33,13 @@ def run(results: list):
     sqlmap_out_fd = open(SQLMAP_OUTFILE, "w")
     sqlmap_out_color_fd = open(SQLMAP_OUTFILE_COLOR, "w")
 
+    # compile exclude path regexes from config
+    exclude_paths = []
+    if CONFIG.get("exclude_paths", ""):
+        exclude_paths_str = util.parse_as_csv(CONFIG.get("exclude_paths", ""))
+        for path_str in exclude_paths_str:
+            exclude_paths.append(re.compile(path_str))
+
     # loop over every target, identified by ip, hostname and port
     for ip in webserver_map:
         ip_vulnerable = False
@@ -47,7 +54,7 @@ def run(results: list):
 
                 # check host for SQLi
                 base_url = "%s://%s:%s" % (protocol, host, portid)
-                host_vuln_dict = check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd)
+                host_vuln_dict = check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd, exclude_paths)
                 if host_vuln_dict:
                     if ip not in vuln_dict:
                         vuln_dict[ip] = {}
@@ -76,7 +83,7 @@ def run(results: list):
     results.append((ResultType.VULN_SCORE, result))
 
 
-def check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd):
+def check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd, exclude_paths):
     """
     Check the host identified by given paramters for SQL Injections.
 
@@ -84,6 +91,7 @@ def check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd):
     :param host_node: webserver_map node of the host (status_code:page_node pairs)
     :param sqlmap_out_fd: FD (file) of where to write uncolored sqlmap output to
     :param sqlmap_out_color_fd: FD (file) of where to write colored sqlmap output to
+    :param exclude_paths: list of regexes that represent paths to exclude from testing
     :return: a dict containing discovered SQLi vulnerability data
     """
 
@@ -126,6 +134,13 @@ def check_host(base_url, host_node, sqlmap_out_fd, sqlmap_out_color_fd):
                 for call_nr, call in enumerate(sqlmap_calls):
                     if VERBOSE:
                         print_progress(call_nr, len(sqlmap_calls))
+
+                    # skip paths that are excluded from testing
+                    url = call[2]
+                    if exclude_paths and url.count("/") > 2:
+                        check_str = "/" + "/".join(url.split("/")[3:])
+                        if any(re_path.match(check_str) for re_path in exclude_paths):
+                            continue
 
                     # run sqlmap call in separate PTY to capture colored ouput
                     # adapted from: https://stackoverflow.com/a/28925318
