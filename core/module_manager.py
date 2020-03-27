@@ -20,7 +20,8 @@ SHOW_PROGRESS_SYMBOLS = ["\u2502", "\u2571", "\u2500", "\u2572",
 PRINT_LOCK_ACQUIRE_TIMEOUT = 1  # in s
 DEFAULT_JOIN_TIMEOUT = 0.38
 MODULE_DIR_PREFIX = "modules"
-MODULE_FUNCTION = "run"
+MODULE_RUN_FUNCTION = "run"
+MODULE_KILL_FUNCTION = "kill"
 USER_RESULT_DIR = "user_results"
 UPDATE_OUT_DIR = "update_output"
 
@@ -165,10 +166,10 @@ class ModuleManager():
             self.logger.info("Invoking module %d of %d - %s", i+1,
                              len(modules), module_name_no_prefix)
             module_results = []
-            module_func = getattr(module, MODULE_FUNCTION, None)
-            if not module_func:
+            module_func = getattr(module, MODULE_RUN_FUNCTION, None)
+            if not module_func or not callable(module_func):
                 self.logger.warning("Module '%s' does not have a '%s' function. Module is skipped.",
-                                    module_name, MODULE_FUNCTION)
+                                    module_name, MODULE_RUN_FUNCTION)
                 os.chdir(main_cwd)
                 continue
 
@@ -206,6 +207,9 @@ class ModuleManager():
                     else:
                         show_progress_state += 1
             except KeyboardInterrupt:
+                kill_func = getattr(module, MODULE_KILL_FUNCTION, None)
+                if kill_func and callable(kill_func):
+                    kill_func()
                 util.printit("Module '%s' was manually killed." % module_name_no_prefix, color=util.RED)
 
             # change back into the main directory
