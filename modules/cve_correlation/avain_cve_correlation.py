@@ -744,13 +744,18 @@ def process_general_cve_cpe_data(found_cves: dict, general_cve_cpe_data: dict):
                 elif version_end_type == "Excluding":
                     cpe_in = cpe_iter_version < version.parse(version_end)
             elif len(entry_cpe_split) > 1:  # make sure that at least product information is available
-                cpe_in = True
-                for i in range(min(len(entry_cpe_split), len(cpe_iter_split))):
-                    if entry_cpe_split[i] == "" or entry_cpe_split[i] == "-":  # '-' as symbol for 'any'
-                        continue
-                    if entry_cpe_split[i] != cpe_iter_split[i]:
-                        cpe_in = False
-                        break
+                # if configured, do not consider CVEs for versionless entry and non-empty with_cpes
+                # (b/c this highly tends to be a false positive)
+                if CONFIG.get("allow_general_with_cpes", "false").lower() == "false" and with_cpes and len(entry_cpe_split) < 3:
+                    cpe_in = False
+                else:
+                    cpe_in = True
+                    for i in range(min(len(entry_cpe_split), len(cpe_iter_split))):
+                        if entry_cpe_split[i] == "" or entry_cpe_split[i] == "-":  # '-' as symbol for 'any'
+                            continue
+                        if entry_cpe_split[i] != cpe_iter_split[i]:
+                            cpe_in = False
+                            break
 
             if cpe_in:
                 if len(cpe_iter_split) > 2 and len(entry_cpe_split) > 2:
