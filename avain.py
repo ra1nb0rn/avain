@@ -3,6 +3,7 @@
 import argparse
 import sys
 import os
+import psutil
 
 from core.controller import Controller
 from core.result_types import ResultType
@@ -202,16 +203,35 @@ def banner():
     print()
 
 
+def get_avain_instance_count():
+    """ Return the number of currently active AVAIN processes """
+
+    instance_count = 0
+    for proc in psutil.process_iter():
+        try:
+            for elem in proc.cmdline():
+                if elem.endswith("/avain.py") or elem == "/usr/local/bin/avain":
+                    instance_count += 1
+                    break
+        except psutil.AccessDenied:
+            pass
+    return instance_count
+
+
 #########################################
 ### Entry point for the AVAIN program ###
 #########################################
 if __name__ == "__main__":
     banner()
+
     # Extend search path for modules
     MODULE_DIR = os.path.dirname("modules")
     sys.path.append(MODULE_DIR)
 
-    # Start program
-    CLI = Cli()
-    CLI.parse_arguments()
-    CLI.start()
+    if get_avain_instance_count() > 1:
+        util.printit("Error: You can only have 1 AVAIN instance running at the same time", color=util.RED)
+    else:
+        # Start program
+        CLI = Cli()
+        CLI.parse_arguments()
+        CLI.start()

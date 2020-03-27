@@ -2,3 +2,4 @@ requests >= 2.18.4
 cvsslib >= 0.5.5
 packaging >= 17.1
 sqlmap >= 1.4.3
+psutil >= 5.7.0
