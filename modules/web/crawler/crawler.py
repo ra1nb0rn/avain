@@ -12,6 +12,7 @@ import requests
 import re
 import selenium
 from comment_parser import comment_parser
+from comment_parser.comment_parser import ParseError as CP_ParseError
 from comment_parser.parsers.common import UnterminatedCommentError
 from scrapy.linkextractors import LinkExtractor
 
@@ -457,11 +458,11 @@ class Crawler():
         # use the comment_parser package to extract HTML and JS comments
         try:
             html_comments = comment_parser.extract_comments_from_str(response.text, mime="text/html")
-        except UnterminatedCommentError:
+        except (UnterminatedCommentError, CP_ParseError):
             html_comments = []
         try:
             js_comments = comment_parser.extract_comments_from_str(response.text, mime="application/javascript")
-        except UnterminatedCommentError:
+        except (UnterminatedCommentError, CP_ParseError):
             js_comments = []
 
         # put the discovered comments together
