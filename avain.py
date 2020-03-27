@@ -184,19 +184,21 @@ class Cli():
 
 
 def banner():
-    print("|" + "-" * 78 + "|")
+    border_color, avain_color, by_color, sane = util.BRIGHT_BLUE, util.BRIGHT_BLUE, util.YELLOW, util.SANE
+    util.printit("|" + "-" * 78 + "|", color=border_color)
     print(
 """\
-|                                                                              |
-|                         ___  _    __ ___     ____ _   __                     |
-|                        /   || |  / //   |   /  _// | / /                     |
-|                       / /| || | / // /| |   / / /  |/ /                      |
-|                      / ___ || |/ // ___ | _/ / / /|  /                       |
-|                     /_/  |_||___//_/  |_|/___//_/ |_/                        |
-|                                                                              |\
-""")
-    print("|" + " " * 25 + "[ Created by - Dustin Born ]" + " " * 25 + "|")
-    print("|" + "-" * 78 + "|")
+{0}                                                                              {0}
+{0}                         ___  _    __ ___     ____ _   __                     {0}
+{0}                        /   || |  / //   |   /  _// | / /                     {0}
+{0}                       / /| || | / // /| |   / / /  |/ /                      {0}
+{0}                      / ___ || |/ // ___ | _/ / / /|  /                       {0}
+{0}                     /_/  |_||___//_/  |_|/___//_/ |_/                        {0}
+{0}                                                                              {0}\
+""".format(border_color + "|" + avain_color))
+    print(border_color + "|" + sane + " " * 25 + by_color + "[ Created by - Dustin Born ]" +
+          sane + " " * 25 + border_color + "|" + sane)
+    util.printit("|" + "-" * 78 + "|", color=border_color)
     print()
 
 
