@@ -20,19 +20,17 @@ install_brew_packages() {
 
     # as brew cannot be run with root privileges, we need to run it as the real user
     if [ $QUIET != 1 ]; then
-        eval sudo -u $REAL_USER_NAME brew install "${BREW_PACKAGES}"
+        sudo -u $REAL_USER_NAME brew update
         brew_fail_check
-        eval sudo -u $REAL_USER_NAME brew upgrade && sudo -u $REAL_USER_NAME brew cleanup
+        sudo -u $REAL_USER_NAME brew install $(echo ${BREW_PACKAGES})
+        sudo -u $REAL_USER_NAME brew upgrade $(echo ${BREW_PACKAGES})
         brew_fail_check
-        eval sudo -u $REAL_USER_NAME brew install "${BREW_PACKAGES}"
-        brew_fail_check
-        eval sudo -u $REAL_USER_NAME brew cleanup
+        sudo -u $REAL_USER_NAME brew cleanup
     else
-        eval sudo -u $REAL_USER_NAME brew install "${BREW_PACKAGES}" >/dev/null
+        sudo -u $REAL_USER_NAME brew update >/dev/null
         brew_fail_check
-        eval sudo -u $REAL_USER_NAME brew upgrade >/dev/null && sudo -u $REAL_USER_NAME brew cleanup >/dev/null
-        brew_fail_check
-        eval sudo -u $REAL_USER_NAME brew install "${BREW_PACKAGES}" >/dev/null
+        sudo -u $REAL_USER_NAME brew install $(echo ${BREW_PACKAGES}) >/dev/null
+        sudo -u $REAL_USER_NAME brew upgrade $(echo ${BREW_PACKAGES}) >/dev/null
         brew_fail_check
         sudo -u $REAL_USER_NAME brew cleanup >/dev/null
     fi
@@ -56,9 +54,9 @@ install_linux_packages() {
     fi
 
     if [ $QUIET != 1 ]; then
-        eval sudo ${LINUX_PACKAGE_MANAGER} update
+        sudo ${LINUX_PACKAGE_MANAGER} update
     else
-        eval sudo ${LINUX_PACKAGE_MANAGER} update >/dev/null
+        sudo ${LINUX_PACKAGE_MANAGER} update >/dev/null
     fi
     if [ $? != 0 ]; then
         printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful.\\n"
@@ -66,9 +64,9 @@ install_linux_packages() {
     fi
 
     if [ ${QUIET} != 1 ]; then
-        eval sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}"
+        sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}"
     else
-        eval sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}" >/dev/null
+        sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}" >/dev/null
     fi
     if [ $? != 0 ]; then
         printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful.\\n"
@@ -117,7 +115,7 @@ install_linux_gobuster() {
 #####################
 
 # Process command line arguments
-QUIET=1
+QUIET=0
 if [ $# -gt 0 ]; then
     if [ $1 == "-q" ]; then
         QUIET=1
@@ -172,7 +170,7 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-eval pip3 install ${QPRINT} -r requirements.txt
+pip3 install ${QPRINT} -r requirements.txt
 if [ $? != 0 ]; then
     printf "${RED}Could not install python packages with pip3.\\n"
     exit 1
