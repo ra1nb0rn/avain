@@ -1,4 +1,5 @@
 import json
+import logging
 import math
 import os
 import pty
@@ -29,6 +30,10 @@ STOP = False
 
 def run(results: list):
     """ Entry point for module """
+
+    # setup logger
+    LOGGER = logging.getLogger(__name__)
+    LOGGER.info("Started search for SQL Injections via sqlmap module")
 
     webserver_map = INTERMEDIATE_RESULTS[ResultType.WEBSERVER_MAP]
     result = {}
@@ -84,6 +89,8 @@ def run(results: list):
     # close sqlmap output files
     sqlmap_out_fd.close()
     sqlmap_out_color_fd.close()
+
+    LOGGER.info("Finished search for SQL Injections via sqlmap module")
 
     # return results
     results.append((ResultType.VULN_SCORE, result))
