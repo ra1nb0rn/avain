@@ -1,4 +1,5 @@
 import datetime
+import glob
 import json
 import logging
 import os
@@ -10,7 +11,8 @@ import core.visualizer as visualizer
 
 LOGGING_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOGFILE = "avain.log"
-DEFAULT_CONFIG_PATH = "config/default_config.txt"
+CONFIG_DIR = "config"
+DEFAULT_CONFIG_PATH = os.path.join(CONFIG_DIR, "default.txt")
 NET_DIR_MAP_FILE = "net_dir_map.json"
 
 class Controller():
@@ -57,9 +59,10 @@ class Controller():
                 for filename in filenames:
                     self.user_results[rtype].append((filename, os.path.abspath(filename)))
 
-        # store absolute config path
+        # store absolute config path and config basename
         if config_path:
             config_path = os.path.abspath(config_path)
+            config_base = os.path.basename(config_path)
 
         # change into AVAIN directory
         self.original_cwd = os.getcwd()
@@ -80,8 +83,18 @@ class Controller():
             print(util.MAGENTA + "Warning: Could not find default config.\n" + util.SANE, file=sys.stderr)
 
         if config_path:
+            # if custom config file has no extension, check config folder for config with given name
+            if not os.path.splitext(config_base)[1]:
+                pot_configs = glob.glob(os.path.join(CONFIG_DIR, config_base + "*"))
+                if pot_configs:
+                    config_path = sorted(pot_configs)[0]
+
+            # parse custom config
             try:
                 self.config = util.parse_config(config_path, self.config)
+            except FileNotFoundError:
+                print(util.MAGENTA + ("Warning: Could not find custom config file '%s'\n" % config_path +
+                                      "Proceeding without custom config\n") + util.SANE)
             except Exception as excpt:
                 print(util.MAGENTA + ("Warning: Could not parse custom config file. " +
                                       "Proceeding without custom config.\n") + util.SANE, file=sys.stderr)

@@ -110,9 +110,10 @@ class Cli():
                         if not os.path.isfile(filepath):
                             parser.error("specified %s result %s is not a file" % (rtype.value, filepath))
 
-        if self.args.config:
-            if not os.path.isfile(self.args.config):
-                parser.error("config %s does not exist" % self.args.config)
+        # check that config file exists if it has an extension
+        # if self.args.config and os.path.splitext(self.args.config)[1]:
+        #     if not os.path.isfile(self.args.config):
+        #         parser.error("config %s does not exist" % self.args.config)
 
         if self.args.ports:
             def check_port(port_expr: str):
