@@ -49,6 +49,8 @@ class Cli():
                                    "to include into or exclude from the scan")
         required_args.add_argument("-uM", "--update-modules", action="store_true", help="make " +
                                    "the modules that have an update mechanism update")
+        required_args.add_argument("-i", "--input", help="specify a previous AVAIN output folder as " +
+                                   "input to reuse all aggregated results therein")
         for rtype, args in USER_RESULT_ARGS.items():
             required_args.add_argument(args[0], args[1], nargs="+", help="specify additional " +
                                        "%s results to include into the final scan result" %
@@ -71,9 +73,9 @@ class Cli():
 
         self.parse_user_results(parser)
         if (not self.args.networks) and (not self.args.network_list) and (not self.user_results) \
-                and (not self.args.update_modules):
+                and (not self.args.update_modules) and (not self.args.input):
             parser.error("at least one of the following arguments is required: -n/--network, " +
-                         "-nL/--network-list, -uD/--update-modules or any one of [%s]" %
+                         "-nL/--network-list, -uD/--update-modules, -i/--input or any one of [%s]" %
                          ", ".join("%s/%s" % rarg for rarg in USER_RESULT_ARGS.values()))
 
         self.parse_network_list(parser)
@@ -101,6 +103,9 @@ class Cli():
 
         if self.args.output:
             pass  # so far no limitation on output name
+
+        if self.args.input and not os.path.isdir(self.args.input):
+            parser.error("specified AVAIN result directory '%s' does not exist" % self.args.input)
 
         if self.user_results:
             for rtype in ResultType:
@@ -143,8 +148,8 @@ class Cli():
 
         controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks,
                                 self.args.update_modules, self.args.config, self.args.ports,
-                                self.args.output, self.user_results, self.args.single_network,
-                                self.verbose)
+                                self.args.output, self.args.input, self.user_results,
+                                self.args.single_network, self.verbose)
         controller.run()
 
     def parse_network_list(self, parser: argparse.ArgumentParser):

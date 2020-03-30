@@ -40,7 +40,9 @@ class VulnScoreProcessor(ResultProcessor):
     def store_aggregated_result(aggr_result, filepath: str):
         """Store the given aggregated result at the specified location"""
 
-        result = [aggr_result]
+        result = {}
+        if aggr_result:
+            result = [aggr_result]
         VulnScoreProcessor.store_json_convertable_result(result, filepath)
 
     def parse_result_file(self, filepath: str):
@@ -137,11 +139,11 @@ class VulnScoreProcessor(ResultProcessor):
                 net_score = max(0, net_score)  # ensure score is >= 0
                 net_score = min(10, net_score) # ensure score is <= 10
             else:
-                net_score = "N/A"
+                net_score = ""
             return net_score
 
         if not self.results:
-            return "N/A"
+            return ""
 
         if len(self.results) == 1:
             host_scores = self.results[list(self.results.keys())[0]]

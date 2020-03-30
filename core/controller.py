@@ -3,9 +3,11 @@ import glob
 import json
 import logging
 import os
+import shutil
 import sys
 
-from core.module_manager import ModuleManager
+from core.module_manager import ModuleManager, MODULE_DIR_PREFIX, RESULT_AGGR_DIRS
+from core.result_types import ResultType
 import core.utility as util
 import core.visualizer as visualizer
 
@@ -18,7 +20,7 @@ NET_DIR_MAP_FILE = "net_dir_map.json"
 class Controller():
 
     def __init__(self, networks: list, add_networks: list, omit_networks: list, update_modules: bool,
-                 config_path: str, ports: list, output_dir: str, user_results: dict,
+                 config_path: str, ports: list, output_dir: str, input_dir: str, user_results: dict,
                  single_network: bool, verbose: bool):
         """
         Create a Controller object.
@@ -30,6 +32,7 @@ class Controller():
         :param config_path: The path to a config file
         :param ports: A list of port expressions
         :param output_dir: A string specifying the output directory of the analysis
+        :param input_dir: A string specifying the output directory of a previous AVAIN analysis
         :param user_results: A list of filenames whose files contain user provided results
         :param single_network: A boolean specifying whether all given networks are to be considered
                                hosts in one single network
@@ -49,9 +52,25 @@ class Controller():
         self.output_dir = os.path.abspath(self.output_dir)
         os.makedirs(self.output_dir, exist_ok=True)
 
-        # check for user scan and analysis results
-        self.user_results = {}
+        # copy 'modules' directory to output directory if AVAIN result directory was given as input
+        if input_dir:
+            previous_modules_dir = os.path.join(input_dir, MODULE_DIR_PREFIX)
+            new_modules_dir = os.path.join(self.output_dir, MODULE_DIR_PREFIX)
+            if os.path.isdir(previous_modules_dir):
+                if os.path.isdir(new_modules_dir):
+                    shutil.rmtree(new_modules_dir)
+                shutil.copytree(previous_modules_dir, new_modules_dir)
 
+        # check for user / previous results
+        self.user_results = {}
+        if input_dir:
+            for rtype in ResultType:
+                result_file = os.path.join(RESULT_AGGR_DIRS[rtype], rtype.value.lower() + "_result.json")
+                result_file = os.path.join(input_dir, result_file)
+                if os.path.isfile(result_file):
+                    if rtype not in self.user_results:
+                        self.user_results[rtype] = []
+                    self.user_results[rtype].append((result_file, os.path.abspath(result_file)))
         if user_results:
             for rtype, filenames in user_results.items():
                 if rtype not in self.user_results:
@@ -181,10 +200,10 @@ class Controller():
             # if there is only one assessment
             score = do_network_assessment(networks, self.output_dir)
             if self.single_network or not self.networks:
-                if score is not None:
+                if score:
                     network_vuln_scores["assessed_network"] = score
             else:
-                if score is not None:
+                if score:
                     network_vuln_scores[networks[0]] = score
         else:
             # if there are multiple scans, place results into separate directory
@@ -193,7 +212,8 @@ class Controller():
                 util.printit("===========================================", color=util.YELLOW)
                 net_dir_map[net] = "network_%d" % (i + 1)
                 score = do_network_assessment([net], os.path.join(self.output_dir, net_dir_map[net]))
-                network_vuln_scores[net] = score
+                if score:
+                    network_vuln_scores[net] = score
             if net_dir_map:
                 net_dir_map_out = os.path.join(self.output_dir, NET_DIR_MAP_FILE)
                 with open(net_dir_map_out, "w") as file:

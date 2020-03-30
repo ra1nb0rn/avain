@@ -118,7 +118,7 @@ class WebserverMapProcessor(ResultProcessor):
         """
 
         if not self.results:
-            return "N/A"
+            return {}
 
         if len(self.results) == 1:
             webserver_map = copy.deepcopy(self.results[list(self.results.keys())[0]])
