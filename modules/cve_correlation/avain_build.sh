@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -z $QUIET ]; then
+    QUIET=0
+fi
+
 # configure submodules of SQLiteCpp
 cd "db_creation_src/SQLiteCpp"
 if [ $QUIET != 1 ]; then

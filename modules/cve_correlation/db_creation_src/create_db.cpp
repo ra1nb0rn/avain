@@ -151,7 +151,7 @@ void get_specific_cpes(json &vendor_data, std::string &vague_cpe, std::unordered
 int add_to_db(SQLite::Database &db, const std::string &filepath) {
     // Begin transaction
     SQLite::Transaction transaction(db);
-    SQLite::Statement cve_query(db, "INSERT INTO cve VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    SQLite::Statement cve_query(db, "INSERT INTO cve VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     SQLite::Statement cve_cpe_query(db, "INSERT INTO cve_cpe VALUES (?, ?, ?, ?, ?, ?, ?)");
 
     // read a JSON file
@@ -160,7 +160,7 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
     input_file >> j;
 
     json impact_entry;
-    std::string cve_id, description, published, last_modified, vector_string, severity, cvss_version;
+    std::string cve_id, description, edb_ids, published, last_modified, vector_string, severity, cvss_version;
     std::string cpe, cpe23, descr_line, cpe_version, affected_versions, vendor_name, product_name, version_value;
     bool vulnerable;
     double base_score;
@@ -168,6 +168,7 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
     // iterate the array
     for (auto &cve_entry : j["CVE_Items"]) {
         cve_id = cve_entry["cve"]["CVE_data_meta"]["ID"];
+        edb_ids = "";
 
         description = "";
         for (auto &desc_entry : cve_entry["cve"]["description"]["description_data"]) {
@@ -207,14 +208,15 @@ int add_to_db(SQLite::Database &db, const std::string &filepath) {
 
         cve_query.bind(1, cve_id);
         cve_query.bind(2, description);
-        cve_query.bind(3, published);
-        cve_query.bind(4, last_modified);
+        cve_query.bind(3, edb_ids);
+        cve_query.bind(4, published);
+        cve_query.bind(5, last_modified);
         
         // Assumption: every entry has at least a cvssV2 score
-        cve_query.bind(5, cvss_version);
-        cve_query.bind(6, base_score);
-        cve_query.bind(7, vector_string);
-        cve_query.bind(8, severity);
+        cve_query.bind(6, cvss_version);
+        cve_query.bind(7, base_score);
+        cve_query.bind(8, vector_string);
+        cve_query.bind(9, severity);
 
         cve_query.exec();
         cve_query.reset();
@@ -444,7 +446,7 @@ int main(int argc, char *argv[]) {
         db.exec("DROP TABLE IF EXISTS cve");
         db.exec("DROP TABLE IF EXISTS cve_cpe");
 
-        db.exec("CREATE TABLE cve (cve_id VARCHAR(25), description TEXT, published DATETIME, last_modified DATETIME, \
+        db.exec("CREATE TABLE cve (cve_id VARCHAR(25), description TEXT, edb_ids TEXT, published DATETIME, last_modified DATETIME, \
             cvss_version CHAR(3), base_score CHAR(3), vector VARCHAR(60), severity VARCHAR(15), PRIMARY KEY(cve_id))");
         db.exec("CREATE TABLE cve_cpe (cve_id VARCHAR(25), cpe TEXT, cpe_version_start VARCHAR(255), cpe_version_start_type VARCHAR(50), \
             cpe_version_end VARCHAR(255), cpe_version_end_type VARCHAR(50), with_cpes TEXT, PRIMARY KEY(cve_id, cpe, cpe_version_start, \
@@ -466,7 +468,7 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
 
-        std::cout << "Creating local copy of NVD " << outfile << " ..." << std::endl;
+        std::cout << "Creating local copy of NVD as " << outfile << " ..." << std::endl;
         for (const auto &file : cve_files) {
             add_to_db(db, file);
         }
