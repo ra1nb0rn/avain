@@ -63,9 +63,9 @@ def run(results: list):
 
     def process_port_cves(protocol: str):
         nonlocal host, ip
-        for _, portinfos in host[protocol].items():
+        for portid, portinfos in host[protocol].items():
             for portinfo in portinfos:
-                add_cves_to_node(portinfo, ip)
+                add_cves_to_node(portinfo, ip, portid)
 
     global LOGGER, DB_CURSOR, CREATED_FILES
 
@@ -148,13 +148,20 @@ def print_cves(all_cves: dict):
     for print_node in all_cve_nodes[:count]:
         description = print_node["description"].replace("\r\n\r\n", "\n").replace("\n\n", "\n").strip()
         print_str = util.GREEN + print_node["id"] + util.SANE
-        print_str += " (" + util.MAGENTA + str(print_node["cvssv3"]) + util.SANE + "): "
-        print_str +=  description + "\n" + "Reference: " + print_node["href"]
+        print_str += " (" + util.MAGENTA + str(print_node["cvssv3"]) + util.SANE + "): %s\n" % description
+
+        if "exploits" in print_node:
+            print_str += util.YELLOW + "Exploits:  " + util.SANE + print_node["exploits"][0] + "\n"
+            if len(print_node["exploits"]) > 1:
+                for edb_link in print_node["exploits"][1:]:
+                    print_str += len("Exploits:  ") * " " + edb_link + "\n"
+
+        print_str += "Reference: " + print_node["href"]
         print_str += ", " + print_node["published"].split(" ")[0]
         util.printit(print_str)
 
 
-def add_cves_to_node(node: dict, ip: str):
+def add_cves_to_node(node: dict, ip: str, portid:str = None):
     """
     Search and store all CVEs the given node's CPEs are affected by.
     Print the given string if a CPE with its CVEs would be added twice to the node.
@@ -173,7 +180,7 @@ def add_cves_to_node(node: dict, ip: str):
                     protocol = node["service"].upper()
                 elif "protocol" in node:
                     protocol = node["protocol"].upper()
-                port = ":" + str(node["portid"]) if (protocol != "base" and "portid" in node) else ""
+                port = ":" + str(portid) if (protocol != "base" and portid) else ""
                 print_str = util.BRIGHT_CYAN + "[+] %s%s (%s)" % (ip, port, protocol) + util.SANE
                 print_str += " - " + util.YELLOW + cpe + util.SANE + "\n"
                 util.printit(print_str)
@@ -780,10 +787,16 @@ def get_cve_details(found_cves: dict):
             if cve_id in cve_details:
                 continue
 
-            descr, publ, last_mod, cvss_ver, score, vector = DB_CURSOR.execute("SELECT description, " +
+            edb_ids, descr, publ, last_mod, cvss_ver, score, vector = DB_CURSOR.execute("SELECT edb_ids, description, " +
                 "published, last_modified, cvss_version, base_score, vector FROM cve WHERE cve_id = \"%s\"" % (cve_id)).fetchone()
             cve_details[cve_id] = {"id": cve_id, "description": descr, "published": publ, "modified": last_mod,
                                    "href": "https://nvd.nist.gov/vuln/detail/%s" % cve_id}
+
+            edb_ids = edb_ids.strip()
+            if edb_ids:
+                cve_details[cve_id]["exploits"] = []
+                for edb_id in edb_ids.strip().split(","):
+                    cve_details[cve_id]["exploits"].append("https://www.exploit-db.com/exploits/%s" % edb_id)
 
             if float(cvss_ver) == 2:
                 cve_details[cve_id]["cvssv2"] = float(score)
