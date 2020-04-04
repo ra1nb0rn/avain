@@ -373,7 +373,7 @@ def parse_nmap_xml(filepath: str):
             if key == "OS":
                 os_name = value.split("(", 1)[0].strip()
                 # try to extract Samba version
-                match = re.match(r".*\(Samba (\d+\.\d+\.\d+)\)", value.strip())
+                match = re.match(r".*\(Samba (\d+\.\d+\.\d+).*\)", value.strip())
                 if match:
                     samba_version = match.group(1)
 
