@@ -77,7 +77,7 @@ def run(results: list):
                 text_out = os.path.join(HYDRA_OUTPUT_DIR, text_out)
                 json_out = os.path.join(HYDRA_OUTPUT_DIR, json_out)
 
-            # Preparse Hydra call
+            # Prepare Hydra call
             tasks = CONFIG.get("tasks", "4")
             hydra_call = ["hydra", "-C", wlist, "-I", "-t", tasks, "-M", HYDRA_TARGETS_FILE,
                           "-b", "json", "-o", json_out, "ssh"]

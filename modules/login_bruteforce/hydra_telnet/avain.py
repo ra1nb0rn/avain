@@ -80,7 +80,7 @@ def run(results: list):
                 json_out = os.path.join(HYDRA_OUTPUT_DIR, json_out)
                 to_file = os.path.join(HYDRA_OUTPUT_DIR, to_file)
 
-            # Preparse Hydra call
+            # Prepare Hydra call
             tasks = CONFIG.get("tasks", "16")
             hydra_call = ["hydra", "-C", wlist, "-I", "-t", tasks, "-M", HYDRA_TARGETS_FILE,
                           "-b", "json", "-o", json_out, "telnet"]
