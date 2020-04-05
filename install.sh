@@ -22,15 +22,15 @@ install_brew_packages() {
     if [ $QUIET != 1 ]; then
         sudo -u $REAL_USER_NAME brew update
         brew_fail_check
-        sudo -u $REAL_USER_NAME brew install $(echo ${BREW_PACKAGES})
-        sudo -u $REAL_USER_NAME brew upgrade $(echo ${BREW_PACKAGES})
+        sudo -u $REAL_USER_NAME brew install ${BREW_PACKAGES}
+        sudo -u $REAL_USER_NAME brew upgrade ${BREW_PACKAGES}
         brew_fail_check
         sudo -u $REAL_USER_NAME brew cleanup
     else
         sudo -u $REAL_USER_NAME brew update >/dev/null
         brew_fail_check
-        sudo -u $REAL_USER_NAME brew install $(echo ${BREW_PACKAGES}) >/dev/null
-        sudo -u $REAL_USER_NAME brew upgrade $(echo ${BREW_PACKAGES}) >/dev/null
+        sudo -u $REAL_USER_NAME brew install ${BREW_PACKAGES} >/dev/null
+        sudo -u $REAL_USER_NAME brew upgrade ${BREW_PACKAGES} >/dev/null
         brew_fail_check
         sudo -u $REAL_USER_NAME brew cleanup >/dev/null
     fi
@@ -64,9 +64,9 @@ install_linux_packages() {
     fi
 
     if [ ${QUIET} != 1 ]; then
-        sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}"
+        sudo ${LINUX_PACKAGE_MANAGER} -y install ${PACKAGES}
     else
-        sudo ${LINUX_PACKAGE_MANAGER} -y install "${PACKAGES}" >/dev/null
+        sudo ${LINUX_PACKAGE_MANAGER} -y install ${PACKAGES} >/dev/null
     fi
     if [ $? != 0 ]; then
         printf "${RED}Installation of ${LINUX_PACKAGE_MANAGER} packages was not successful.\\n"
