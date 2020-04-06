@@ -202,7 +202,7 @@ def run_enum4linux(targets, accounts):
         # call Enum4Linux once for every account
         for user, passwd in accounts:
             # Prepare Enum4Linux call
-            if user and passwd:
+            if user or passwd:
                 call = ["enum4linux", "-u" , user, "-p", passwd, ip]
             else:
                 call = ["enum4linux", ip]
