@@ -220,13 +220,13 @@ def run_enum4linux(targets, accounts):
                         print_line = util.GREEN + print_line
                     elif user_def_re.match(print_line) or pass_def_re.match(print_line):
                         print_line = util.YELLOW + print_line
-
-                    # color target IP and used username/password
-                    print_line = cur_ip_re.sub(util.GREEN + ip + util.SANE, print_line)
-                    if user:
-                        print_line = cur_user_re.sub(util.YELLOW + user + util.SANE, print_line)
-                    if passwd:
-                        print_line = cur_passwd_re.sub(util.YELLOW + passwd + util.SANE, print_line)
+                    else:
+                        # color target IP and used username/password
+                        print_line = cur_ip_re.sub(util.GREEN + ip + util.SANE, print_line)
+                        if user:
+                            print_line = cur_user_re.sub(util.YELLOW + user + util.SANE, print_line)
+                        if passwd:
+                            print_line = cur_passwd_re.sub(util.YELLOW + passwd + util.SANE, print_line)
 
                     # print processed line to screen
                     if VERBOSE and line and "*unknown*\*unknown*" not in line:
