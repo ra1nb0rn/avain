@@ -102,7 +102,7 @@ class ResultProcessor(metaclass=ABCMeta):
         return sorted_result
 
     @staticmethod
-    def store_json_convertable_result(result: dict, filepath: str):
+    def store_json_convertible_result(result: dict, filepath: str):
         """Store the given result at the specified location"""
 
         with open(filepath, "w") as file:

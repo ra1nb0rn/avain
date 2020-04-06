@@ -97,14 +97,14 @@ class WebserverMapProcessor(ResultProcessor):
     def store_result(result: dict, filepath: str):
         """Store the given result at the specified location"""
 
-        WebserverMapProcessor.store_json_convertable_result(result, filepath)
+        WebserverMapProcessor.store_json_convertible_result(result, filepath)
 
     @staticmethod
     def store_aggregated_result(aggr_result, filepath: str):
         """Store the given aggregated result at the specified location"""
 
         result = aggr_result
-        WebserverMapProcessor.store_json_convertable_result(result, filepath)
+        WebserverMapProcessor.store_json_convertible_result(result, filepath)
 
     def parse_result_file(self, filepath: str):
         return self.parse_result_from_json_file(filepath)

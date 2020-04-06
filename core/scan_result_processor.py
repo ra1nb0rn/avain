@@ -42,13 +42,13 @@ class ScanResultProcessor(ResultProcessor):
     def store_result(result: dict, filepath: str):
         """Store the given result at the specified location"""
 
-        ScanResultProcessor.store_json_convertable_result(result, filepath)
+        ScanResultProcessor.store_json_convertible_result(result, filepath)
 
     @staticmethod
     def store_aggregated_result(aggr_result, filepath: str):
         """Store the given aggregated result at the specified location"""
 
-        ScanResultProcessor.store_json_convertable_result(aggr_result, filepath)
+        ScanResultProcessor.store_json_convertible_result(aggr_result, filepath)
 
     def parse_result_file(self, filepath: str):
         return self.parse_result_from_json_file(filepath)
