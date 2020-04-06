@@ -54,6 +54,9 @@ class Controller():
 
         # copy 'modules' directory to output directory if AVAIN result directory was given as input
         if input_dir:
+            if os.path.isfile(os.path.join(input_dir, NET_DIR_MAP_FILE)):
+                util.printit("Error: reuse of complete output directory only supported for single network output directories", color=util.RED)
+                return
             previous_modules_dir = os.path.join(input_dir, MODULE_DIR_PREFIX)
             new_modules_dir = os.path.join(self.output_dir, MODULE_DIR_PREFIX)
             if os.path.isdir(previous_modules_dir):
