@@ -158,7 +158,7 @@ class VulnScoreProcessor(ResultProcessor):
             host_scores = {str(i): host_scores[i] for i in range(len(host_scores))}
 
         result = aggregate_host_scores(host_scores)
-        if isinstance(host_scores, dict) and isinstance(host_scores[list(host_scores.keys())[0]], dict):
+        if host_scores and isinstance(host_scores, dict) and isinstance(host_scores[list(host_scores.keys())[0]], dict):
             self._save_module_scores(host_scores.keys())
 
         # dump host scores to file
