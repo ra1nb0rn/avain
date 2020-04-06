@@ -86,3 +86,6 @@ dump_data = True                                                // if SQLis are 
 var_optimal = 0.8                                                // optimal variance of a HTTP parameter (used for computing commonality scores of HTTP params)
 weight_frequency = 0.75                                          // importance of frequency of HTTP parameters (used for computing commonality scores of HTTP params)
 weight_variance = 0.25                                           // importance of variance of HTTP parameters (used for computing commonality scores of HTTP params)
+
+[smb.avain_enum]
+//accounts = ("user1": "pass1"), ("user2": "pass2")              // list of accounts to use for authentication to SMB services
