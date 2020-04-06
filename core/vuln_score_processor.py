@@ -97,6 +97,9 @@ class VulnScoreProcessor(ResultProcessor):
 
             host_scores = {}
             for _, module_result in module_results.items():
+                # if result is already aggregated, continue
+                if not isinstance(module_result, dict):
+                    continue
                 for host, score in module_result.items():
                     try:  # catch potential 'N/A' or other conversion exception
                         score = float(score)
@@ -150,9 +153,13 @@ class VulnScoreProcessor(ResultProcessor):
         else:
             host_scores = ResultProcessor.sort_result_by_ip(aggregate_module_scores(self.results))
 
-        result = aggregate_host_scores(host_scores)
+        # if only list of scores without IPs is available, transform it to a dict
+        if isinstance(host_scores, list):
+            host_scores = {str(i): host_scores[i] for i in range(len(host_scores))}
 
-        self._save_module_scores(host_scores.keys())
+        result = aggregate_host_scores(host_scores)
+        if isinstance(host_scores, dict) and isinstance(host_scores[list(host_scores.keys())[0]], dict):
+            self._save_module_scores(host_scores.keys())
 
         # dump host scores to file
         host_scores_file = os.path.join(self.output_dir, HOST_SCORES_FILE)
