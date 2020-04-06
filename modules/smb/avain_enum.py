@@ -44,6 +44,8 @@ def run(results):
     if CONFIG.get("accounts", ""):
         accounts_str = CONFIG["accounts"]
         accounts = parse_accounts_str(accounts_str)
+    # add guest account to beginning of account list
+    accounts.insert(0, ("", ""))
 
     # run in order: SMBMap, Enum4Linux, Nmap SMB vuln scripts
     cols = shutil.get_terminal_size((100, 20))[0]
@@ -118,9 +120,6 @@ def parse_accounts_str(accounts_str):
 def run_smbmap(targets, accounts):
     """ Run SMBMap on the given targets with all of the given accounts """
 
-    # add guest account to account list
-    accounts.insert(0, ("", ""))
-
     # open redirect file for SMBMap output
     redr_file = open(SMBMAP_OUTPUT_FILE, "w")
 
@@ -189,14 +188,11 @@ def run_enum4linux(targets, accounts):
     user_def_re = re.compile(r"Username\W*\.+\W*'.*'")
     pass_def_re = re.compile(r"Password\W*\.+\W*'.*'")
 
-    # add guest account to account list
-    accounts.insert(0, ("", ""))
-
     # open redirect file for Enum4Linux output
     redr_file = open(ENUM4LINUX_OUTPUT_FILE, "w")
 
     # iterate over targets and scan them
-    for ip, _ in targets.items():
+    for ip in targets:
         # note: enum4linux does not allow specification of ports
 
         # call Enum4Linux once for every account
