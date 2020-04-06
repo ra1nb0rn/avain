@@ -180,6 +180,8 @@ def run_enum4linux(targets, accounts):
                                    stderr=subprocess.PIPE)
     # if it's not installed, return
     if e4l_installed.returncode != 0:
+        util.printit("Skipping, because Enum4Linux is not installed.")
+        util.printit("If you want AVAIN to use Enum4Linux, you have to install it manually.")
         return
 
     # some regexes to process output
