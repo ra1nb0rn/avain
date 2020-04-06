@@ -38,6 +38,9 @@ fi
 cp create_db ../../
 
 cd "../../"
+if [ -f nvd_db.db3 ]; then
+    rm nvd_db.db3
+fi
 eval "./module_updater.py"
 
 if [ $? != 0 ]; then
