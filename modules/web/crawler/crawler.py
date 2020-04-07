@@ -812,7 +812,7 @@ class Crawler():
                     else:
                         cur_node[ptype] = list(set(param_node[ptype]))
 
-            # unite instances of the cuurent param node with the current web host map node
+            # unite instances of the current param node with the current web host map node
             if "instances" in param_node:
                 # handle non-existent / empty instances node in aggregation webserver_map
                 if "instances" not in cur_node:
