@@ -89,3 +89,12 @@ weight_variance = 0.25                                           // importance o
 
 [smb.avain_enum]
 //accounts = ("user1": "pass1"), ("user2": "pass2")              // list of accounts to use for authentication to SMB services
+
+[web.cms_scanner.wpscan.avain]
+multiple_wp_sites = False                                        // whether one host (ip + port + hostname) can serve multiple WordPress sites
+cookie_str = ""                                                  // the cookies to use when scanning with WPScan
+user_agent = Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0  // the user agent to use
+wpvulndb_api_token = ""                                          // Not required to find vulns b/c cve_correlation module can find (most of) them
+max_threads = 5                                                  // the max threads to use within WPScan
+disable_tls_checks = True                                        // "disables SSL/TLS certificate verification" (from WPScan help)
+stealthy = False                                                 // use random user agent and passive detection methods (see WPScan help)
