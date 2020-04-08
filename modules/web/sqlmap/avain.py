@@ -59,9 +59,9 @@ def run(results: list):
                 # determine protocol from scan results if available
                 protocol = "http"
                 if (ip in INTERMEDIATE_RESULTS[ResultType.SCAN] and
-                        portid in INTERMEDIATE_RESULTS[ResultType.SCAN][ip] and
-                        "service" in INTERMEDIATE_RESULTS[ResultType.SCAN][ip][portid]):
-                    protocol = INTERMEDIATE_RESULTS[ResultType.SCAN][ip][portid]["service"]
+                        portid in INTERMEDIATE_RESULTS[ResultType.SCAN][ip]["tcp"] and
+                        "service" in INTERMEDIATE_RESULTS[ResultType.SCAN][ip]["tcp"][portid]):
+                    protocol = INTERMEDIATE_RESULTS[ResultType.SCAN][ip]["tcp"][portid]["service"]
 
                 # check host for SQLi
                 base_url = "%s://%s:%s" % (protocol, host, portid)
