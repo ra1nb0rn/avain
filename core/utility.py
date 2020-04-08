@@ -29,6 +29,9 @@ BRIGHT_CYAN = "\u001b[36;1m"
 CURSOR_PREV_LINE = "\033[1A\r"
 CLEAR_UNTIL_EOL = "\033[K"
 
+# regex to strip escape sequences
+ANSI_ESCAPE_RE = re.compile(r"\x1B[@-_][0-?]*[ -/]*[@-~]")
+
 # mutex to prevent concurrent printing
 PRINT_MUTEX = Lock()
 
@@ -400,5 +403,4 @@ def strip_ansi_escape_seq(text: str):
     From: https://stackoverflow.com/a/14693789
     """
 
-    ansi_escape = re.compile(r"\x1B[@-_][0-?]*[ -/]*[@-~]")
-    return ansi_escape.sub("", text)
+    return ANSI_ESCAPE_RE.sub("", text)
