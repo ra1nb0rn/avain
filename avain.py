@@ -192,7 +192,7 @@ class Cli():
 
 def banner():
     border_color, avain_color, by_color, sane = util.BRIGHT_BLUE, util.BRIGHT_BLUE, util.YELLOW, util.SANE
-    util.printit("|" + "-" * 78 + "|", color=border_color)
+    util.printit("\n|" + "-" * 78 + "|", color=border_color)
     print(
 """\
 {0}                                                                              {0}
