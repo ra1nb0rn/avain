@@ -200,9 +200,9 @@ def banner():
 {0}                        /   || |  / //   |   /  _// | / /                     {0}
 {0}                       / /| || | / // /| |   / / /  |/ /                      {0}
 {0}                      / ___ || |/ // ___ | _/ / / /|  /                       {0}
-{0}                     /_/  |_||___//_/  |_|/___//_/ |_/                        {0}
+{0}                     /_/  |_||___//_/  |_|/___//_/ |_/      {1}           {0}
 {0}                                                                              {0}\
-""".format(border_color + "|" + avain_color))
+""".format(border_color + "|" + avain_color, util.BRIGHT_GREEN + "(%s)"  % __version__ + border_color))
     print(border_color + "|" + sane + " " * 25 + by_color + "[ Created by - Dustin Born ]" +
           sane + " " * 25 + border_color + "|" + sane)
     util.printit("|" + "-" * 78 + "|", color=border_color)
