@@ -133,11 +133,12 @@ class Cli():
                 if ":" in port_expr:
                     port_expr = port_expr[port_expr.find(":")+1:]
                 if "-" in port_expr:
-                    port_1, port_2 = port_expr.split("-")
-                    check_port(port_1)
-                    check_port(port_2)
-                    if int(port_1) > int(port_2):
-                        parser.error("port range %s is not a valid port range" % port_expr)
+                    if len(port_expr) > 1:
+                        port_1, port_2 = port_expr.split("-")
+                        check_port(port_1)
+                        check_port(port_2)
+                        if int(port_1) > int(port_2):
+                            parser.error("port range %s is not a valid port range" % port_expr)
                 else:
                     check_port(port_expr)
 
