@@ -74,7 +74,7 @@ The contents of the created output folder should mostly be simple to understand,
 
 Three more examples of how you can call AVAIN:
 * ``avain -n 192.168.0.* -uM -p T:80,U:53 -o http_dns_sec``
-* ``avain -n 192.168.0.1 192.168.0.100-150 -sN -c config/someconfig.cfg -v``
+* ``avain -n 10.0.42.* 192.168.0.1-150 -sN -c config/someconfig.cfg -v``
 * ``avain -sR path_to_sr_1 path_to_sr_2 -o network_analysis``
 
 
