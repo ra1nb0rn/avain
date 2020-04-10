@@ -7,11 +7,11 @@
 [core]
 // the list of modules to use (in order)
 modules = nmap.avain_nmap, smb.avain_enum, web.gobuster.avain, web.crawler.avain, web.cms_scanner.wpscan.avain, web.sqlmap.avain, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
-default_trust = 3                                                // the default quality of data / trust level for scan modules
-scan_trust_aggr_scheme = TRUST_AGGR                              // possible values --> {TRUST_MAX, TRUST_AGGR}
-scan_result_aggr_scheme = MULTIPLE                               // possible value --> {SINGLE, MULTIPLE, FILTER}
-print_result_types = SCAN, WEBSERVER_MAP                         // the intermediate result types to output
-module_update_interval = 20160                                   // in minutes, i.e. every other week
+default_trust = 3                                                 // the default quality of data / trust level for scan modules
+scan_trust_aggr_scheme = TRUST_AGGR                               // possible values --> {TRUST_MAX, TRUST_AGGR}
+scan_result_aggr_scheme = MULTIPLE                                // possible value --> {SINGLE, MULTIPLE, FILTER}
+print_result_types = SCAN, WEBSERVER_MAP                          // the intermediate result types to output
+module_update_interval = 20160                                    // in minutes, i.e. every other week
 automatic_module_updates = False                                  // whether modules should be updated automatically after 'module_update_interval' minutes
 
 
@@ -19,16 +19,16 @@ automatic_module_updates = False                                  // whether mod
 [nmap.avain_nmap]
 // add_nmap_params = --max-rtt-timeout 100ms --max-retries 1     // additional Nmap params
 scan_type = S                                                    // SYN scan and UDP scan require root privileges
-fast_scan = True                                                // whether Nmap should use T5 and F option as speedup
+fast_scan = True                                                 // whether Nmap should use T5 and F option as speedup
 add_scripts = default, http-headers, smb-os-discovery, banner    // additional scripts Nmap should use
 timing_template = 4                                              // the timing (or aggressiveness) template to use
 
 [cve_correlation.avain_cve_correlation]
-DB_expire = 1000000000                                                // in minutes, i.e. every week
+DB_expire = 1000000000                                           // in minutes, i.e. every week
 skip_os = True                                                   // whether to skip OS CVE analysis --> {True, False}
 max_cve_count = -1                                               // the maximum number of CVEs to retrieve; -1 for unlimited
 squash_cpes = True                                               // whether to squash every discovered CPE in case of invalid CPE
-allow_versionless_search = False                                  // whether to fully search for CVEs when CPE has no version
+allow_versionless_search = False                                 // whether to fully search for CVEs when CPE has no version
 max_print_count = 20                                             // with verbose: how many NVD entries to print to stdout for one CPE, -1 for all
 allow_general_with_cpes = False                                  // if True, allow retrieval of CVEs having a versionless CPE and non-empty with_cpes
 
@@ -59,7 +59,7 @@ user_agent = Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.
 cookie_str = ""                                                  // the cookies to use when crawling, specified as key=value pairs separated by a semicolon
 exclude_paths = "^.*[Ll][Oo][Gg][Oo][Uu][Tt].*$"                 // list of regexes that specify paths (incl. query) to exclude from crawling
 use_linkfinder = False                                           // whether to use Linkfinder to statically find pages in JS code (false positives likely)
-use_selenium = False                                              // whether Selenium should be used to run JavaScript and trigger events (disable if crawler gets stuck)
+use_selenium = False                                             // whether Selenium should be used to run JavaScript and trigger events (disable if crawler gets stuck)
 extract_info_from_forms = True                                   // whether to analyze forms and try to extract GET / POST params or URLs from them
 extract_comments = True                                          // if True, try to extract comments from crawled HTML, JS, etc. documents
 check_linkfinder = True                                          // whether a URL discovered by linkfinder should be checked for existence via HEAD request
@@ -77,7 +77,7 @@ level = 1                                                        // sqlmap test 
 risk = 1                                                         // risk of tests to perform (see: https://github.com/sqlmapproject/sqlmap/wiki/Usage#risk)
 num_common_params = 0                                            // number of HTTP parameters that should change for different tests of another HTTP parameter
 max_per_param_tests = 1                                          // maximum number of tests per HTTP parameter (multiple tests only if the param's usage differs)
-param_test_rate = 0.5                                           // the rate of HTTP parameters to test per URI path; GET / POST are handled separately
+param_test_rate = 0.5                                            // the rate of HTTP parameters to test per URI path; GET / POST are handled separately
 min_params_test_count = 5                                        // minimum number of  HTTP parameters to test per URI path, independent of param_test_rate
 ignore_code = 404                                                // ignore codes (see https://github.com/sqlmapproject/sqlmap/wiki/Usage#ignore-problematic-http-error-code)
 follow_refresh_intent = False                                    // Whether to follow a refresh intent (inside HTML: <meta http-equiv="refresh" content="...">)
@@ -88,6 +88,7 @@ weight_frequency = 0.75                                          // importance o
 weight_variance = 0.25                                           // importance of variance of HTTP parameters (used for computing commonality scores of HTTP params)
 
 [smb.avain_enum]
+use_nmap_scripts = True                                          // whether the Nmap SMB vulnerability scripts should be used
 //accounts = ("user1": "pass1"), ("user2": "pass2")              // list of accounts to use for authentication to SMB services
 
 [web.cms_scanner.wpscan.avain]

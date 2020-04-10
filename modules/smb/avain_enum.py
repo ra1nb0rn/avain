@@ -54,9 +54,10 @@ def run(results):
     util.printit()
     print_divider("Enum4Linux")
     run_enum4linux(targets, accounts)
-    util.printit()
-    print_divider("Nmap SMB Vulnerability Scripts")
-    run_nmap_vuln_scripts(targets)
+    if CONFIG.get("use_nmap_scripts", "true").lower() == "true":
+        util.printit()
+        print_divider("Nmap SMB Vulnerability Scripts")
+        run_nmap_vuln_scripts(targets)
 
     # no AVAIN results are returned
     logger.info("Finished SMB enumeration")
