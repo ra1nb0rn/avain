@@ -21,7 +21,7 @@ class Controller():
 
     def __init__(self, networks: list, add_networks: list, omit_networks: list, update_modules: bool,
                  config_path: str, ports: list, output_dir: str, input_dir: str, user_results: dict,
-                 single_network: bool, verbose: bool):
+                 separate_networks: bool, verbose: bool):
         """
         Create a Controller object.
 
@@ -34,8 +34,8 @@ class Controller():
         :param output_dir: A string specifying the output directory of the analysis
         :param input_dir: A string specifying the output directory of a previous AVAIN analysis
         :param user_results: A list of filenames whose files contain user provided results
-        :param single_network: A boolean specifying whether all given networks are to be considered
-                               hosts in one single network
+        :param separate_networks: A boolean specifying whether all given networks are to be assessed
+                                  and scored independently
         :param vebose: Specifying whether to provide verbose output or not
         """
 
@@ -123,7 +123,7 @@ class Controller():
                 util.print_exception_and_continue(excpt)
 
         # set remaining variables
-        self.single_network = single_network
+        self.separate_networks = separate_networks
         self.verbose = verbose
         self.ports = ports
         self.update_modules = update_modules
@@ -199,10 +199,10 @@ class Controller():
             self.module_manager.reset_results()
             return net_score
 
-        if self.single_network or len(networks) <= 1:
+        if (not self.separate_networks) or len(networks) <= 1:
             # if there is only one assessment
             score = do_network_assessment(networks, self.output_dir)
-            if self.single_network or not self.networks:
+            if (not self.separate_networks) or (not self.networks):
                 if score:
                     network_vuln_scores["assessed_network"] = score
             else:

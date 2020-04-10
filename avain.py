@@ -59,9 +59,9 @@ class Cli():
         optional_args.add_argument("-c", "--config", help="specify a config file to use")
         optional_args.add_argument("-o", "--output", help="specify the output folder name")
         optional_args.add_argument("-p", "--ports", help="specify which ports to scan on every host")
-        optional_args.add_argument("-sN", "--single-network", action="store_true", help="operate " +
-                                   "in single network mode meaning that all specified networks " +
-                                   "are considered to be a subnet of one common supernet")
+        optional_args.add_argument("-sN", "--separate-networks", action="store_true", help="operate " +
+                                   "in separate networks mode meaning that all specified networks " +
+                                   "are assessed and scored independently")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
         optional_args.add_argument("-q", "--quiet", action="store_true", help="disable verbose output, be quiet")
 
@@ -150,7 +150,7 @@ class Cli():
         controller = Controller(self.args.networks, self.args.add_networks, self.args.omit_networks,
                                 self.args.update_modules, self.args.config, self.args.ports,
                                 self.args.output, self.args.input, self.user_results,
-                                self.args.single_network, self.verbose)
+                                self.args.separate_networks, self.verbose)
         controller.run()
 
     def parse_network_list(self, parser: argparse.ArgumentParser):
