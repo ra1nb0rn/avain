@@ -105,11 +105,12 @@ class Controller():
             print(util.MAGENTA + "Warning: Could not find default config.\n" + util.SANE, file=sys.stderr)
 
         if config_path:
-            # if custom config file has no extension, check config folder for config with given name
-            if not os.path.splitext(config_base)[1]:
-                pot_configs = glob.glob(os.path.join(CONFIG_DIR, config_base + "*"))
-                if pot_configs:
-                    config_path = sorted(pot_configs)[0]
+            if not os.path.isfile(config_path):
+                # if custom config file has no extension, check config folder for config with given name
+                if not os.path.splitext(config_base)[1]:
+                    pot_configs = glob.glob(os.path.join(CONFIG_DIR, config_base + "*"))
+                    if pot_configs:
+                        config_path = sorted(pot_configs)[0]
 
             # parse custom config
             try:
