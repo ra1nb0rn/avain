@@ -6,7 +6,7 @@
 /* here defined are default configuration settings */
 [core]
 // the list of modules to use (in order)
-modules = nmap.avain_nmap, web.gobuster.avain, web.crawler.avain, web.sqlmap.avain, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
+modules = nmap.avain_nmap, smb.avain_enum, web.gobuster.avain, web.crawler.avain, web.cms_scanner.wpscan.avain, web.sqlmap.avain, cve_correlation.avain_cve_correlation, login_bruteforce.hydra_ssh.avain, login_bruteforce.hydra_telnet.avain
 default_trust = 3                                                // the default quality of data / trust level for scan modules
 scan_trust_aggr_scheme = TRUST_AGGR                              // possible values --> {TRUST_MAX, TRUST_AGGR}
 scan_result_aggr_scheme = MULTIPLE                               // possible value --> {SINGLE, MULTIPLE, FILTER}
