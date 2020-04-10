@@ -63,12 +63,12 @@ class Cli():
                                    "in single network mode meaning that all specified networks " +
                                    "are considered to be a subnet of one common supernet")
         optional_args.add_argument("-v", "--verbose", action="store_true", help="enable verbose output")
-        optional_args.add_argument("-nV", "--non-verbose", action="store_true", help="disable verbose output")
+        optional_args.add_argument("-q", "--quiet", action="store_true", help="disable verbose output, be quiet")
 
         self.args = parser.parse_args()
 
         # set verbosity (AVAIN is verbose by default)
-        if self.args.non_verbose:
+        if self.args.quiet:
             self.verbose = False
 
         self.parse_user_results(parser)
