@@ -174,6 +174,10 @@ def run_gobuster(url, redr_file):
         new_dirs = process_gobuster_findings(url, dir_, findings, webserver_map)
         dirs += new_dirs
 
+        # print empty line after every gobuster call
+        util.printit("")
+        redr_file.write("\n")
+
     return webserver_map
 
 
