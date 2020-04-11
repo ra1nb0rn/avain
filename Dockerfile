@@ -2,7 +2,7 @@ FROM ubuntu
 
 WORKDIR /home/avain
 RUN apt-get update >/dev/null && \
-    apt-get install -y locales sudo git >/dev/null && \
+    apt-get install -y locales sudo git build-essential ruby-dev gcc >/dev/null && \
     git clone --quiet --depth 1 https://github.com/dustinborn/avain.git . && \
     ./install.sh && \
     rm -rf /var/lib/apt/lists/*
