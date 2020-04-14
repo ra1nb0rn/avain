@@ -1,0 +1,89 @@
+{
+   "192.168.0.242": [
+      {
+         "name": "Linux Linux 2.6.X",
+         "cpes": [
+            "cpe:/o:linux:linux_kernel:2.6"
+         ],
+         "accuracy": "100",
+         "type": "general purpose"
+      }
+   ],
+   "192.168.0.246": [
+      {
+         "name": "Linux Linux 2.6.X",
+         "cpes": [
+            "cpe:/o:linux:linux_kernel:2.6.32"
+         ],
+         "accuracy": "96",
+         "type": "general purpose"
+      },
+      {
+         "name": "Linux Linux 4.X",
+         "cpes": [
+            "cpe:/o:linux:linux_kernel:4"
+         ],
+         "accuracy": "96",
+         "type": "general purpose"
+      },
+      {
+         "name": "Linux Linux 3.X",
+         "cpes": [
+            "cpe:/o:linux:linux_kernel:3.1"
+         ],
+         "accuracy": "96",
+         "type": "general purpose"
+      },
+      {
+         "name": "Linux Linux 3.X",
+         "cpes": [
+            "cpe:/o:linux:linux_kernel:3.2"
+         ],
+         "accuracy": "95",
+         "type": "general purpose"
+      },
+      {
+         "name": "Linux Linux 2.6.X",
+         "cpes": [
+            "cpe:/o:linux:linux_kernel:2.6.17"
+         ],
+         "accuracy": "94",
+         "type": "webcam"
+      },
+      {
+         "name": "AXIS embedded",
+         "cpes": [
+            "cpe:/h:axis:210a_network_camera",
+            "cpe:/h:axis:211_network_camera"
+         ],
+         "accuracy": "94",
+         "type": "webcam"
+      },
+      {
+         "name": "Synology DiskStation Manager 5.X",
+         "cpes": [
+            "cpe:/a:synology:diskstation_manager:5.2"
+         ],
+         "accuracy": "94",
+         "type": "storage-misc"
+      },
+      {
+         "name": "Netgear RAIDiator 4.X",
+         "cpes": [
+            "cpe:/o:netgear:raidiator:4.2.28"
+         ],
+         "accuracy": "94",
+         "type": "storage-misc"
+      },
+      {
+         "name": "Unix",
+         "accuracy": "100",
+         "type": ""
+      },
+      {
+         "name": "Windows 6.1",
+         "accuracy": "100",
+         "type": ""
+      }
+   ]
+}

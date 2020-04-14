@@ -1,0 +1,225 @@
+2020-04-13 19:24:43 [scrapy.utils.log] INFO: Scrapy 1.7.3 started (bot: scrapybot)
+2020-04-13 19:24:43 [scrapy.utils.log] INFO: Versions: lxml 4.3.3.0, libxml2 2.9.9, cssselect 1.0.3, parsel 1.5.1, w3lib 1.20.0, Twisted 19.2.0, Python 3.7.7 (default, Mar 10 2020, 15:43:33) - [Clang 11.0.0 (clang-1100.0.33.17)], pyOpenSSL 19.1.0 (OpenSSL 1.1.1d  10 Sep 2019), cryptography 2.8, Platform Darwin-19.4.0-x86_64-i386-64bit
+2020-04-13 19:24:43 [scrapy.crawler] INFO: Overridden settings: {'USER_AGENT': 'Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0'}
+2020-04-13 19:24:43 [scrapy.extensions.telnet] INFO: Telnet Password: 6e13ce9e38634090
+2020-04-13 19:24:43 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.memusage.MemoryUsage',
+ 'scrapy.extensions.logstats.LogStats']
+2020-04-13 19:24:43 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2020-04-13 19:24:43 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2020-04-13 19:24:43 [scrapy.middleware] INFO: Enabled item pipelines:
+[]
+2020-04-13 19:24:43 [scrapy.core.engine] INFO: Spider opened
+2020-04-13 19:24:43 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2020-04-13 19:24:43 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6023
+2020-04-13 19:24:43 [py.warnings] WARNING: /usr/local/lib/python3.7/site-packages/scrapy/spiders/__init__.py:66: UserWarning: Spider.make_requests_from_url method is deprecated; it won't be called in future Scrapy releases. Please override Spider.start_requests method instead (see __main__.AvainCrawlSpider).
+  cls.__module__, cls.__name__
+
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php> (referer: None)
+2020-04-13 19:24:43 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/core/> (referer: None)
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/update.php> (referer: None)
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/> (referer: None)
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (403) <GET http://kioptrix3.com/data> (referer: None)
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/> (referer: None)
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/cache/> (referer: None)
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/style/> (referer: None)
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/> (referer: None)
+2020-04-13 19:24:43 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:24:43 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:24:43 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/> (referer: None)
+2020-04-13 19:24:47 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php?system=Admin> (referer: http://kioptrix3.com/index.php)
+2020-04-13 19:24:47 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/thumb_8csqlvc375.jpg> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:24:47 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/translators.html> (referer: http://kioptrix3.com/phpmyadmin/)
+2020-04-13 19:24:47 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://kioptrix3.com/cache/index.php?system=Admin> (referer: http://kioptrix3.com/cache/)
+2020-04-13 19:24:47 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/g.php/1> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:24:47 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/p.php/5> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:24:47 [scrapy.core.engine] DEBUG: Crawled (301) <GET http://kioptrix3.com/gallery> (referer: http://kioptrix3.com/index.php)
+2020-04-13 19:24:47 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/thumb_0q52na4t2g.jpg> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:24:47 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/icons/blank.gif> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:47 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/thumb_8y1a02r6yh.jpg> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:24:48 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php?system=Blog> (referer: http://kioptrix3.com/index.php)
+2020-04-13 19:24:48 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php?page=index> (referer: http://kioptrix3.com/index.php)
+2020-04-13 19:24:48 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/login.php> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:24:48 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/index.php> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:24:49 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/p.php/4> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:24:49 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/p.php/3> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:24:49 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/index.php> (referer: http://kioptrix3.com/phpmyadmin/)
+2020-04-13 19:24:49 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/recent.php> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:24:49 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/print.css> (referer: http://kioptrix3.com/phpmyadmin/)
+2020-04-13 19:24:50 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/favicon.ico> (referer: http://kioptrix3.com/phpmyadmin/)
+2020-04-13 19:24:50 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://kioptrix3.com/cache/index.php?system=Blog> (referer: http://kioptrix3.com/cache/)
+2020-04-13 19:24:50 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/TinyMCE/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:50 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/Documentation.html> (referer: http://kioptrix3.com/phpmyadmin/)
+2020-04-13 19:24:50 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php?system=Admin&page=loginSubmit> (referer: http://kioptrix3.com/index.php?system=Admin)
+2020-04-13 19:24:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/phpmyadmin.css.php?lang=en-utf-8&convcharset=iso-8859-1&collation_connection=utf8_unicode_ci&token=da74397afc5a39da5b1bc3d1b46d6e28&js_frame=right&nocache=3710267720> (referer: http://kioptrix3.com/phpmyadmin/)
+2020-04-13 19:24:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/FileManager/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:51 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://kioptrix3.com/cache/index.php?page=index> (referer: http://kioptrix3.com/cache/)
+2020-04-13 19:24:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/phpmyadmin.css.php?lang=en-utf-8&convcharset=iso-8859-1&collation_connection=utf8_unicode_ci&token=936432d469ff0f0f519a3cf2c6735a5a&js_frame=right&nocache=3710267720> (referer: http://kioptrix3.com/phpmyadmin/)
+2020-04-13 19:24:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/docs.css> (referer: http://kioptrix3.com/phpmyadmin/translators.html)
+2020-04-13 19:24:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Menu/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Blog/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/lrte/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Dashboard/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/icons/folder.gif> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php?system=Blog&post=1281005380> (referer: http://kioptrix3.com/index.php?system=Blog)
+2020-04-13 19:24:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Nicedit/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php?system=Blog&archive=2010-8> (referer: http://kioptrix3.com/index.php?system=Blog)
+2020-04-13 19:24:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php?system=Blog&post=1281005382> (referer: http://kioptrix3.com/index.php?system=Blog)
+2020-04-13 19:24:55 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/index.php?system=Blog&category=0> (referer: http://kioptrix3.com/index.php?system=Blog)
+2020-04-13 19:24:55 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/icons/back.gif> (referer: http://kioptrix3.com/modules/)
+2020-04-13 19:24:55 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/recent.php> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:24:55 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/p.php/3> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:24:55 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/p.php/4> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:24:55 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/index.php> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:24:55 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/changelog.php> (referer: http://kioptrix3.com/phpmyadmin/Documentation.html)
+2020-04-13 19:24:55 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/TinyMCE/EditorViewPlugin.php> (referer: http://kioptrix3.com/modules/TinyMCE/)
+2020-04-13 19:24:57 [scrapy.core.engine] DEBUG: Crawled (401) <GET http://kioptrix3.com/phpmyadmin/scripts/setup.php> (referer: http://kioptrix3.com/phpmyadmin/Documentation.html)
+2020-04-13 19:24:57 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/license.php> (referer: http://kioptrix3.com/phpmyadmin/Documentation.html)
+2020-04-13 19:24:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/TinyMCE/TinyMCEModuleInfo.php> (referer: http://kioptrix3.com/modules/TinyMCE/)
+2020-04-13 19:24:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/icons/unknown.gif> (referer: http://kioptrix3.com/modules/TinyMCE/)
+2020-04-13 19:24:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/lrte/EditorViewPlugin.php> (referer: http://kioptrix3.com/modules/lrte/)
+2020-04-13 19:24:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/TinyMCE/editor.js> (referer: http://kioptrix3.com/modules/TinyMCE/)
+2020-04-13 19:24:58 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://kioptrix3.com/modules/Blog/function.include> (referer: http://kioptrix3.com/modules/Blog/)
+2020-04-13 19:24:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/lrte/lrteModuleAdmin.php> (referer: http://kioptrix3.com/modules/lrte/)
+2020-04-13 19:24:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/lrte/lrteModuleInstall.php> (referer: http://kioptrix3.com/modules/lrte/)
+2020-04-13 19:24:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/TinyMCE/TinyMCEModuleAdmin.php> (referer: http://kioptrix3.com/modules/TinyMCE/)
+2020-04-13 19:24:59 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/lrte/lrteModuleInfo.php> (referer: http://kioptrix3.com/modules/lrte/)
+2020-04-13 19:24:59 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Menu/Browse.plb> (referer: http://kioptrix3.com/modules/Menu/)
+2020-04-13 19:24:59 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Menu/MenuModuleAdmin.php> (referer: http://kioptrix3.com/modules/Menu/)
+2020-04-13 19:24:59 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Menu/MenuModuleInfo.php> (referer: http://kioptrix3.com/modules/Menu/)
+2020-04-13 19:24:59 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Nicedit/NiceditModuleAdmin.php> (referer: http://kioptrix3.com/modules/Nicedit/)
+2020-04-13 19:25:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Dashboard/DashboardModuleInstall.php> (referer: http://kioptrix3.com/modules/Dashboard/)
+2020-04-13 19:25:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Nicedit/EditorViewPlugin.php> (referer: http://kioptrix3.com/modules/Nicedit/)
+2020-04-13 19:25:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Nicedit/NiceditModuleInstall.php> (referer: http://kioptrix3.com/modules/Nicedit/)
+2020-04-13 19:25:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Nicedit/NiceditModuleInfo.php> (referer: http://kioptrix3.com/modules/Nicedit/)
+2020-04-13 19:25:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Dashboard/noDisableStatus.dat> (referer: http://kioptrix3.com/modules/Dashboard/)
+2020-04-13 19:25:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Dashboard/DashboardModuleAdmin.php> (referer: http://kioptrix3.com/modules/Dashboard/)
+2020-04-13 19:25:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Dashboard/DashboardModuleInfo.php> (referer: http://kioptrix3.com/modules/Dashboard/)
+2020-04-13 19:25:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Dashboard/DashViewPlugin.php> (referer: http://kioptrix3.com/modules/Dashboard/)
+2020-04-13 19:25:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/phpmyadmin/scripts/> (referer: http://kioptrix3.com/phpmyadmin/scripts/setup.php)
+2020-04-13 19:25:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/Browse.plb> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/readme.txt> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/noDisableStatus.dat> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/icons/text.gif> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/BackupModuleInfo.php> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/BackupModuleInstall.php> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/pclzip.lib.php> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:04 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/logo.png> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:04 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Backup/BackupModuleAdmin.php> (referer: http://kioptrix3.com/modules/Backup/)
+2020-04-13 19:25:04 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Menu/MenuModule.php> (referer: http://kioptrix3.com/modules/Menu/)
+2020-04-13 19:25:05 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Menu/logo.png> (referer: http://kioptrix3.com/modules/Menu/)
+2020-04-13 19:25:05 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Menu/MenuModuleInstall.php> (referer: http://kioptrix3.com/modules/Menu/)
+2020-04-13 19:25:05 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/FileManager/FileManagerModuleAdmin.php> (referer: http://kioptrix3.com/modules/FileManager/)
+2020-04-13 19:25:05 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/icons/image2.gif> (referer: http://kioptrix3.com/modules/FileManager/)
+2020-04-13 19:25:05 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/FileManager/FileManagerModuleInstall.php> (referer: http://kioptrix3.com/modules/FileManager/)
+2020-04-13 19:25:06 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/FileManager/FileManagerModuleInfo.php> (referer: http://kioptrix3.com/modules/FileManager/)
+2020-04-13 19:25:06 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/FileManager/filemanager.php> (referer: http://kioptrix3.com/modules/FileManager/)
+2020-04-13 19:25:06 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/FileManager/Browse.plb> (referer: http://kioptrix3.com/modules/FileManager/)
+2020-04-13 19:25:06 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://kioptrix3.com/modules/Dashboard/function.include> (referer: http://kioptrix3.com/modules/Dashboard/DashboardModuleInfo.php)
+2020-04-13 19:25:06 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/Menu/noDisableStatus.dat> (referer: http://kioptrix3.com/modules/Menu/)
+2020-04-13 19:25:06 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/FileManager/logo.png> (referer: http://kioptrix3.com/modules/FileManager/)
+2020-04-13 19:25:06 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/modules/TinyMCE/TinyMCEModuleInstall.php> (referer: http://kioptrix3.com/modules/TinyMCE/)
+2020-04-13 19:25:06 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/login.php> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:25:07 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://kioptrix3.com/modules/Dashboard/function.include-once> (referer: http://kioptrix3.com/modules/Dashboard/DashboardModuleInfo.php)
+2020-04-13 19:25:07 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/p.php/5> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:25:07 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/g.php/1> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:25:08 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/index.php> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:08 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/index.php> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:25:08 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/p.php/4> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:08 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/p.php/4> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:25:08 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/p.php/3> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:08 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/p.php/3> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:25:08 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/recent.php> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:08 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/recent.php> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:25:08 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/g.php/1> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:08 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/g.php/1> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:25:10 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/login.php> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:10 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/login.php> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:25:10 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/p.php/5> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:10 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/p.php/5> (referer: http://kioptrix3.com/gallery/)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=3&vote=1&from=%2Fgallery%2Fp.php%2F3%3F> (referer: http://kioptrix3.com/gallery/p.php/3)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=4&vote=1&from=%2Fgallery%2Fp.php%2F4%3F> (referer: http://kioptrix3.com/gallery/p.php/4)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=3&vote=4&from=%2Fgallery%2Fp.php%2F3%3F> (referer: http://kioptrix3.com/gallery/p.php/3)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=4&vote=4&from=%2Fgallery%2Fp.php%2F4%3F> (referer: http://kioptrix3.com/gallery/p.php/4)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/med_0q52na4t2g.jpg> (referer: http://kioptrix3.com/gallery/p.php/4)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=3&vote=2&from=%2Fgallery%2Fp.php%2F3%3F> (referer: http://kioptrix3.com/gallery/p.php/3)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=3&vote=3&from=%2Fgallery%2Fp.php%2F3%3F> (referer: http://kioptrix3.com/gallery/p.php/3)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/8csqlvc375.jpg> (referer: http://kioptrix3.com/gallery/p.php/3)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/med_8csqlvc375.jpg> (referer: http://kioptrix3.com/gallery/p.php/3)
+2020-04-13 19:25:11 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/gallery.php?id=1&sort=> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=3&vote=5&from=%2Fgallery%2Fp.php%2F3%3F> (referer: http://kioptrix3.com/gallery/p.php/3)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=4&vote=3&from=%2Fgallery%2Fp.php%2F4%3F> (referer: http://kioptrix3.com/gallery/p.php/4)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=4&vote=5&from=%2Fgallery%2Fp.php%2F4%3F> (referer: http://kioptrix3.com/gallery/p.php/4)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/0q52na4t2g.jpg> (referer: http://kioptrix3.com/gallery/p.php/4)
+2020-04-13 19:25:11 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/p.php/> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/8y1a02r6yh.jpg> (referer: http://kioptrix3.com/gallery/p.php/5)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=5&vote=3&from=%2Fgallery%2Fp.php%2F5%3F> (referer: http://kioptrix3.com/gallery/p.php/5)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=4&vote=2&from=%2Fgallery%2Fp.php%2F4%3F> (referer: http://kioptrix3.com/gallery/p.php/4)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/photos/med_8y1a02r6yh.jpg> (referer: http://kioptrix3.com/gallery/p.php/5)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=5&vote=5&from=%2Fgallery%2Fp.php%2F5%3F> (referer: http://kioptrix3.com/gallery/p.php/5)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=5&vote=2&from=%2Fgallery%2Fp.php%2F5%3F> (referer: http://kioptrix3.com/gallery/p.php/5)
+2020-04-13 19:25:11 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=5&vote=1&from=%2Fgallery%2Fp.php%2F5%3F> (referer: http://kioptrix3.com/gallery/p.php/5)
+2020-04-13 19:25:12 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/g.php/> (failed 1 times): 500 Internal Server Error
+2020-04-13 19:25:12 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/gallery.php?id=1&sort=> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:25:12 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/p.php/> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:25:12 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://kioptrix3.com/gallery/vote.php?id=5&vote=4&from=%2Fgallery%2Fp.php%2F5%3F> (referer: http://kioptrix3.com/gallery/p.php/5)
+2020-04-13 19:25:15 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET http://kioptrix3.com/gallery/g.php/> (failed 2 times): 500 Internal Server Error
+2020-04-13 19:25:15 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/p.php/> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:15 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/p.php/> (referer: http://kioptrix3.com/gallery/p.php/4)
+2020-04-13 19:25:15 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/gallery.php?id=1&sort=> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:15 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/gallery.php?id=1&sort=> (referer: http://kioptrix3.com/gallery/g.php/1)
+2020-04-13 19:25:16 [scrapy.downloadermiddlewares.retry] DEBUG: Gave up retrying <GET http://kioptrix3.com/gallery/g.php/> (failed 3 times): 500 Internal Server Error
+2020-04-13 19:25:16 [scrapy.core.engine] DEBUG: Crawled (500) <GET http://kioptrix3.com/gallery/g.php/> (referer: http://kioptrix3.com/gallery/g.php/1)
+2020-04-13 19:25:16 [scrapy.core.engine] INFO: Closing spider (finished)
+2020-04-13 19:25:16 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+{'downloader/request_bytes': 55893,
+ 'downloader/request_count': 147,
+ 'downloader/request_method_count/GET': 147,
+ 'downloader/response_bytes': 733372,
+ 'downloader/response_count': 147,
+ 'downloader/response_status_count/200': 105,
+ 'downloader/response_status_count/301': 1,
+ 'downloader/response_status_count/401': 1,
+ 'downloader/response_status_count/403': 1,
+ 'downloader/response_status_count/404': 6,
+ 'downloader/response_status_count/500': 33,
+ 'elapsed_time_seconds': 33.150721,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2020, 4, 13, 17, 25, 16, 965778),
+ 'log_count/DEBUG': 158,
+ 'log_count/INFO': 10,
+ 'log_count/WARNING': 1,
+ 'memusage/max': 43540480,
+ 'memusage/startup': 43540480,
+ 'request_depth_max': 3,
+ 'response_received_count': 125,
+ 'retry/count': 22,
+ 'retry/max_reached': 11,
+ 'retry/reason_count/500 Internal Server Error': 22,
+ 'scheduler/dequeued': 147,
+ 'scheduler/dequeued/memory': 147,
+ 'scheduler/enqueued': 147,
+ 'scheduler/enqueued/memory': 147,
+ 'start_time': datetime.datetime(2020, 4, 13, 17, 24, 43, 815057)}
+2020-04-13 19:25:16 [scrapy.core.engine] INFO: Spider closed (finished)

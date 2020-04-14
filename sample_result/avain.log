@@ -1,0 +1,74 @@
+2020-04-13 19:20:24,140 - core.controller - INFO - Starting the AVAIN program
+2020-04-13 19:20:24,140 - core.controller - INFO - Executed call: avain -n 192.168.0.242 192.168.0.246 -c demo_config.txt -o avain_demo
+2020-04-13 19:20:24,141 - core.module_manager - INFO - Invoking the specified modules
+2020-04-13 19:20:24,141 - core.module_manager - INFO - 9 modules were found
+2020-04-13 19:20:24,149 - core.module_manager - INFO - Invoking module 1 of 9 - nmap.avain_nmap
+2020-04-13 19:20:24,150 - modules.nmap.avain_nmap - INFO - Setting up Nmap scan
+2020-04-13 19:20:24,150 - modules.nmap.avain_nmap - INFO - Writing networks to scan into 'networks.list'
+2020-04-13 19:20:24,150 - modules.nmap.avain_nmap - INFO - Executing Nmap call 'nmap -Pn -n -A --osscan-guess -F -oX raw_nmap_scan_results.xml -iL networks.list -sS -T4 --script=default,http-headers,smb-os-discovery,banner -v'
+2020-04-13 19:21:06,268 - modules.nmap.avain_nmap - INFO - Nmap scan done. Stdout and Stderr have been written to 'raw_nmap_scan_results.txt'. The XML output has been written to 'raw_nmap_scan_results.xml'
+2020-04-13 19:21:06,269 - modules.nmap.avain_nmap - INFO - Parsing Nmap XML output
+2020-04-13 19:21:06,291 - modules.nmap.avain_nmap - INFO - Done
+2020-04-13 19:21:06,297 - core.module_manager - INFO - Module 1 of 9 completed
+2020-04-13 19:21:06,309 - core.module_manager - INFO - Invoking module 2 of 9 - smb.avain_enum
+2020-04-13 19:21:06,311 - modules.smb.avain_enum - INFO - Starting SMB enumeration
+2020-04-13 19:21:16,174 - modules.smb.avain_enum - INFO - Finished SMB enumeration
+2020-04-13 19:21:16,174 - core.module_manager - INFO - Module modules.smb.avain_enum did not return any final results
+2020-04-13 19:21:16,176 - core.module_manager - INFO - Module 2 of 9 completed
+2020-04-13 19:21:16,987 - core.module_manager - INFO - Invoking module 3 of 9 - web.gobuster.avain
+2020-04-13 19:21:16,987 - modules.web.gobuster.avain - INFO - Starting with gobuster scan
+2020-04-13 19:21:16,989 - modules.web.gobuster.avain - INFO - Initiating scan for 192.168.0.242
+2020-04-13 19:22:56,556 - modules.web.gobuster.avain - INFO - Initiating scan for 192.168.0.246
+2020-04-13 19:24:37,188 - modules.web.gobuster.avain - INFO - Finished gobuster scan
+2020-04-13 19:24:37,191 - core.module_manager - INFO - Module 3 of 9 completed
+2020-04-13 19:24:38,096 - core.module_manager - INFO - Invoking module 4 of 9 - web.crawler.avain
+2020-04-13 19:24:38,097 - modules.web.crawler.avain - INFO - Started webserver crawling
+2020-04-13 19:26:11,215 - modules.web.crawler.avain - INFO - Finished webserver crawling
+2020-04-13 19:26:11,222 - core.module_manager - INFO - Module 4 of 9 completed
+2020-04-13 19:26:11,238 - core.module_manager - INFO - Invoking module 5 of 9 - web.cms_scanner.wpscan.avain
+2020-04-13 19:26:11,239 - modules.web.cms_scanner.wpscan.avain - INFO - Started scanning WordPress servers with WPScan module
+2020-04-13 19:26:49,128 - modules.web.cms_scanner.wpscan.avain - INFO - Finished scanning WordPress servers with WPScan module
+2020-04-13 19:26:49,130 - core.module_manager - INFO - Module 5 of 9 completed
+2020-04-13 19:26:49,141 - core.scan_result_processor - INFO - Grouped similar scan results and wrote result to /avain_demo/scan_result_aggregation/aggregation_groups.json
+2020-04-13 19:26:49,143 - core.scan_result_processor - INFO - Aggregated the individual groups and wrote result to /avain_demo/scan_result_aggregation/aggregation_options.json
+2020-04-13 19:26:49,151 - core.module_manager - INFO - Invoking module 6 of 9 - web.sqlmap.avain
+2020-04-13 19:26:49,153 - modules.web.sqlmap.avain - INFO - Started search for SQL Injections via sqlmap module
+2020-04-13 19:33:12,208 - modules.web.sqlmap.avain - INFO - Finished search for SQL Injections via sqlmap module
+2020-04-13 19:33:12,210 - core.module_manager - INFO - Module 6 of 9 completed
+2020-04-13 19:33:12,309 - core.scan_result_processor - INFO - Grouped similar scan results and wrote result to /avain_demo/scan_result_aggregation/aggregation_groups.json
+2020-04-13 19:33:12,310 - core.scan_result_processor - INFO - Aggregated the individual groups and wrote result to /avain_demo/scan_result_aggregation/aggregation_options.json
+2020-04-13 19:33:12,311 - core.module_manager - INFO - Invoking module 7 of 9 - cve_correlation.avain_cve_correlation
+2020-04-13 19:33:12,312 - modules.cve_correlation.avain_cve_correlation - INFO - Starting with CVE analysis
+2020-04-13 19:33:12,313 - modules.cve_correlation.avain_cve_correlation - INFO - Gathering information using the local CVE database last updated on 2020-04-08 23:40:27.651183
+2020-04-13 19:33:12,313 - modules.cve_correlation.avain_cve_correlation - INFO - Starting with CVE discovery of all hosts
+2020-04-13 19:33:14,282 - modules.cve_correlation.avain_cve_correlation - INFO - Parsing CPE dictionary for further lookups
+2020-04-13 19:33:37,573 - modules.cve_correlation.avain_cve_correlation - INFO - Done
+2020-04-13 19:33:41,545 - modules.cve_correlation.avain_cve_correlation - INFO - Skipping OS CVE analysis as stated in config file
+2020-04-13 19:34:12,185 - modules.cve_correlation.avain_cve_correlation - INFO - Skipping OS CVE analysis as stated in config file
+2020-04-13 19:34:12,187 - modules.cve_correlation.avain_cve_correlation - INFO - Done
+2020-04-13 19:34:12,188 - modules.cve_correlation.avain_cve_correlation - INFO - Computing final CVSSv3 scores for all hosts
+2020-04-13 19:34:12,188 - modules.cve_correlation.avain_cve_correlation - INFO - Done
+2020-04-13 19:34:12,237 - modules.cve_correlation.avain_cve_correlation - INFO - Creating summary
+2020-04-13 19:34:12,240 - modules.cve_correlation.avain_cve_correlation - INFO - Done
+2020-04-13 19:34:12,243 - core.module_manager - INFO - Module 7 of 9 completed
+2020-04-13 19:34:12,253 - core.scan_result_processor - INFO - Grouped similar scan results and wrote result to /avain_demo/scan_result_aggregation/aggregation_groups.json
+2020-04-13 19:34:12,255 - core.scan_result_processor - INFO - Aggregated the individual groups and wrote result to /avain_demo/scan_result_aggregation/aggregation_options.json
+2020-04-13 19:34:12,256 - core.module_manager - INFO - Invoking module 8 of 9 - login_bruteforce.hydra_ssh.avain
+2020-04-13 19:34:12,257 - modules.login_bruteforce.hydra_ssh.avain - INFO - Starting with Mirai SSH susceptibility analysis
+2020-04-13 19:34:12,259 - modules.login_bruteforce.hydra_ssh.avain - INFO - Beginning Hydra SSH Brute Force with command: hydra -C ../wordlists/mirai_user_pass.txt -I -t 4 -M targets.txt -b json -o hydra_output.json ssh
+2020-04-13 19:35:17,321 - modules.login_bruteforce.hydra_ssh.avain - INFO - Done
+2020-04-13 19:35:17,323 - modules.login_bruteforce.hydra_ssh.avain - INFO - Processing Hydra Output
+2020-04-13 19:35:17,323 - modules.login_bruteforce.hydra_ssh.avain - INFO - Done
+2020-04-13 19:35:17,327 - core.module_manager - INFO - Module 8 of 9 completed
+2020-04-13 19:35:17,333 - core.scan_result_processor - INFO - Grouped similar scan results and wrote result to /avain_demo/scan_result_aggregation/aggregation_groups.json
+2020-04-13 19:35:17,335 - core.scan_result_processor - INFO - Aggregated the individual groups and wrote result to /avain_demo/scan_result_aggregation/aggregation_options.json
+2020-04-13 19:35:17,337 - core.module_manager - INFO - Invoking module 9 of 9 - login_bruteforce.hydra_telnet.avain
+2020-04-13 19:35:17,339 - modules.login_bruteforce.hydra_telnet.avain - INFO - Starting with Mirai Telnet susceptibility analysis
+2020-04-13 19:35:17,340 - modules.login_bruteforce.hydra_telnet.avain - INFO - Did not receive any targets. Skipping analysis.
+2020-04-13 19:35:17,340 - core.module_manager - INFO - Module modules.login_bruteforce.hydra_telnet.avain did not return any results
+2020-04-13 19:35:17,341 - core.module_manager - INFO - Module 9 of 9 completed
+2020-04-13 19:35:17,341 - core.module_manager - INFO - All modules have been executed
+2020-04-13 19:35:17,343 - core.scan_result_processor - INFO - Grouped similar scan results and wrote result to /avain_demo/scan_result_aggregation/aggregation_groups.json
+2020-04-13 19:35:17,344 - core.scan_result_processor - INFO - Aggregated the individual groups and wrote result to /avain_demo/scan_result_aggregation/aggregation_options.json
+2020-04-13 19:35:17,483 - core.controller - INFO - The main output file is called '/avain_demo/network_vulnerability_ratings.json'
+2020-04-13 19:35:17,483 - core.controller - INFO - All created files have been written to '/avain_demo'

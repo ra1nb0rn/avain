@@ -1,0 +1,8 @@
+                                
+[+] 192.168.0.246:445  (guest session)    Name: Name: vtcsec.lan
+                                
+	Disk                                                  	Permissions	Comment
+	----                                                  	-----------	-------
+	print$                                            	NO ACCESS	Printer Drivers
+	DraftArticles                                     	READ ONLY	Draft Articles
+	IPC$                                              	NO ACCESS	IPC Service (vtcsec server (Samba, Ubuntu))

@@ -1,0 +1,127 @@
+[36;1m-------------------------------------------------------------------[0m http://vtcsec/secret/ [36;1m-------------------------------------------------------------------[0m
+_______________________________________________________________
+         __          _______   _____
+         \ \        / /  __ \ / ____|
+          \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+           \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+         WordPress Security Scanner by the WPScan Team
+                         Version 3.7.11
+       Sponsored by Automattic - https://automattic.com/
+       @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+_______________________________________________________________
+
+[32m[+][0m URL: http://vtcsec/secret/ [192.168.0.246]
+[32m[+][0m Started: Mon Apr 13 19:26:20 2020
+
+Interesting Finding(s):
+
+[32m[+][0m Headers
+ | Interesting Entry: Server: Apache/2.4.18 (Ubuntu)
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+[32m[+][0m XML-RPC seems to be enabled: http://vtcsec/secret/xmlrpc.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+ | References:
+ |  - http://codex.wordpress.org/XML-RPC_Pingback_API
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner
+ |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access
+
+[32m[+][0m http://vtcsec/secret/readme.html
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[32m[+][0m Upload directory has listing enabled: http://vtcsec/secret/wp-content/uploads/
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[32m[+][0m The external WP-Cron seems to be enabled: http://vtcsec/secret/wp-cron.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 60%
+ | References:
+ |  - https://www.iplocation.net/defend-wordpress-from-ddos
+ |  - https://github.com/wpscanteam/wpscan/issues/1299
+
+[32m[+][0m WordPress version 4.9.13 identified (Latest, released on 2019-12-12).
+ | Found By: Rss Generator (Passive Detection)
+ |  - http://vtcsec/secret/index.php/feed/, <generator>https://wordpress.org/?v=4.9.13</generator>
+ |  - http://vtcsec/secret/index.php/comments/feed/, <generator>https://wordpress.org/?v=4.9.13</generator>
+
+[32m[+][0m WordPress theme in use: twentyseventeen
+ | Location: http://vtcsec/secret/wp-content/themes/twentyseventeen/
+ | Last Updated: 2020-03-31T00:00:00.000Z
+ | Readme: http://vtcsec/secret/wp-content/themes/twentyseventeen/README.txt
+ | [33m[!][0m The version is out of date, the latest version is 2.3
+ | Style URL: http://vtcsec/secret/wp-content/themes/twentyseventeen/style.css?ver=4.9.13
+ | Style Name: Twenty Seventeen
+ | Style URI: https://wordpress.org/themes/twentyseventeen/
+ | Description: Twenty Seventeen brings your site to life with header video and immersive featured images. With a focus on business sites, it features multiple sections on the front page as well as widgets, navigation and social menus, a logo, and more. Personalize its asymmetrical grid with a custom color scheme and showcase your multimedia content with post formats. Our default theme for 2017 works great in many languages, for any abilities, and on any device.
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ | License: GNU General Public License v2 or later
+ | License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ | Tags: one-column, two-columns, right-sidebar, flexible-header, accessibility-ready, custom-colors, custom-header, custom-menu, custom-logo, editor-style, featured-images, footer-widgets, post-formats, rtl-language-support, sticky-post, theme-options, threaded-comments, translation-ready
+ | Text Domain: twentyseventeen
+ |
+ | Found By: Css Style In Homepage (Passive Detection)
+ |
+ | Version: 1.4 (80% confidence)
+ | Found By: Style (Passive Detection)
+ |  - http://vtcsec/secret/wp-content/themes/twentyseventeen/style.css?ver=4.9.13, Match: 'Version: 1.4'
+
+[32m[+][0m Enumerating Vulnerable Plugins (via Passive Methods)
+
+[34m[i][0m No plugins Found.
+
+[32m[+][0m Enumerating Vulnerable Themes (via Passive and Aggressive Methods)
+                                                                                 Checking Known Locations - Time: 00:00:01 <> (328 / 328) 100.00% Time: 00:00:01
+[32m[+][0m Checking Theme Versions (via Passive and Aggressive Methods)
+
+[34m[i][0m No themes Found.
+
+[32m[+][0m Enumerating Timthumbs (via Passive and Aggressive Methods)
+                                                                                 Checking Known Locations - Time: 00:00:15 <> (2575 / 2575) 100.00% Time: 00:00:15
+
+[34m[i][0m No Timthumbs Found.
+
+[32m[+][0m Enumerating Config Backups (via Passive and Aggressive Methods)
+                                                                                 Checking Config Backups - Time: 00:00:00 <===> (21 / 21) 100.00% Time: 00:00:00
+
+[34m[i][0m No Config Backups Found.
+
+[32m[+][0m Enumerating Medias (via Passive and Aggressive Methods) (Permalink setting must be set to "Plain" for those to be detected)
+                                                                                 Brute Forcing Attachment IDs - Time: 00:00:01 <> (100 / 100) 100.00% Time: 00:00:01
+
+[34m[i][0m No Medias Found.
+
+[32m[+][0m Enumerating Users (via Passive and Aggressive Methods)
+                                                                                 Brute Forcing Author IDs - Time: 00:00:00 <==> (10 / 10) 100.00% Time: 00:00:00
+
+[34m[i][0m User(s) Identified:
+
+[32m[+][0m admin
+ | Found By: Author Posts - Author Pattern (Passive Detection)
+ | Confirmed By:
+ |  Rss Generator (Passive Detection)
+ |  Wp Json Api (Aggressive Detection)
+ |   - http://vtcsec/secret/index.php/wp-json/wp/v2/users/?per_page=100&page=1
+ |  Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ |  Login Error Messages (Aggressive Detection)
+
+[33m[!][0m No WPVulnDB API Token given, as a result vulnerability data has not been output.
+[33m[!][0m You can get a free API token with 50 daily requests by registering at https://wpvulndb.com/users/sign_up
+
+[32m[+][0m Finished: Mon Apr 13 19:26:48 2020
+[32m[+][0m Requests Done: 3078
+[32m[+][0m Cached Requests: 10
+[32m[+][0m Data Sent: 873.048 KB
+[32m[+][0m Data Received: 987.713 KB
+[32m[+][0m Memory used: 279.102 MB
+[32m[+][0m Elapsed time: 00:00:28
+[36;1m-------------------------------------------------------------------------------------------------------------------------------------------------------------[0m

@@ -1,0 +1,14 @@
+{
+   "192.168.0.242": {
+      "modules/web/sqlmap/avain.py": 9.8,
+      "modules/cve_correlation/avain_cve_correlation.py": 9.8,
+      "modules/login_bruteforce/hydra_ssh/avain.py": 9.8,
+      "modules/login_bruteforce/hydra_telnet/avain.py": "N/A"
+   },
+   "192.168.0.246": {
+      "modules/web/sqlmap/avain.py": "N/A",
+      "modules/cve_correlation/avain_cve_correlation.py": 9.8,
+      "modules/login_bruteforce/hydra_ssh/avain.py": "N/A",
+      "modules/login_bruteforce/hydra_telnet/avain.py": "N/A"
+   }
+}

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/local/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Mon Apr 13 19:20:25 2020 as: nmap -Pn -n -A -&#45;osscan-guess -F -oX raw_nmap_scan_results.xml -iL networks.list -sS -T4 -&#45;script=default,http-headers,smb-os-discovery,banner -v -->
+<nmaprun scanner="nmap" args="nmap -Pn -n -A -&#45;osscan-guess -F -oX raw_nmap_scan_results.xml -iL networks.list -sS -T4 -&#45;script=default,http-headers,smb-os-discovery,banner -v" start="1586798425" startstr="Mon Apr 13 19:20:25 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="100" services="7,9,13,21-23,25-26,37,53,79-81,88,106,110-111,113,119,135,139,143-144,179,199,389,427,443-445,465,513-515,543-544,548,554,587,631,646,873,990,993,995,1025-1029,1110,1433,1720,1723,1755,1900,2000-2001,2049,2121,2717,3000,3128,3306,3389,3986,4899,5000,5009,5051,5060,5101,5190,5357,5432,5631,5666,5800,5900,6000-6001,6646,7070,8000,8008-8009,8080-8081,8443,8888,9100,9999-10000,32768,49152-49157"/>
+<verbose level="1"/>
+<debugging level="0"/>
+<taskbegin task="NSE" time="1586798426"/>
+<taskend task="NSE" time="1586798426"/>
+<taskbegin task="NSE" time="1586798426"/>
+<taskend task="NSE" time="1586798426"/>
+<taskbegin task="NSE" time="1586798426"/>
+<taskend task="NSE" time="1586798426"/>
+<taskbegin task="ARP Ping Scan" time="1586798426"/>
+<taskend task="ARP Ping Scan" time="1586798426" extrainfo="2 total hosts"/>
+<taskbegin task="SYN Stealth Scan" time="1586798426"/>
+<taskend task="SYN Stealth Scan" time="1586798426" extrainfo="200 total ports"/>
+<taskbegin task="Service scan" time="1586798426"/>
+<taskend task="Service scan" time="1586798437" extrainfo="7 services on 2 hosts"/>
+<taskbegin task="NSE" time="1586798450"/>
+<taskend task="NSE" time="1586798466"/>
+<taskbegin task="NSE" time="1586798466"/>
+<taskend task="NSE" time="1586798466"/>
+<taskbegin task="NSE" time="1586798466"/>
+<taskend task="NSE" time="1586798466"/>
+<host starttime="1586798426" endtime="1586798466"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.0.242" addrtype="ipv4"/>
+<address addr="08:00:27:7B:44:55" addrtype="mac" vendor="Oracle VirtualBox virtual NIC"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="closed" count="98">
+<extrareasons reason="resets" count="98"/>
+</extraports>
+<port protocol="tcp" portid="22"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="ssh" product="OpenSSH" version="4.7p1 Debian 8ubuntu1.2" extrainfo="protocol 2.0" ostype="Linux" method="probed" conf="10"><cpe>cpe:/a:openbsd:openssh:4.7p1</cpe><cpe>cpe:/o:linux:linux_kernel</cpe></service><script id="banner" output="SSH-2.0-OpenSSH_4.7p1 Debian-8ubuntu1.2"/><script id="ssh-hostkey" output="&#xa;  1024 30:e3:f6:dc:2e:22:5d:17:ac:46:02:39:ad:71:cb:49 (DSA)&#xa;  2048 9a:82:e6:96:e4:7e:d6:a6:d7:45:44:cb:19:aa:ec:dd (RSA)"><table>
+<elem key="bits">1024</elem>
+<elem key="key">AAAAB3NzaC1kc3MAAACBAL4CpDFXD9Zn2ONktcyGQL37Dn6s9JaOv3oKjxfdiABm9GjRkLEtbSAK3vhBBUJTZcVKYZk21lFHAqoe/+pLr4U9yOLOBbSoKNSxQ2VHN9FOLc9C58hKMF/0sjDsSIZnaI4zO7M4HmdEMYXONrmj2x6qczbfqecs+z4cEYVUF3R3AAAAFQCuG9mm7mLm1GGqZRSICZ+omMZkKQAAAIEAnj8NDH48hL+Pp06GWQZOlhte8JRZT5do6n8+bCgRSOvaYLYGoNi/GBzlET6tMSjWMsyhVY/YKTNTXRjqzS1DqbODM7M1GzLjsmGtVlkLoQafV6HJ25JsKPCEzSImjeOCpzwRP5opjmMrYBMjjKqtIlWYpaUijT4uR08tdaTxCukAAACBAJeJ9j2DTugDAy+SLCa0dZCH+jnclNo3o6oINF1FjzICdgDONL2YbBeU3CiAL2BureorAE0lturvvrIC2xVn2vHhrLpz6NPbDAkrLV2/rwoavbCkYGrwXdBHd5ObqBIkoUKbI1hGIGA51nafI2tjoXPfIeHeNOep20hgr32x9x1x</elem>
+<elem key="fingerprint">30e3f6dc2e225d17ac460239ad71cb49</elem>
+<elem key="type">ssh-dss</elem>
+</table>
+<table>
+<elem key="bits">2048</elem>
+<elem key="key">AAAAB3NzaC1yc2EAAAABIwAAAQEAyOv6c+5ON+N+ZNDtjetiZ0eUxnIR1U0UqSF+a24Pz2xqdnJC1EN0O3zxGJB3gfPdJlyqUDiozbEth1GBP//8wbWsa1pLJOL1YmcumEJCsitngnrVN7huACG127UjKP8hArECjCHzc1P372gN3AQ/h5aZd0VV17e03HnAJ64ZziOQzVJ+DKWJbiHoXC2cdD1P+nlhK5fULe0QBvmA14gkl2LWA6KILHiisHZpF+V3X7NvXYyCSSI9GeXwhW4RKOCGdGVbjYf7d93K9gj0oU7dHrbdNKgX0WosuhMuXmKleHkIxfyLAILYWrRRj0GVdhZfbI99J3TYaR/yLTpb0D6mhw==</elem>
+<elem key="fingerprint">9a82e696e47ed6a6d74544cb19aaecdd</elem>
+<elem key="type">ssh-rsa</elem>
+</table>
+</script></port>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="http" product="Apache httpd" version="2.2.8" extrainfo="(Ubuntu) PHP/5.2.4-2ubuntu5.6 with Suhosin-Patch" method="probed" conf="10"><cpe>cpe:/a:apache:http_server:2.2.8</cpe></service><script id="http-cookie-flags" output="&#xa;  /: &#xa;    PHPSESSID: &#xa;      httponly flag not set"><table key="/">
+<table key="PHPSESSID">
+<elem>httponly flag not set</elem>
+</table>
+</table>
+</script><script id="http-favicon" output="Unknown favicon MD5: 99EFC00391F142252888403BB1C196D2"/><script id="http-headers" output="&#xa;  Date: Mon, 13 Apr 2020 17:21:57 GMT&#xa;  Server: Apache/2.2.8 (Ubuntu) PHP/5.2.4-2ubuntu5.6 with Suhosin-Patch&#xa;  X-Powered-By: PHP/5.2.4-2ubuntu5.6&#xa;  Set-Cookie: PHPSESSID=e4ce2db90e6abb8905f16cffde83d5ed; path=/&#xa;  Expires: Thu, 19 Nov 1981 08:52:00 GMT&#xa;  Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0&#xa;  Pragma: no-cache&#xa;  Connection: close&#xa;  Content-Type: text/html&#xa;  &#xa;  (Request type: HEAD)&#xa;"/><script id="http-methods" output="&#xa;  Supported Methods: GET HEAD POST OPTIONS"><table key="Supported Methods">
+<elem>GET</elem>
+<elem>HEAD</elem>
+<elem>POST</elem>
+<elem>OPTIONS</elem>
+</table>
+</script><script id="http-server-header" output="Apache/2.2.8 (Ubuntu) PHP/5.2.4-2ubuntu5.6 with Suhosin-Patch"><elem>Apache/2.2.8 (Ubuntu) PHP/5.2.4-2ubuntu5.6 with Suhosin-Patch</elem>
+</script><script id="http-title" output="Ligoat Security - Got Goat? Security ..."><elem key="title">Ligoat Security - Got Goat? Security ...</elem>
+</script></port>
+</ports>
+<os><portused state="open" proto="tcp" portid="22"/>
+<portused state="closed" proto="tcp" portid="7"/>
+<portused state="closed" proto="udp" portid="40245"/>
+<osmatch name="Linux 2.6.9 - 2.6.33" accuracy="100" line="59153">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="100"><cpe>cpe:/o:linux:linux_kernel:2.6</cpe></osclass>
+</osmatch>
+</os>
+<uptime seconds="5220" lastboot="Mon Apr 13 17:54:06 2020"/>
+<distance value="1"/>
+<tcpsequence index="199" difficulty="Good luck!" values="66E77FCB,6651BFAF,669EDABA,670D934A,66C22D95,677C3BF2"/>
+<ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
+<tcptssequence class="100HZ" values="7EC54,7EC5F,7EC69,7EC74,7EC7E,7EC88"/>
+<trace>
+<hop ttl="1" ipaddr="192.168.0.242" rtt="2.78"/>
+</trace>
+<times srtt="2778" rttvar="336" to="100000"/>
+</host>
+<host starttime="1586798426" endtime="1586798466"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.0.246" addrtype="ipv4"/>
+<address addr="08:00:27:08:13:C1" addrtype="mac" vendor="Oracle VirtualBox virtual NIC"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="closed" count="95">
+<extrareasons reason="resets" count="95"/>
+</extraports>
+<port protocol="tcp" portid="21"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="ftp" product="ProFTPD" version="1.3.3c" ostype="Unix" method="probed" conf="10"><cpe>cpe:/a:proftpd:proftpd:1.3.3c</cpe></service><script id="banner" output="220 ProFTPD 1.3.3c Server (vtcsec) [192.168.0.246]"/></port>
+<port protocol="tcp" portid="22"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="ssh" product="OpenSSH" version="7.2p2 Ubuntu 4ubuntu2.8" extrainfo="Ubuntu Linux; protocol 2.0" ostype="Linux" method="probed" conf="10"><cpe>cpe:/a:openbsd:openssh:7.2p2</cpe><cpe>cpe:/o:linux:linux_kernel</cpe></service><script id="banner" output="SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.8"/><script id="ssh-hostkey" output="&#xa;  2048 d6:01:90:39:2d:8f:46:fb:03:86:73:b3:3c:54:7e:54 (RSA)&#xa;  256 f1:f3:c0:dd:ba:a4:85:f7:13:9a:da:3a:bb:4d:93:04 (ECDSA)&#xa;  256 12:e2:98:d2:a3:e7:36:4f:be:6b:ce:36:6b:7e:0d:9e (ED25519)"><table>
+<elem key="bits">2048</elem>
+<elem key="key">AAAAB3NzaC1yc2EAAAADAQABAAABAQDVPefz9pE0ykT66eeP8gZ1P/Op3xChGFJa8il0KwqpmaMSJIUdOnPy8n1FSDKvs3MagCwVCKMQGLYlNTJ8kabXwl+8ULz9FPfTHG2U3v/n3NyPgVtmSgU88n4yjfVcwJbf4ZvSoccCnGjCqizpkjQmAlZ/ETRX3h70BwZdm00u7Gtpn/eYljlIjgcgJmHkunJ08M1B87CMwBkqBdvjypx0Vw/Ku2KnZa16MHlMegHOrX4rvopdLQXDtlFgqGtBxJmyWoh5eURKDlblgtpurOy1rPW4Tcsse7WOUoI1xE9KHzh/sH75OJu49d8RfYwULKpLUbcV7rwv82kaaGigBUxx</elem>
+<elem key="fingerprint">d60190392d8f46fb038673b33c547e54</elem>
+<elem key="type">ssh-rsa</elem>
+</table>
+<table>
+<elem key="bits">256</elem>
+<elem key="key">AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBO1BUhTxlxa/Wbwk2lRzqdjGVz+B+e9/K6jA1eZLM1cudzOck7TdtPTuup5QteLjG1lytX2Sirn7ZUuULeOsJrM=</elem>
+<elem key="fingerprint">f1f3c0ddbaa485f7139ada3abb4d9304</elem>
+<elem key="type">ecdsa-sha2-nistp256</elem>
+</table>
+<table>
+<elem key="bits">256</elem>
+<elem key="key">AAAAC3NzaC1lZDI1NTE5AAAAIJPiFdk1m+7FhiWVNHn0M1mSu8cOoPXGjXXpRFQU7c0M</elem>
+<elem key="fingerprint">12e298d2a3e7364fbe6bce366b7e0d9e</elem>
+<elem key="type">ssh-ed25519</elem>
+</table>
+</script></port>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="http" product="Apache httpd" version="2.4.18" extrainfo="(Ubuntu)" method="probed" conf="10"><cpe>cpe:/a:apache:http_server:2.4.18</cpe></service><script id="http-headers" output="&#xa;  Date: Mon, 13 Apr 2020 17:20:51 GMT&#xa;  Server: Apache/2.4.18 (Ubuntu)&#xa;  Last-Modified: Thu, 16 Nov 2017 16:53:57 GMT&#xa;  ETag: &quot;b1-55e1c7758dcdb&quot;&#xa;  Accept-Ranges: bytes&#xa;  Content-Length: 177&#xa;  Vary: Accept-Encoding&#xa;  Connection: close&#xa;  Content-Type: text/html&#xa;  &#xa;  (Request type: HEAD)&#xa;"/><script id="http-methods" output="&#xa;  Supported Methods: GET HEAD POST OPTIONS"><table key="Supported Methods">
+<elem>GET</elem>
+<elem>HEAD</elem>
+<elem>POST</elem>
+<elem>OPTIONS</elem>
+</table>
+</script><script id="http-server-header" output="Apache/2.4.18 (Ubuntu)"><elem>Apache/2.4.18 (Ubuntu)</elem>
+</script><script id="http-title" output="Site doesn&apos;t have a title (text/html)."></script></port>
+<port protocol="tcp" portid="139"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="netbios-ssn" product="Samba smbd" version="3.X - 4.X" extrainfo="workgroup: WORKGROUP" hostname="VTCSEC" method="probed" conf="10"><cpe>cpe:/a:samba:samba</cpe></service></port>
+<port protocol="tcp" portid="445"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="netbios-ssn" product="Samba smbd" version="4.3.11-Ubuntu" extrainfo="workgroup: WORKGROUP" hostname="VTCSEC" method="probed" conf="10"><cpe>cpe:/a:samba:samba</cpe></service></port>
+</ports>
+<os><portused state="open" proto="tcp" portid="21"/>
+<portused state="closed" proto="tcp" portid="7"/>
+<portused state="closed" proto="udp" portid="30773"/>
+<osmatch name="Linux 2.6.32" accuracy="96" line="55173">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="96"><cpe>cpe:/o:linux:linux_kernel:2.6.32</cpe></osclass>
+</osmatch>
+<osmatch name="Linux 3.2 - 4.9" accuracy="96" line="65105">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="96"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="4.X" accuracy="96"><cpe>cpe:/o:linux:linux_kernel:4</cpe></osclass>
+</osmatch>
+<osmatch name="Linux 2.6.32 - 3.10" accuracy="96" line="56381">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="96"><cpe>cpe:/o:linux:linux_kernel:2.6</cpe></osclass>
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="96"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
+</osmatch>
+<osmatch name="Linux 3.4 - 3.10" accuracy="95" line="65366">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="95"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
+</osmatch>
+<osmatch name="Linux 3.1" accuracy="95" line="62708">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="95"><cpe>cpe:/o:linux:linux_kernel:3.1</cpe></osclass>
+</osmatch>
+<osmatch name="Linux 3.2" accuracy="95" line="64455">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="95"><cpe>cpe:/o:linux:linux_kernel:3.2</cpe></osclass>
+</osmatch>
+<osmatch name="AXIS 210A or 211 Network Camera (Linux 2.6.17)" accuracy="94" line="61606">
+<osclass type="webcam" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="94"><cpe>cpe:/o:linux:linux_kernel:2.6.17</cpe></osclass>
+<osclass type="webcam" vendor="AXIS" osfamily="embedded" accuracy="94"><cpe>cpe:/h:axis:210a_network_camera</cpe><cpe>cpe:/h:axis:211_network_camera</cpe></osclass>
+</osmatch>
+<osmatch name="Synology DiskStation Manager 5.2-5644" accuracy="94" line="101159">
+<osclass type="storage-misc" vendor="Synology" osfamily="DiskStation Manager" osgen="5.X" accuracy="94"><cpe>cpe:/a:synology:diskstation_manager:5.2</cpe></osclass>
+</osmatch>
+<osmatch name="Netgear RAIDiator 4.2.28" accuracy="94" line="88023">
+<osclass type="storage-misc" vendor="Netgear" osfamily="RAIDiator" osgen="4.X" accuracy="94"><cpe>cpe:/o:netgear:raidiator:4.2.28</cpe></osclass>
+</osmatch>
+<osmatch name="Linux 2.6.32 - 2.6.35" accuracy="94" line="56153">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="94"><cpe>cpe:/o:linux:linux_kernel:2.6</cpe></osclass>
+</osmatch>
+<osfingerprint fingerprint="OS:SCAN(V=7.80%E=4%D=4/13%OT=21%CT=7%CU=30773%PV=Y%DS=1%DC=D%G=Y%M=080027%T&#xa;OS:M=5E949F82%P=x86_64-apple-darwin18.6.0)SEQ(SP=101%GCD=1%ISR=106%TI=Z%CI=&#xa;OS:Z%II=I%TS=A)OPS(O1=M5B4ST11NW7%O2=M5B4ST11NW7%O3=M5B4NNT11NW7%O4=M5B4ST1&#xa;OS:1NW7%O5=M5B4ST11NW7%O6=M5B4ST11)WIN(W1=FE88%W2=FE88%W3=FE88%W4=FE88%W5=F&#xa;OS:E88%W6=FE88)ECN(R=Y%DF=Y%T=40%W=FAF0%O=M5B4NNSNW7%CC=Y%Q=)T1(R=Y%DF=Y%T=&#xa;OS:40%S=O%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%&#xa;OS:O=%RD=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=4&#xa;OS:0%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%&#xa;OS:Q=)U1(R=Y%DF=N%T=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=&#xa;OS:Y%DFI=N%T=40%CD=S)&#xa;"/>
+</os>
+<uptime seconds="169961" lastboot="Sat Apr 11 20:08:25 2020"/>
+<distance value="1"/>
+<tcpsequence index="257" difficulty="Good luck!" values="790F1B4B,4E53B790,36FC99B5,DB2294AA,F39B59EF,CB453810"/>
+<ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
+<tcptssequence class="1000HZ" values="A2123C2,A212429,A21248F,A2124F4,A212558,A2125BC"/>
+<hostscript><script id="clock-skew" output="mean: 1h19m59s, deviation: 2h18m34s, median: 0s"><elem key="mean">4799</elem>
+<elem key="count">3</elem>
+<elem key="median">0</elem>
+<elem key="stddev">8314</elem>
+</script><script id="nbstat" output="NetBIOS name: VTCSEC, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)&#xa;Names:&#xa;  VTCSEC&lt;00&gt;           Flags: &lt;unique&gt;&lt;active&gt;&#xa;  VTCSEC&lt;03&gt;           Flags: &lt;unique&gt;&lt;active&gt;&#xa;  VTCSEC&lt;20&gt;           Flags: &lt;unique&gt;&lt;active&gt;&#xa;  WORKGROUP&lt;00&gt;        Flags: &lt;group&gt;&lt;active&gt;&#xa;  WORKGROUP&lt;1e&gt;        Flags: &lt;group&gt;&lt;active&gt;"/><script id="smb-os-discovery" output="&#xa;  OS: Windows 6.1 (Samba 4.3.11-Ubuntu)&#xa;  Computer name: vtcsec&#xa;  NetBIOS computer name: VTCSEC\x00&#xa;  Domain name: \x00&#xa;  FQDN: vtcsec&#xa;  System time: 2020-04-13T13:20:51-04:00&#xa;"><elem key="os">Windows 6.1</elem>
+<elem key="lanmanager">Samba 4.3.11-Ubuntu</elem>
+<elem key="server">VTCSEC\x00</elem>
+<elem key="date">2020-04-13T13:20:51-04:00</elem>
+<elem key="fqdn">vtcsec</elem>
+<elem key="domain_dns">\x00</elem>
+<elem key="workgroup">WORKGROUP\x00</elem>
+</script><script id="smb-security-mode" output="&#xa;  account_used: guest&#xa;  authentication_level: user&#xa;  challenge_response: supported&#xa;  message_signing: disabled (dangerous, but default)"><elem key="account_used">guest</elem>
+<elem key="authentication_level">user</elem>
+<elem key="challenge_response">supported</elem>
+<elem key="message_signing">disabled</elem>
+</script><script id="smb2-security-mode" output="&#xa;  2.02: &#xa;    Message signing enabled but not required"><table key="2.02">
+<elem>Message signing enabled but not required</elem>
+</table>
+</script><script id="smb2-time" output="&#xa;  date: 2020-04-13T17:20:51&#xa;  start_date: N/A"><elem key="date">2020-04-13T17:20:51</elem>
+<elem key="start_date">N/A</elem>
+</script></hostscript><trace>
+<hop ttl="1" ipaddr="192.168.0.246" rtt="2.76"/>
+</trace>
+<times srtt="2756" rttvar="526" to="100000"/>
+</host>
+<taskbegin task="NSE" time="1586798466"/>
+<taskend task="NSE" time="1586798466"/>
+<taskbegin task="NSE" time="1586798466"/>
+<taskend task="NSE" time="1586798466"/>
+<taskbegin task="NSE" time="1586798466"/>
+<taskend task="NSE" time="1586798466"/>
+<runstats><finished time="1586798466" timestr="Mon Apr 13 19:21:06 2020" elapsed="42.00" summary="Nmap done at Mon Apr 13 19:21:06 2020; 2 IP addresses (2 hosts up) scanned in 42.00 seconds" exit="success"/><hosts up="2" down="0" total="2"/>
+</runstats>
+</nmaprun>

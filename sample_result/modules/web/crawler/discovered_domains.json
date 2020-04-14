@@ -1,0 +1,14 @@
+{
+    "192.168.0.242": {
+        "80": [
+            "ajax.googleapis.com",
+            "www.w3.org"
+        ]
+    },
+    "192.168.0.246": {
+        "80": [
+            "fonts.gstatic.com",
+            "fonts.googleapis.com"
+        ]
+    }
+}

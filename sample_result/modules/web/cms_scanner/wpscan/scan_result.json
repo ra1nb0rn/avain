@@ -1,0 +1,18 @@
+{
+   "192.168.0.246": {
+      "tcp": {
+         "80": [
+            {
+               "cpes": [
+                  "cpe:/a:wordpress:wordpress:4.9.13"
+               ],
+               "name": "WordPress 4.9.13",
+               "portid": "80",
+               "protocol": "tcp",
+               "state": "open",
+               "service": "http"
+            }
+         ]
+      }
+   }
+}

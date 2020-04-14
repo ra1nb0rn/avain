@@ -1,0 +1,315 @@
+******************************************
+**** 192.168.0.242:80 - kioptrix3.com ****
+******************************************
+------------------------------------------------------------
+ [+] URLs with '200' HTTP response:
+------------------------------------------------------------
+    http://kioptrix3.com/index.php
+    http://kioptrix3.com/modules/
+    http://kioptrix3.com/core/
+    http://kioptrix3.com/update.php
+    http://kioptrix3.com/style/
+    http://kioptrix3.com/cache/
+    http://kioptrix3.com/phpmyadmin/
+    http://kioptrix3.com/
+    http://kioptrix3.com/gallery/photos/thumb_8csqlvc375.jpg
+    http://kioptrix3.com/phpmyadmin/translators.html
+    http://kioptrix3.com/gallery/photos/thumb_0q52na4t2g.jpg
+    http://kioptrix3.com/icons/blank.gif
+    http://kioptrix3.com/gallery/photos/thumb_8y1a02r6yh.jpg
+    http://kioptrix3.com/phpmyadmin/index.php
+    http://kioptrix3.com/phpmyadmin/print.css
+    http://kioptrix3.com/phpmyadmin/favicon.ico
+    http://kioptrix3.com/modules/TinyMCE/
+    http://kioptrix3.com/phpmyadmin/Documentation.html
+    http://kioptrix3.com/phpmyadmin/phpmyadmin.css.php
+    http://kioptrix3.com/modules/FileManager/
+    http://kioptrix3.com/phpmyadmin/docs.css
+    http://kioptrix3.com/modules/Menu/
+    http://kioptrix3.com/modules/Blog/
+    http://kioptrix3.com/modules/lrte/
+    http://kioptrix3.com/modules/Backup/
+    http://kioptrix3.com/modules/Dashboard/
+    http://kioptrix3.com/icons/folder.gif
+    http://kioptrix3.com/modules/Nicedit/
+    http://kioptrix3.com/icons/back.gif
+    http://kioptrix3.com/phpmyadmin/changelog.php
+    http://kioptrix3.com/modules/TinyMCE/EditorViewPlugin.php
+    http://kioptrix3.com/phpmyadmin/license.php
+    http://kioptrix3.com/modules/TinyMCE/TinyMCEModuleInfo.php
+    http://kioptrix3.com/icons/unknown.gif
+    http://kioptrix3.com/modules/lrte/EditorViewPlugin.php
+    http://kioptrix3.com/modules/TinyMCE/editor.js
+    http://kioptrix3.com/modules/lrte/lrteModuleAdmin.php
+    http://kioptrix3.com/modules/lrte/lrteModuleInstall.php
+    http://kioptrix3.com/modules/TinyMCE/TinyMCEModuleAdmin.php
+    http://kioptrix3.com/modules/lrte/lrteModuleInfo.php
+    http://kioptrix3.com/modules/Menu/Browse.plb
+    http://kioptrix3.com/modules/Menu/MenuModuleAdmin.php
+    http://kioptrix3.com/modules/Menu/MenuModuleInfo.php
+    http://kioptrix3.com/modules/Nicedit/NiceditModuleAdmin.php
+    http://kioptrix3.com/modules/Dashboard/DashboardModuleInstall.php
+    http://kioptrix3.com/modules/Nicedit/EditorViewPlugin.php
+    http://kioptrix3.com/modules/Nicedit/NiceditModuleInstall.php
+    http://kioptrix3.com/modules/Nicedit/NiceditModuleInfo.php
+    http://kioptrix3.com/modules/Dashboard/noDisableStatus.dat
+    http://kioptrix3.com/modules/Dashboard/DashboardModuleAdmin.php
+    http://kioptrix3.com/modules/Dashboard/DashboardModuleInfo.php
+    http://kioptrix3.com/modules/Dashboard/DashViewPlugin.php
+    http://kioptrix3.com/phpmyadmin/scripts/
+    http://kioptrix3.com/modules/Backup/Browse.plb
+    http://kioptrix3.com/modules/Backup/readme.txt
+    http://kioptrix3.com/modules/Backup/noDisableStatus.dat
+    http://kioptrix3.com/icons/text.gif
+    http://kioptrix3.com/modules/Backup/BackupModuleInfo.php
+    http://kioptrix3.com/modules/Backup/BackupModuleInstall.php
+    http://kioptrix3.com/modules/Backup/pclzip.lib.php
+    http://kioptrix3.com/modules/Backup/logo.png
+    http://kioptrix3.com/modules/Backup/BackupModuleAdmin.php
+    http://kioptrix3.com/modules/Menu/MenuModule.php
+    http://kioptrix3.com/modules/Menu/logo.png
+    http://kioptrix3.com/modules/Menu/MenuModuleInstall.php
+    http://kioptrix3.com/modules/FileManager/FileManagerModuleAdmin.php
+    http://kioptrix3.com/icons/image2.gif
+    http://kioptrix3.com/modules/FileManager/FileManagerModuleInstall.php
+    http://kioptrix3.com/modules/FileManager/FileManagerModuleInfo.php
+    http://kioptrix3.com/modules/FileManager/filemanager.php
+    http://kioptrix3.com/modules/FileManager/Browse.plb
+    http://kioptrix3.com/modules/Menu/noDisableStatus.dat
+    http://kioptrix3.com/modules/FileManager/logo.png
+    http://kioptrix3.com/modules/TinyMCE/TinyMCEModuleInstall.php
+    http://kioptrix3.com/gallery/vote.php
+    http://kioptrix3.com/gallery/photos/med_0q52na4t2g.jpg
+    http://kioptrix3.com/gallery/photos/8csqlvc375.jpg
+    http://kioptrix3.com/gallery/photos/med_8csqlvc375.jpg
+    http://kioptrix3.com/gallery/photos/0q52na4t2g.jpg
+    http://kioptrix3.com/gallery/photos/8y1a02r6yh.jpg
+    http://kioptrix3.com/gallery/photos/med_8y1a02r6yh.jpg
+    http://kioptrix3.com/gallery
+
+------------------------------------------------------------
+ [+] URLs with '500' HTTP response:
+------------------------------------------------------------
+    http://kioptrix3.com/gallery/
+    http://kioptrix3.com/gallery/index.php
+    http://kioptrix3.com/gallery/p.php/4
+    http://kioptrix3.com/gallery/p.php/3
+    http://kioptrix3.com/gallery/recent.php
+    http://kioptrix3.com/gallery/g.php/1
+    http://kioptrix3.com/gallery/login.php
+    http://kioptrix3.com/gallery/p.php/5
+    http://kioptrix3.com/gallery/p.php/
+    http://kioptrix3.com/gallery/gallery.php
+    http://kioptrix3.com/gallery/g.php/
+
+------------------------------------------------------------
+ [+] URLs with '403' HTTP response:
+------------------------------------------------------------
+    http://kioptrix3.com/data
+
+------------------------------------------------------------
+ [+] URLs with '401' HTTP response:
+------------------------------------------------------------
+    http://kioptrix3.com/phpmyadmin/scripts/setup.php
+
+
+***********************************
+**** 192.168.0.246:80 - vtcsec ****
+***********************************
+------------------------------------------------------------
+ [+] URLs with '200' HTTP response:
+------------------------------------------------------------
+    http://vtcsec/index.html
+    http://vtcsec/secret/
+    http://vtcsec/
+    http://vtcsec/secret/wp-includes/wlwmanifest.xml
+    http://vtcsec/secret/xmlrpc.php
+    http://vtcsec/secret/wp-login.php
+    http://vtcsec/secret/wp-includes/
+    http://vtcsec/secret/wp-admin/load-styles.php
+    http://vtcsec/secret/wp-includes/taxonomy.php
+    http://vtcsec/secret/wp-includes/class-wp-http-response.php
+    http://vtcsec/secret/wp-includes/bookmark-template.php
+    http://vtcsec/secret/wp-includes/class-wp-hook.php
+    http://vtcsec/secret/wp-includes/class-wp-session-tokens.php
+    http://vtcsec/secret/wp-includes/comment-template.php
+    http://vtcsec/secret/wp-includes/widgets.php
+    http://vtcsec/secret/wp-includes/capabilities.php
+    http://vtcsec/secret/wp-includes/class-wp-http-cookie.php
+    http://vtcsec/secret/wp-includes/class-wp-customize-widgets.php
+    http://vtcsec/secret/wp-includes/class.wp-dependencies.php
+    http://vtcsec/secret/wp-includes/class-wp-http-curl.php
+    http://vtcsec/secret/wp-includes/class-oembed.php
+    http://vtcsec/icons/folder.gif
+    http://vtcsec/secret/wp-includes/link-template.php
+    http://vtcsec/secret/wp-includes/class-requests.php
+    http://vtcsec/secret/wp-includes/revision.php
+    http://vtcsec/secret/wp-includes/kses.php
+    http://vtcsec/secret/wp-includes/class-wp-locale-switcher.php
+    http://vtcsec/secret/wp-includes/class-wp-query.php
+    http://vtcsec/secret/wp-includes/query.php
+    http://vtcsec/secret/wp-includes/l10n.php
+    http://vtcsec/secret/wp-includes/class-wp-theme.php
+    http://vtcsec/secret/wp-includes/bookmark.php
+    http://vtcsec/secret/wp-includes/class-wp-editor.php
+    http://vtcsec/secret/wp-includes/nav-menu.php
+    http://vtcsec/secret/wp-includes/class-wp-term.php
+    http://vtcsec/secret/wp-includes/class-pop3.php
+    http://vtcsec/secret/wp-includes/general-template.php
+    http://vtcsec/secret/wp-includes/post-formats.php
+    http://vtcsec/secret/wp-includes/shortcodes.php
+    http://vtcsec/secret/wp-includes/class-wp-customize-nav-menus.php
+    http://vtcsec/secret/wp-includes/load.php
+    http://vtcsec/secret/wp-includes/version.php
+    http://vtcsec/secret/wp-includes/class-wp-tax-query.php
+    http://vtcsec/secret/wp-includes/class-wp-metadata-lazyloader.php
+    http://vtcsec/secret/wp-includes/post-thumbnail-template.php
+    http://vtcsec/secret/wp-includes/compat.php
+    http://vtcsec/secret/wp-includes/class-wp-network-query.php
+    http://vtcsec/icons/blank.gif
+    http://vtcsec/secret/wp-includes/author-template.php
+    http://vtcsec/secret/wp-includes/class-wp-http-streams.php
+    http://vtcsec/secret/wp-includes/class-wp-image-editor.php
+    http://vtcsec/secret/wp-includes/class-wp-ajax-response.php
+    http://vtcsec/secret/wp-includes/atomlib.php
+    http://vtcsec/secret/wp-includes/option.php
+    http://vtcsec/secret/wp-includes/user.php
+    http://vtcsec/secret/wp-includes/post.php
+    http://vtcsec/secret/wp-includes/rest-api.php
+    http://vtcsec/secret/wp-includes/admin-bar.php
+    http://vtcsec/secret/wp-includes/class-wp-error.php
+    http://vtcsec/secret/wp-includes/pluggable.php
+    http://vtcsec/secret/wp-includes/class-wp-customize-manager.php
+    http://vtcsec/secret/wp-includes/spl-autoload-compat.php
+    http://vtcsec/secret/wp-includes/date.php
+    http://vtcsec/secret/wp-includes/plugin.php
+    http://vtcsec/secret/wp-includes/class-wp-widget.php
+    http://vtcsec/secret/wp-includes/class-wp-locale.php
+    http://vtcsec/secret/wp-includes/class-wp.php
+    http://vtcsec/secret/wp-includes/class-wp-oembed-controller.php
+    http://vtcsec/secret/wp-includes/template.php
+    http://vtcsec/secret/wp-includes/class-phpass.php
+    http://vtcsec/secret/wp-includes/class-wp-network.php
+    http://vtcsec/secret/wp-includes/class-wp-list-util.php
+    http://vtcsec/secret/wp-includes/functions.wp-styles.php
+    http://vtcsec/secret/wp-includes/ms-functions.php
+    http://vtcsec/secret/wp-includes/pluggable-deprecated.php
+    http://vtcsec/secret/wp-includes/class-wp-dependency.php
+    http://vtcsec/secret/wp-includes/class-wp-rewrite.php
+    http://vtcsec/secret/wp-includes/functions.wp-scripts.php
+    http://vtcsec/secret/wp-includes/default-constants.php
+    http://vtcsec/secret/wp-includes/class-wp-http-encoding.php
+    http://vtcsec/secret/wp-includes/feed.php
+    http://vtcsec/secret/wp-includes/class-wp-role.php
+    http://vtcsec/secret/wp-includes/class-wp-embed.php
+    http://vtcsec/secret/wp-includes/class-wp-term-query.php
+    http://vtcsec/secret/wp-includes/class-wp-comment-query.php
+    http://vtcsec/icons/unknown.gif
+    http://vtcsec/icons/back.gif
+    http://vtcsec/secret/wp-includes/ms-deprecated.php
+    http://vtcsec/secret/wp-includes/class-wp-admin-bar.php
+    http://vtcsec/secret/wp-includes/class-wp-comment.php
+    http://vtcsec/secret/wp-includes/formatting.php
+    http://vtcsec/secret/wp-includes/class-phpmailer.php
+    http://vtcsec/secret/wp-includes/class-wp-feed-cache-transient.php
+    http://vtcsec/secret/wp-includes/class-wp-post.php
+    http://vtcsec/secret/wp-includes/class-wp-user.php
+    http://vtcsec/secret/wp-includes/class-wp-http-proxy.php
+    http://vtcsec/secret/wp-includes/rewrite.php
+    http://vtcsec/secret/wp-includes/canonical.php
+    http://vtcsec/secret/wp-includes/class-wp-post-type.php
+    http://vtcsec/secret/wp-includes/deprecated.php
+    http://vtcsec/secret/wp-includes/class-wp-meta-query.php
+    http://vtcsec/secret/wp-includes/class-smtp.php
+    http://vtcsec/secret/wp-includes/class-wp-site-query.php
+    http://vtcsec/secret/wp-includes/class-wp-widget-factory.php
+    http://vtcsec/secret/wp-includes/ms-load.php
+    http://vtcsec/secret/wp-includes/class-wp-user-query.php
+    http://vtcsec/secret/wp-includes/ms-default-constants.php
+    http://vtcsec/secret/wp-includes/ms-files.php
+    http://vtcsec/secret/wp-includes/embed.php
+    http://vtcsec/secret/wp-includes/class-wp-taxonomy.php
+    http://vtcsec/secret/wp-includes/cache.php
+    http://vtcsec/secret/wp-includes/wp-db.php
+    http://vtcsec/secret/wp-includes/meta.php
+    http://vtcsec/secret/wp-includes/http.php
+    http://vtcsec/secret/wp-includes/category-template.php
+    http://vtcsec/secret/wp-includes/media-template.php
+    http://vtcsec/secret/wp-includes/class-json.php
+    http://vtcsec/secret/wp-includes/category.php
+    http://vtcsec/secret/wp-includes/class-wp-roles.php
+    http://vtcsec/secret/wp-includes/theme.php
+    http://vtcsec/secret/wp-includes/comment.php
+    http://vtcsec/secret/wp-includes/class-wp-matchesmapregex.php
+    http://vtcsec/secret/wp-includes/class-wp-walker.php
+    http://vtcsec/secret/wp-includes/ms-blogs.php
+    http://vtcsec/secret/wp-includes/post-template.php
+    http://vtcsec/secret/wp-includes/cron.php
+    http://vtcsec/secret/wp-includes/class-wp-site.php
+    http://vtcsec/secret/wp-admin
+    http://vtcsec/secret/wp-content/plugins
+
+------------------------------------------------------------
+ [+] URLs with '500' HTTP response:
+------------------------------------------------------------
+    http://vtcsec/secret/wp-includes/class.wp-scripts.php
+    http://vtcsec/secret/wp-includes/class.wp-styles.php
+    http://vtcsec/secret/wp-includes/feed-rss2.php
+    http://vtcsec/secret/wp-includes/default-filters.php
+    http://vtcsec/secret/wp-includes/wp-diff.php
+    http://vtcsec/secret/wp-includes/class-wp-http-ixr-client.php
+    http://vtcsec/secret/wp-includes/class-wp-simplepie-file.php
+    http://vtcsec/secret/wp-includes/class-walker-page-dropdown.php
+    http://vtcsec/secret/wp-includes/registration.php
+    http://vtcsec/secret/wp-includes/update.php
+    http://vtcsec/secret/wp-includes/ms-default-filters.php
+    http://vtcsec/secret/wp-includes/class-walker-comment.php
+    http://vtcsec/secret/wp-includes/media.php
+    http://vtcsec/secret/wp-includes/class-wp-http-requests-response.php
+    http://vtcsec/secret/wp-includes/locale.php
+    http://vtcsec/secret/wp-includes/class-http.php
+    http://vtcsec/secret/wp-includes/class-wp-image-editor-gd.php
+    http://vtcsec/secret/wp-includes/class-simplepie.php
+    http://vtcsec/secret/wp-includes/default-widgets.php
+    http://vtcsec/secret/wp-includes/rss.php
+    http://vtcsec/secret/wp-includes/registration-functions.php
+    http://vtcsec/secret/wp-includes/class-snoopy.php
+    http://vtcsec/secret/wp-includes/class-wp-customize-setting.php
+    http://vtcsec/secret/wp-includes/nav-menu-template.php
+    http://vtcsec/secret/wp-includes/class-wp-xmlrpc-server.php
+    http://vtcsec/secret/wp-includes/ms-settings.php
+    http://vtcsec/secret/wp-includes/session.php
+    http://vtcsec/secret/wp-includes/class-IXR.php
+    http://vtcsec/secret/wp-includes/class-walker-category-dropdown.php
+    http://vtcsec/secret/wp-includes/feed-rss.php
+    http://vtcsec/secret/wp-includes/template-loader.php
+    http://vtcsec/secret/wp-includes/embed-template.php
+    http://vtcsec/secret/wp-includes/class-wp-text-diff-renderer-inline.php
+    http://vtcsec/secret/wp-includes/class-wp-user-meta-session-tokens.php
+    http://vtcsec/secret/wp-includes/functions.php
+    http://vtcsec/secret/wp-includes/rss-functions.php
+    http://vtcsec/secret/wp-includes/class-walker-nav-menu.php
+    http://vtcsec/secret/wp-includes/class-wp-feed-cache.php
+    http://vtcsec/secret/wp-includes/class-walker-category.php
+    http://vtcsec/secret/wp-includes/class-feed.php
+    http://vtcsec/secret/wp-includes/class-wp-customize-control.php
+    http://vtcsec/secret/wp-includes/feed-rss2-comments.php
+    http://vtcsec/secret/wp-includes/vars.php
+    http://vtcsec/secret/wp-includes/feed-atom.php
+    http://vtcsec/secret/wp-includes/feed-rdf.php
+    http://vtcsec/secret/wp-includes/script-loader.php
+    http://vtcsec/secret/wp-includes/class-wp-image-editor-imagick.php
+    http://vtcsec/secret/wp-includes/feed-atom-comments.php
+    http://vtcsec/secret/wp-includes/class-wp-customize-panel.php
+    http://vtcsec/secret/wp-includes/class-wp-customize-section.php
+    http://vtcsec/secret/wp-includes/class-wp-text-diff-renderer-table.php
+    http://vtcsec/secret/wp-includes/class-wp-http-requests-hooks.php
+    http://vtcsec/secret/wp-includes/class-wp-simplepie-sanitize-kses.php
+    http://vtcsec/secret/wp-includes/class-walker-page.php
+
+------------------------------------------------------------
+ [+] URLs with '302' HTTP response:
+------------------------------------------------------------
+    http://vtcsec/secret/wp-admin/
+
+

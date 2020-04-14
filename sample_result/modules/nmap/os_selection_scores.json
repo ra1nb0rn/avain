@@ -1,0 +1,122 @@
+{
+   "192.168.0.242": [
+      [
+         {
+            "name": "Linux Linux 2.6.X",
+            "cpes": [
+               "cpe:/o:linux:linux_kernel:2.6"
+            ],
+            "accuracy": "100",
+            "type": "general purpose"
+         },
+         0.5967958965964003
+      ]
+   ],
+   "192.168.0.246": [
+      [
+         {
+            "name": "Linux Linux 2.6.X",
+            "cpes": [
+               "cpe:/o:linux:linux_kernel:2.6.32"
+            ],
+            "accuracy": "96",
+            "type": "general purpose"
+         },
+         0.5303421990084174
+      ],
+      [
+         {
+            "name": "Linux Linux 4.X",
+            "cpes": [
+               "cpe:/o:linux:linux_kernel:4"
+            ],
+            "accuracy": "96",
+            "type": "general purpose"
+         },
+         0.45725285580757036
+      ],
+      [
+         {
+            "name": "Linux Linux 3.X",
+            "cpes": [
+               "cpe:/o:linux:linux_kernel:3.1"
+            ],
+            "accuracy": "96",
+            "type": "general purpose"
+         },
+         0.4802110798160299
+      ],
+      [
+         {
+            "name": "Linux Linux 3.X",
+            "cpes": [
+               "cpe:/o:linux:linux_kernel:3.2"
+            ],
+            "accuracy": "95",
+            "type": "general purpose"
+         },
+         0.5457281921155481
+      ],
+      [
+         {
+            "name": "Linux Linux 2.6.X",
+            "cpes": [
+               "cpe:/o:linux:linux_kernel:2.6.17"
+            ],
+            "accuracy": "94",
+            "type": "webcam"
+         },
+         0.5119509975073131
+      ],
+      [
+         {
+            "name": "AXIS embedded",
+            "cpes": [
+               "cpe:/h:axis:210a_network_camera",
+               "cpe:/h:axis:211_network_camera"
+            ],
+            "accuracy": "94",
+            "type": "webcam"
+         },
+         -0.17504677148652026
+      ],
+      [
+         {
+            "name": "Synology DiskStation Manager 5.X",
+            "cpes": [
+               "cpe:/a:synology:diskstation_manager:5.2"
+            ],
+            "accuracy": "94",
+            "type": "storage-misc"
+         },
+         0.03522068916058874
+      ],
+      [
+         {
+            "name": "Netgear RAIDiator 4.X",
+            "cpes": [
+               "cpe:/o:netgear:raidiator:4.2.28"
+            ],
+            "accuracy": "94",
+            "type": "storage-misc"
+         },
+         0.025848267735122013
+      ],
+      [
+         {
+            "name": "Unix",
+            "accuracy": "100",
+            "type": ""
+         },
+         -0.9825339167683959
+      ],
+      [
+         {
+            "name": "Windows 6.1",
+            "accuracy": "100",
+            "type": ""
+         },
+         -0.4005105276851021
+      ]
+   ]
+}
