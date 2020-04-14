@@ -53,6 +53,17 @@ A more detailed overview of the current modules, what they can do and how they w
 **Important:** If you intend to run AVAIN against a sensitive or valuable system, be sure to configure it properly beforehand and know what to expect. Some modules, e.g. the sqlmap module, can run aggressive / intrusive scans that may not be side-effect free and break things on the scanned host.
 
 
+## Demo
+For demonstration purposes, AVAIN was run against [*Kioptrix 3*](https://www.vulnhub.com/entry/kioptrix-level-12-3,24/) and [*Basic Pentesting 1*](https://www.vulnhub.com/entry/basic-pentesting-1,216/) (with additional SMB service running) from VulnHub. Disclaimer: parts of the scan are sped up in the video, see the bottom right corner. Click on the image to go the video on YouTube:
+<p align="center">
+    <a href="https://www.youtube.com/watch?v=VN12gwXahr8">
+      <img src="images/demo_thumbnail.png" width="90%">
+    </a>
+</p>
+
+The obtained results are available in the [``sample_result``](sample_result) folder.
+
+
 ## Installation
 AVAIN was made to work on Unix based systems. It was tested to work on macOS, Ubuntu Linux and Kali Linux. You can either install it directly on your system or use the available Dockerfile. To install it directly &amp; automatically, run the ``install.sh`` script. As the script attempts to install AVAIN's required software, you may have to run it as *root* or get asked for a password. If you do not have *apt* (Linux) or *Homebrew* (macOS) as your package manager installed, you can simply change the package manager at the top of the script. For other issues feel free to open an issue. Since macOS by default does not have a package manager installed, you may have to install [Homebrew](https://github.com/Homebrew/brew) first. For more information on the installation process and potential problems, see the [wiki page](https://github.com/DustinBorn/avain/wiki/Getting-Started).
 
@@ -61,7 +72,7 @@ AVAIN was made to work on Unix based systems. It was tested to work on macOS, Ub
 To use AVAIN, simply call it by typing ``avain`` without any arguments in a terminal and you will see the following usage information:
 
 <p align="center">
-    <img src="usage_info.png" width="90%">
+    <img src="images/usage_info.png" width="90%">
 </p>
 
 Further insight on AVAIN's usage information is available at [this](https://github.com/DustinBorn/avain/wiki/Usage) wiki page.
