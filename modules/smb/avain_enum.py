@@ -49,14 +49,17 @@ def run(results):
 
     # run in order: SMBMap, Enum4Linux, Nmap SMB vuln scripts
     cols = shutil.get_terminal_size((100, 20))[0]
-    print_divider("SMBMap", extra_end="")
+    if VERBOSE:
+        print_divider("SMBMap", extra_end="")
     run_smbmap(targets, accounts)
-    util.printit()
-    print_divider("Enum4Linux")
+    if VERBOSE:
+        util.printit()
+        print_divider("Enum4Linux")
     run_enum4linux(targets, accounts)
     if CONFIG.get("use_nmap_scripts", "true").lower() == "true":
-        util.printit()
-        print_divider("Nmap SMB Vulnerability Scripts")
+        if VERBOSE:
+            util.printit()
+            print_divider("Nmap SMB Vulnerability Scripts")
         run_nmap_vuln_scripts(targets)
 
     # no AVAIN results are returned
@@ -180,8 +183,9 @@ def run_enum4linux(targets, accounts):
                                    stderr=subprocess.PIPE)
     # if it's not installed, return
     if e4l_installed.returncode != 0:
-        util.printit("Skipping, because Enum4Linux is not installed.")
-        util.printit("If you want AVAIN to use Enum4Linux, you have to install it manually.")
+        if VERBOSE:
+            util.printit("Skipping, because Enum4Linux is not installed.")
+            util.printit("If you want AVAIN to use Enum4Linux, you have to install it manually.")
         return
 
     # some regexes to process output
@@ -236,7 +240,8 @@ def run_enum4linux(targets, accounts):
                     # write original line to output file
                     redr_file.write(line)
 
-            util.printit("\n")
+            if VERBOSE:
+                util.printit("\n")
             redr_file.write("\n\n")
 
     redr_file.close()

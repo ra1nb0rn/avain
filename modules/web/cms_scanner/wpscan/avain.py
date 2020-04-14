@@ -144,15 +144,16 @@ def run_wpscan(targets, redr_fd_color, redr_fd):
     for target in targets:
         # just some printing ...
         count = cols - len(" %s " % target)
-        util.printit(math.floor(count / 2) * "-", end="", color=util.BRIGHT_CYAN)
         redr_fd_color.write(util.BRIGHT_CYAN + math.floor(count / 2) * "-" + util.SANE)
         redr_fd.write(math.floor(count / 2) * "-")
-        util.printit(" %s " % target, end="")
         redr_fd_color.write(" %s " % target)
         redr_fd.write(" %s " % target)
-        util.printit(math.ceil(count / 2) * "-", color=util.BRIGHT_CYAN)
         redr_fd_color.write(util.BRIGHT_CYAN + math.ceil(count / 2) * "-" + util.SANE + "\n")
         redr_fd.write(math.ceil(count / 2) * "-" + "\n")
+        if VERBOSE:
+            util.printit(math.floor(count / 2) * "-", end="", color=util.BRIGHT_CYAN)
+            util.printit(" %s " % target, end="")
+            util.printit(math.ceil(count / 2) * "-", color=util.BRIGHT_CYAN)
 
         # setup WPScan call (for --enumerate: 'dbe' disabled for now b/c WPScan error)
         call = ["wpscan", "-v", "--url", target, "--enumerate", "vp,vt,tt,cb,u,m"]
@@ -188,7 +189,8 @@ def run_wpscan(targets, redr_fd_color, redr_fd):
                     line = line[:-2]
 
                 # print to screen
-                print(line, end="")
+                if VERBOSE:
+                    print(line, end="")
 
                 # do not write temporary output to output file
                 if not ("Time" in line and "ETA" in line):
