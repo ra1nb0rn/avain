@@ -954,10 +954,10 @@ def extract_form_data(response):
         form_id = form.attrib.get("id", None)
         method = form.attrib.get("method", None)
         # only process forms with action and method attribute
-        if (not action) or (not method):
+        if (action is None) or (not method):
             continue
         # adjust action and method strings
-        if action == "#":
+        if action == "#" or action == "":
             action = response.url
         action = action.replace("&amp;", "&")
         action = action.replace("&#038;", "&")
