@@ -31,9 +31,9 @@ else
         # if install did not work, install Ruby and then wpscan via gem
         if [ $? != 0 ]; then
             if [ ${QUIET} != 1 ]; then
-                sudo ${LINUX_PACKAGE_MANAGER} -y install ruby rubygems
+                sudo ${LINUX_PACKAGE_MANAGER} -y install ruby ruby-dev rubygems
             else
-                sudo ${LINUX_PACKAGE_MANAGER} -y install ruby rubygems >/dev/null
+                sudo ${LINUX_PACKAGE_MANAGER} -y install ruby ruby-dev rubygems >/dev/null
             fi
             if [ ${QUIET} != 1 ]; then
                 gem install wpscan

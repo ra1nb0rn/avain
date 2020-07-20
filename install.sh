@@ -6,7 +6,7 @@ LINUX_PACKAGE_MANAGER="apt-get"
 # some function definitions
 install_brew_packages() {
     # Use brew to install macOS software packages
-    BREW_PACKAGES="python wget nmap sqlite3 cmake coreutils hydra gobuster"  # gcc should be available by default
+    BREW_PACKAGES="python wget curl nmap sqlite3 cmake coreutils hydra gobuster"  # gcc should be available by default
 
     which brew &> /dev/null
     if [ $? != 0 ]; then
@@ -46,7 +46,7 @@ brew_fail_check() {
 
 install_linux_packages() {
     # Use ${LINUX_PACKAGE_MANAGER} to install Linux software packages
-    PACKAGES="python3 python3-pip nmap libssh-dev hydra wget sqlite3 libsqlite3-dev cmake gcc"
+    PACKAGES="python3 python3-pip nmap libssh-dev hydra wget curl sqlite3 libsqlite3-dev cmake gcc"
     which ${LINUX_PACKAGE_MANAGER} &> /dev/null
     if [ $? != 0 ]; then
         printf "${RED}Could not find ${LINUX_PACKAGE_MANAGER} command.\\nPlease check your package mannager installation first.\\n"
