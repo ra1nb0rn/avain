@@ -6,14 +6,14 @@ if [ "${KERNEL}" == "Darwin" ]; then
         sudo -u $REAL_USER_NAME brew upgrade wpscan
         if [ $? != 0 ]; then
             printf "${RED}Installation of wpscan via brew was not successful.\\n"
-            exit 1
+            return 1
         fi
     else
         sudo -u $REAL_USER_NAME brew install wpscan >/dev/null
         sudo -u $REAL_USER_NAME brew upgrade wpscan >/dev/null
         if [ $? != 0 ]; then
             printf "${RED}Installation of wpscan via brew was not successful.\\n"
-            exit 1
+            return 1
         fi
     fi
 else
@@ -45,7 +45,7 @@ else
             wpscan -h &> /dev/null
             if [ $? != 0 ]; then
                 printf "${RED}Could not find or install wpscan.\\nPlease install it manually and then restart the overall installation.\\n"
-                exit 1
+                return 1
             fi
         fi
     fi

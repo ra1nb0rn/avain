@@ -45,7 +45,7 @@ eval "./module_updater.py"
 
 if [ $? != 0 ]; then
     echo -e "${RED}Could not update database"
-    exit 1
+    return 1
 fi
 
 # create simple standalone wrapper for module

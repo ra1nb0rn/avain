@@ -23,7 +23,7 @@ install_chromedriver_linux() {
 
     if [ $SUCCESS != 1 ]; then
         printf "${RED}Could not install chromedriver. Please install it manually."
-        exit 1
+        return 1
     fi
 }
 
@@ -70,5 +70,5 @@ elif [ "${KERNEL}" == "Linux" ]; then
     sed -i "1s/python$/python3/" LinkFinder/linkfinder.py
 else
     printf "${RED}Could not identify running OS.\\nPlease install AVAIN manually."
-    exit 1
+    return 1
 fi
