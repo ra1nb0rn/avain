@@ -4,10 +4,10 @@ A framework for the automated vulnerability analysis in IP-based networks that e
 <p>
 <a href="#"><img src="https://img.shields.io/badge/python-3.6%2B-red" alt="Python 3.6+"></a>
 <a href="#"><img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS-%23557ef6" alt="Platform: linux, macOS"></a>
-<a href="#"><img src="https://img.shields.io/github/v/release/dustinborn/avain?include_prereleases" alt="<release>"></a>
-<a href="https://github.com/DustinBorn/avain/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT"></a>
-<a href="https://github.com/DustinBorn/avain/wiki"><img src="https://img.shields.io/badge/documentation-wiki-yellow" alt="Wiki"></a>
-<a href="#"><img src="https://img.shields.io/github/languages/code-size/dustinborn/avain?color=lightgray"></a>
+<a href="#"><img src="https://img.shields.io/github/v/release/ra1nb0rn/avain?include_prereleases" alt="<release>"></a>
+<a href="https://github.com/ra1nb0rn/avain/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT"></a>
+<a href="https://github.com/ra1nb0rn/avain/wiki"><img src="https://img.shields.io/badge/documentation-wiki-yellow" alt="Wiki"></a>
+<a href="#"><img src="https://img.shields.io/github/languages/code-size/ra1nb0rn/avain?color=lightgray"></a>
 </p>
 
 ## About
@@ -20,7 +20,7 @@ At its core, AVAIN is an extensible framework that uses modules to do vulnerabil
 * modules are implemented in Python; other tools can be wrapped
 * modules can specify install and update scripts
 
-For more information about AVAIN's framework features, look at the [separate wiki page](https://github.com/DustinBorn/avain/wiki/Framework-Features). To see how to develop new modules with Python, have a look at [this](https://github.com/DustinBorn/avain/wiki/Creating-a-New-Module) wiki page.
+For more information about AVAIN's framework features, look at the [separate wiki page](https://github.com/ra1nb0rn/avain/wiki/Framework-Features). To see how to develop new modules with Python, have a look at [this](https://github.com/ra1nb0rn/avain/wiki/Creating-a-New-Module) wiki page.
 
 
 ## Current Features of Modules
@@ -48,7 +48,7 @@ The currently available modules can automatically:
 - **Credential Bruteforcing**
   - [x] Brute force credentials for SSH &amp; Telnet services via [Hydra](https://github.com/vanhauser-thc/thc-hydra) and a configurable wordlist
 
-A more detailed overview of the current modules, what they can do and how they work is available in the [wiki](https://github.com/DustinBorn/avain/wiki/Module-Overview). All of AVAIN's modules are highly configurable. As a small example, you can configure authentication cookies to be used or regex URLs to be excluded while scraping a website. For a full list of configuration parameters and how to use them properly, have look at the separate [wiki page](https://github.com/DustinBorn/avain/wiki/Configuration). In addition, despite AVAIN being fairly verbose during the analysis, all the result files that contain even more information are stored in AVAIN's output directory. While the file structure should be simple to understand, it is further explained in the [wiki](https://github.com/DustinBorn/avain/wiki/Output-Structure).
+A more detailed overview of the current modules, what they can do and how they work is available in the [wiki](https://github.com/ra1nb0rn/avain/wiki/Module-Overview). All of AVAIN's modules are highly configurable. As a small example, you can configure authentication cookies to be used or regex URLs to be excluded while scraping a website. For a full list of configuration parameters and how to use them properly, have look at the separate [wiki page](https://github.com/ra1nb0rn/avain/wiki/Configuration). In addition, despite AVAIN being fairly verbose during the analysis, all the result files that contain even more information are stored in AVAIN's output directory. While the file structure should be simple to understand, it is further explained in the [wiki](https://github.com/ra1nb0rn/avain/wiki/Output-Structure).
 
 **Important:** If you intend to run AVAIN against a sensitive or valuable system, be sure to configure it properly beforehand and know what to expect. Some modules, e.g. the sqlmap module, can run aggressive / intrusive scans that may not be side-effect free and break things on the scanned host.
 
@@ -65,7 +65,7 @@ The obtained results are available in the [``sample_result``](sample_result) fol
 
 
 ## Installation
-AVAIN was made to work on Unix based systems. It was tested to work on macOS, Ubuntu Linux and Kali Linux. You can either install it directly on your system or use the available Dockerfile. To install it directly &amp; automatically, run the ``install.sh`` script. As the script attempts to install AVAIN's required software, you may have to run it as *root* or get asked for a password. If you do not have *apt* (Linux) or *Homebrew* (macOS) as your package manager installed, you can simply change the package manager at the top of the script. For other issues feel free to open an issue. Since macOS by default does not have a package manager installed, you may have to install [Homebrew](https://github.com/Homebrew/brew) first. For more information on the installation process and potential problems, see the [wiki page](https://github.com/DustinBorn/avain/wiki/Getting-Started).
+AVAIN was made to work on Unix based systems. It was tested to work on macOS, Ubuntu Linux and Kali Linux. You can either install it directly on your system or use the available Dockerfile. To install it directly &amp; automatically, run the ``install.sh`` script. As the script attempts to install AVAIN's required software, you may have to run it as *root* or get asked for a password. If you do not have *apt* (Linux) or *Homebrew* (macOS) as your package manager installed, you can simply change the package manager at the top of the script. For other issues feel free to open an issue. Since macOS by default does not have a package manager installed, you may have to install [Homebrew](https://github.com/Homebrew/brew) first. For more information on the installation process and potential problems, see the [wiki page](https://github.com/ra1nb0rn/avain/wiki/Getting-Started).
 
 
 ## Usage
@@ -75,13 +75,13 @@ To use AVAIN, simply call it by typing ``avain`` without any arguments in a term
     <img src="images/usage_info.png" width="90%">
 </p>
 
-Further insight on AVAIN's usage information is available at [this](https://github.com/DustinBorn/avain/wiki/Usage) wiki page.
+Further insight on AVAIN's usage information is available at [this](https://github.com/ra1nb0rn/avain/wiki/Usage) wiki page.
 
 For running AVAIN on some target like ``192.168.42.1``, the corresponding call is:
 ```
 avain -n 192.168.42.1
 ```
-The contents of the created output folder should mostly be simple to understand, but a [separate wiki page](https://github.com/DustinBorn/avain/wiki/Output-Structure) goes into more detail.
+The contents of the created output folder should mostly be simple to understand, but a [separate wiki page](https://github.com/ra1nb0rn/avain/wiki/Output-Structure) goes into more detail.
 
 Three more examples of how you can call AVAIN:
 * ``avain -n 192.168.0.* -uM -p T:80,U:53 -o http_dns_sec``
@@ -90,7 +90,7 @@ Three more examples of how you can call AVAIN:
 
 
 ## Wiki
-In case you have more question about AVAIN, the [wiki](https://github.com/DustinBorn/avain/wiki/) is very detailed and explains AVAIN in great detail.
+In case you have more question about AVAIN, the [wiki](https://github.com/ra1nb0rn/avain/wiki/) is very detailed and explains AVAIN in great detail.
 
 
 ## Contribution & Bugs
@@ -98,8 +98,8 @@ If you want to contribute, or have any questions or suggestions, use GitHub or d
 
 
 ## License
-AVAIN is licensed under the MIT license, see [here](https://github.com/DustinBorn/avain/blob/master/LICENSE).
+AVAIN is licensed under the MIT license, see [here](https://github.com/ra1nb0rn/avain/blob/master/LICENSE).
 
 
 ## Miscellaneous
-I created AVAIN as part of my Bachelor Thesis at TU Darmstadt (located in Germany) under the guidance of my advisor Rolf Egert. We presented a demo paper about AVAIN at NetSys&nbsp;'19. In addition, we presented a full paper based on AVAIN at the IEEE GLOBECOM 2019 Workshop on Security and Privacy in Smart, Cooperative IoT and CPS. For more info see the [Publications](https://github.com/DustinBorn/avain/wiki/Publications) wiki page.
+I originally created AVAIN as part of my Bachelor Thesis at TU Darmstadt (located in Germany) under the guidance of my advisor Rolf Egert. After my thesis I decided to continue working on AVAIN in my spare time. We presented a demo paper about AVAIN at NetSys&nbsp;'19. In addition, we presented a full paper based on AVAIN at the IEEE GLOBECOM 2019 Workshop on Security and Privacy in Smart, Cooperative IoT and CPS. For more info see the [Publications](https://github.com/ra1nb0rn/avain/wiki/Publications) wiki page.
