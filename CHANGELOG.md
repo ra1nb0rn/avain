@@ -1,6 +1,29 @@
 # Changelog
 This file keeps track of all notable changes between the different versions of AVAIN.
 
+## v0.1.3 - 2020-07-22
+### Added
+- SQL Injection detection module
+- SMB enumeration module
+- WPScan module
+- CVE correlation module additionally retrieves Exploit DB IDs
+- Regexes of paths not to crawl / visit can be specified via config
+- Add globally reachable configuration profiles
+- Add alternative configurations
+- Wrapper script around CVE correlation module that enables usage outside of AVAIN framework
+- Kill function for modules
+- Previous output directory can be specified as input
+- Sample result and demonstration video
+### Changed
+- Overall accuracy of CVE correlation module was improved
+- In the CVE correlation module, the retrieval of CVEs where the queried CPE is not the primarily vulnerable software can be turned on and off via the config
+- AVAIN explicitly cannot run twice at the same time
+- The installation script explicitly removes the NVD database before reinstalling it to cope with DB schemata updates
+- --non-verbose flag is now the --quiet flag
+- -sN flag now means --separate-networks instead of --single-network
+### Fixed
+- Various small bugs
+
 ## v0.1.2 - 2019-09-22
 ### Added
 - A very detailed wiki

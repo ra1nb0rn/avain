@@ -10,8 +10,8 @@ from core.result_types import ResultType
 import core.utility as util
 
 # The following metadata applies to all source code files of AVAIN
-__author__ = "Dustin Born"
-__version__ = "0.1.2"
+__author__ = "Dustin Born (ra1nb0rn)"
+__version__ = "0.1.3"
 __license__ = "MIT"
 
 
@@ -204,8 +204,8 @@ def banner():
 {0}                     /_/  |_||___//_/  |_|/___//_/ |_/      {1}           {0}
 {0}                                                                              {0}\
 """.format(border_color + "|" + avain_color, util.BRIGHT_GREEN + "(%s)"  % __version__ + border_color))
-    print(border_color + "|" + sane + " " * 25 + by_color + "[ Created by - Dustin Born ]" +
-          sane + " " * 25 + border_color + "|" + sane)
+    print(border_color + "|" + sane + " " * 19 + by_color + "[ Created by - Dustin Born (ra1nb0rn) ]" +
+          sane + " " * 20 + border_color + "|" + sane)
     util.printit("|" + "-" * 78 + "|", color=border_color)
     print()
 
