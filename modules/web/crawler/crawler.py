@@ -293,6 +293,7 @@ class Crawler():
         self.extract_cookies(response.headers.getlist("Set-Cookie"), response.url)
 
         # use scrapy's lxml linkextractor to extract links / URLs
+        scrapy_urls = set()
         try:
             # extract <base> URL's domain if a <base> tag exists
             base_domain = ""
@@ -308,10 +309,21 @@ class Crawler():
             allowed_domains = [self.domain, "%s:%s" % (self.domain, self.port)]
             if base_domain:
                 allowed_domains.append(base_domain)
-            scrapy_links = LinkExtractor(allow_domains=allowed_domains,
+            raw_scrapy_links = LinkExtractor(allow_domains=allowed_domains,
                                          tags=("a", "area", "script", "link", "source", "img"),
                                          attrs=("src", "href"),
                                          deny_extensions=set()).extract_links(response)
+            raw_scrapy_urls = [link.url for link in raw_scrapy_links]
+
+            # copy discovered URLs and additionally insert initial network location
+            scrapy_urls = raw_scrapy_urls.copy()
+            if base_domain and base_domain != allowed_domains[0] and base_domain != allowed_domains[1]:
+                orig_netloc = urllib.parse.urlparse(response.url).netloc
+                for scrapy_url in raw_scrapy_urls:
+                    parsed_scrapy_url = list(urllib.parse.urlsplit(scrapy_url))
+                    parsed_scrapy_url[1] = orig_netloc
+                    scrapy_urls.append(urllib.parse.urlunsplit(parsed_scrapy_url))
+            scrapy_urls = set(scrapy_urls)
         except (AttributeError, scrapy.exceptions.NotSupported) as e:
             if str(e) == "Response content isn't text":
                 # stop processing and return no new URLs
@@ -339,8 +351,7 @@ class Crawler():
 
         # unite discovered URLs
         urls = set()
-        for link in scrapy_links:
-            urls.add(link.url)
+        urls |= scrapy_urls
         urls |= linkfinder_urls
         urls |= dynamic_urls
         urls |= form_urls
