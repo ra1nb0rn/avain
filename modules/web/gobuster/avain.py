@@ -36,6 +36,9 @@ def run(results: list):
     # open file handle to redirect output
     redr_file = open(CREATED_FILES[0], "w+")
 
+    # check if installed gobuster is older and has only mode 'dir'
+    is_old_gobuster = check_is_old_gobuster()
+
     for (ip, host, port, protocol) in TARGETS:
         # for every new IP create a new webserver_map entry and print a seperator
         if ip not in webserver_map:
@@ -63,7 +66,7 @@ def run(results: list):
             url = protocol + "://" + host + ":" + port
 
         # run gobuster on target URL and save the results
-        host_web_map = run_gobuster(url, redr_file)
+        host_web_map = run_gobuster(url, redr_file, is_old_gobuster)
         webserver_map[ip][port][host] = host_web_map
 
     # close redirect file
@@ -73,7 +76,24 @@ def run(results: list):
     results.append((ResultType.WEBSERVER_MAP, webserver_map))
 
 
-def run_gobuster(url, redr_file):
+def check_is_old_gobuster():
+    """
+    Check if the installed gobuster is older and has mode "dir", since this leads
+    to a slightly different call syntax.
+    """
+
+    # check how to use gobuster information for version estimation
+    try:
+        check_out = subprocess.check_output(["gobuster", "dir"], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        check_out = e.output
+    check_out = check_out.decode()
+    if ("2 errors occurred" in check_out and "WordList (-w): Must be specified" in check_out and "Url/Domain (-u): Must be specified" in check_out):
+        return True
+    return False
+
+
+def run_gobuster(url, redr_file, is_old_gobuster):
     """
     Run gobuster on the target URL and process its results.
 
@@ -104,8 +124,11 @@ def run_gobuster(url, redr_file):
 
         # setup gobuster parameters
         cur_url = url + dir_
-        gobuster_call = ["gobuster", "dir", "-t", CONFIG["threads"], "-w", CONFIG["wordlist"],
+        gobuster_call = ["gobuster", "-t", CONFIG["threads"], "-w", CONFIG["wordlist"],
                          "-u", cur_url, "-x", CONFIG["extensions"], "-k"]
+        if not is_old_gobuster:
+            gobuster_call.insert(1, "dir")
+
         findings = []
         printed_starting, printing_results = False, False
         prev_line_is_progress = False
