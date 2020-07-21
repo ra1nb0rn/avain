@@ -15,6 +15,7 @@ from comment_parser import comment_parser
 from comment_parser.comment_parser import ParseError as CP_ParseError
 from comment_parser.parsers.common import UnterminatedCommentError
 from scrapy.linkextractors import LinkExtractor
+import scrapy.exceptions
 
 from core import utility as util
 from . import ipc_operations
@@ -293,15 +294,30 @@ class Crawler():
 
         # use scrapy's lxml linkextractor to extract links / URLs
         try:
-            scrapy_links = LinkExtractor(allow_domains=[self.domain, "%s:%s" % (self.domain, self.port)],
+            # extract <base> URL's domain if a <base> tag exists
+            base_domain = ""
+            base_tag_sels = response.xpath("//base")
+            for base_tag_sel in base_tag_sels:
+                href_sels = base_tag_sel.xpath("@href")
+                if href_sels:
+                    href = href_sels.extract_first()
+                    base_domain = urllib.parse.urlparse(href).netloc
+                    break
+
+            # setup allowed domains and extract new links
+            allowed_domains = [self.domain, "%s:%s" % (self.domain, self.port)]
+            if base_domain:
+                allowed_domains.append(base_domain)
+            scrapy_links = LinkExtractor(allow_domains=allowed_domains,
                                          tags=("a", "area", "script", "link", "source", "img"),
                                          attrs=("src", "href"),
                                          deny_extensions=set()).extract_links(response)
-        except AttributeError as e:
+        except (AttributeError, scrapy.exceptions.NotSupported) as e:
             if str(e) == "Response content isn't text":
                 # stop processing and return no new URLs
                 return set()
             raise e
+
 
         # run the different URL / link discovery mechanisms
         linkfinder_urls, dynamic_urls, form_urls, sub_urls = set(), set(), set(), set()
