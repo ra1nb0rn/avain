@@ -68,7 +68,7 @@ def run(results: list):
 
     # match the data feed URLs
     nvd_nist_datafeed_html = nvd_response.text
-    jfeed_expr = re.compile(r"https://nvd\.nist\.gov/feeds/json/cve/1\.1/nvdcve-1\.1-\d\d\d\d.json\.zip")
+    jfeed_expr = re.compile(r"/feeds/json/cve/1\.1/nvdcve-1\.1-\d\d\d\d.json\.zip")
     nvd_feed_urls = re.findall(jfeed_expr, nvd_nist_datafeed_html)
 
     if not nvd_feed_urls:
@@ -82,6 +82,7 @@ def run(results: list):
     with open(WGET_OUTFILE, "w") as file:
         zipfiles = []
         for nvd_feed_url in nvd_feed_urls:
+            nvd_feed_url = "https://nvd.nist.gov" + nvd_feed_url
             outname = os.path.join(NVD_DATAFEED_DIR, nvd_feed_url.split("/")[-1])
             return_code = subprocess.call("wget %s -O %s" % (shlex.quote(nvd_feed_url), shlex.quote(outname)),
                                           stdout=file, stderr=subprocess.STDOUT, shell=True)
