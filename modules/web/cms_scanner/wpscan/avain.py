@@ -156,7 +156,7 @@ def run_wpscan(targets, redr_fd_color, redr_fd):
             util.printit(math.ceil(count / 2) * "-", color=util.BRIGHT_CYAN)
 
         # setup WPScan call (for --enumerate: 'dbe' disabled for now b/c WPScan error)
-        call = ["wpscan", "-v", "--url", target, "--no-update", "--enumerate", "vp,vt,tt,cb,u,m"]
+        call = ["wpscan", "-v", "--url", target, "--no-update", "--enumerate", "ap,vt,tt,cb,u,m"]
         if CONFIG.get("wpvulndb_api_token", ""):
             call += ["--api-token", CONFIG["wpvulndb_api_token"]]
         if CONFIG.get("cookie_str", ""):
@@ -167,8 +167,12 @@ def run_wpscan(targets, redr_fd_color, redr_fd):
             call += ["--disable-tls-checks"]
         if CONFIG.get("stealthy", "false").lower() == "true":
             call += ["--stealthy"]
-        elif CONFIG.get("user_agent", ""):
+        if CONFIG.get("user_agent", ""):
             call += ["--user-agent", CONFIG["user_agent"]]
+        if CONFIG.get("plugins_detection_mode", ""):
+            mode = CONFIG["plugins_detection_mode"]
+            if mode in ("passive", "mixed", "aggressive"):
+                call += ["--plugins-detection", mode]
 
         util.acquire_print()
         # execute WPScan call in separate PTY to capture good output

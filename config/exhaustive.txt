@@ -99,3 +99,4 @@ wpvulndb_api_token = ""                                          // Not required
 max_threads = 5                                                  // the max threads to use within WPScan
 disable_tls_checks = True                                        // "disables SSL/TLS certificate verification" (from WPScan help)
 stealthy = False                                                 // use random user agent and passive detection methods (see WPScan help)
+plugins_detection_mode = mixed                                   // the wpscan plugins detection mode to use ("passive", "aggressive", or "mixed")
