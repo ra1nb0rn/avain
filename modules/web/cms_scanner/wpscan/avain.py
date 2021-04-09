@@ -156,7 +156,7 @@ def run_wpscan(targets, redr_fd_color, redr_fd):
             util.printit(math.ceil(count / 2) * "-", color=util.BRIGHT_CYAN)
 
         # setup WPScan call (for --enumerate: 'dbe' disabled for now b/c WPScan error)
-        call = ["wpscan", "-v", "--url", target, "--enumerate", "vp,vt,tt,cb,u,m"]
+        call = ["wpscan", "-v", "--url", target, "--no-update", "--enumerate", "vp,vt,tt,cb,u,m"]
         if CONFIG.get("wpvulndb_api_token", ""):
             call += ["--api-token", CONFIG["wpvulndb_api_token"]]
         if CONFIG.get("cookie_str", ""):
