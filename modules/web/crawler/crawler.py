@@ -612,13 +612,18 @@ class Crawler():
         # extract URLs, POST params and cookies by inspecting requests made by the Selenium driver
         visited_urls = set()
         for request in self.driver.requests:
+            if "url" in request.__dir__():
+                req_url = request.url
+            else:
+                req_url = request.path
+
             # add as path instance if POST parameters are available
-            if self.url_has_netloc(request.url) and request.method == "POST" and request.body:
+            if self.url_has_netloc(req_url) and request.method == "POST" and request.body:
                 try:
                     body = request.body.decode()
                     post_params = get_query_params(body)
                     if post_params:
-                        parsed_url = urllib.parse.urlparse(request.url)
+                        parsed_url = urllib.parse.urlparse(req_url)
                         get_params = get_query_params(parsed_url.query)
                         # extract cookies sent by the Selenium driver
                         cookie_strs = request.headers["Cookie"].split(";")
@@ -632,7 +637,7 @@ class Crawler():
                         self.add_path_instance(parsed_url.path, get_params, post_params, cookies)
                 except:
                     pass
-            visited_urls.add(request.url)
+            visited_urls.add(req_url)
 
         del self.driver.requests
         return visited_urls
