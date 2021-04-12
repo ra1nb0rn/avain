@@ -289,8 +289,12 @@ class Crawler():
             print_str = "  [" + color + str(response.status) + util.SANE + "]  " + response.url + extra_print
             util.printit(print_str)
 
-        # extract cookies from HTTP header response
-        self.extract_cookies(response.headers.getlist("Set-Cookie"), response.url)
+        # extract cookies and their paths from HTTP response header
+        cookie_paths = self.extract_cookies(response.headers.getlist("Set-Cookie"), response.url)
+        cookie_urls = set()
+        for path in cookie_paths:
+            cookie_urls.add(self.to_absolute_url(path, response.urljoin))
+
 
         # use scrapy's lxml linkextractor to extract links / URLs
         scrapy_urls = set()
@@ -351,6 +355,7 @@ class Crawler():
 
         # unite discovered URLs
         urls = set()
+        urls |= cookie_urls
         urls |= scrapy_urls
         urls |= linkfinder_urls
         urls |= dynamic_urls
@@ -433,7 +438,8 @@ class Crawler():
     def extract_cookies(self, set_cookie_strings, url):
         """
         Extract cookie objects from the raw cookie strings returned in an HTTP
-        response and append them to the list of discovered cookies.
+        response and append them to the list of discovered cookies. Also return
+        any paths found via the cookies' "Path" attributes.
         """
 
         # determine current domain
@@ -442,10 +448,9 @@ class Crawler():
 
         # determine current path
         path_found = url_parsed.path
-        if not path_found.endswith("/"):
-            path_found = path_found[:path_found.rfind("/")]
 
         # extract cookies
+        paths = set()
         for cookie_string in set_cookie_strings:
             cookie_string = cookie_string.decode()
             name, path, domain, httpOnly, secure, sameSite = "", "", domain_found, False, False, ""
@@ -457,6 +462,7 @@ class Crawler():
                     key, val = item.split("=")
                     if key.lower() == "path":
                         path = val
+                        paths.add(path)
                     elif key.lower() == "domain":
                         domain = val
                     elif key == "SameSite":
@@ -474,6 +480,7 @@ class Crawler():
                 self.found_cookies.append({"name": name, "path": path, "pathFound": path_found,
                                            "domain": domain, "httpOnly": httpOnly,
                                            "secure": secure, "sameSite": sameSite})
+        return paths
 
     def extract_comments(self, response):
         """
