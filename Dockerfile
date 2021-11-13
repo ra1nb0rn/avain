@@ -1,9 +1,9 @@
-FROM ubuntu:bionic
+FROM ubuntu:latest
 
 WORKDIR /home/avain
 RUN apt-get update >/dev/null && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata locales sudo git build-essential gcc >/dev/null && \
-    git clone --quiet --depth 1 https://github.com/dustinborn/avain.git . && \
+    git clone --quiet --depth 1 https://github.com/ra1nb0rn/avain.git . && \
     ./install.sh && \
     rm -rf /var/lib/apt/lists/*
 
